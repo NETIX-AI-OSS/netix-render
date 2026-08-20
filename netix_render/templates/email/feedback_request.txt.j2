@@ -1,0 +1,11 @@
+{{ t("hello") }}{% if payload.greeting_name %} {{ payload.greeting_name }}{% endif %},
+
+{{ t("feedback_intro") }}
+{{ payload.prompt_text }}
+{% if payload.entity_ref %}
+{{ t("reference") }}: {{ payload.entity_ref }}
+{% endif %}
+{{ payload.cta.label }}: {{ payload.cta.url }}
+{% if payload.note %}
+{{ payload.note }}
+{% endif %}

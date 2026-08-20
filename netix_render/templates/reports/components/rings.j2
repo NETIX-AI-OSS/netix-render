@@ -1,0 +1,5 @@
+{% macro rings(section) -%}
+<div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px">
+  {% for item in section.items %}{{ ring(item) }}{% endfor %}
+</div>
+{%- endmacro %}

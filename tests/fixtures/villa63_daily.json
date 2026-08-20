@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "report_id": "NTX-V63-DLY-260611",
+    "engine_version": "v4.2.1",
+    "generated_at": "2026-06-11T06:30:00",
+    "period": {
+      "start": "2026-06-10T22:00:00",
+      "end": "2026-06-11T06:00:00",
+      "label": "Thursday, 11 June 2026 · reporting period Wed 10 Jun 22:00 → Thu 11 Jun 06:00 · Jumeirah, Dubai"
+    },
+    "asset": {
+      "id": "villa-63",
+      "name": "Villa 63",
+      "location": "Jumeirah, Dubai"
+    },
+    "title": "Villa 63 — Daily Brief",
+    "tag_line": "DAILY OPERATIONS BRIEF · 06:30",
+    "language": "en",
+    "dir": "ltr",
+    "accent": {
+      "gradient": ["#0e1320", "#173d33", "#1f7a5c"],
+      "logo_color": "#7fe0bf"
+    },
+    "timezone_label": "GST",
+    "manual_edits": 0
+  },
+  "sections": [
+    {
+      "kind": "banner",
+      "level": "ok",
+      "text": "Overnight status: FAHU running & smoke clear · supply air 15.7 °C on setpoint · circulation + pressurization pumps running · pool plant on schedule — roof tank healthy."
+    },
+    {
+      "kind": "kpi_grid",
+      "items": [
+        {"value": "15.7°C", "label": "FAHU supply air", "status": "ok", "note": "RA 15.4 °C · on setpoint"},
+        {"value": "21.2°C", "label": "FAHU coil ΔT", "status": "ok", "note": "on 37.1 → off 15.8 °C"},
+        {"value": "—", "label": "Energy yesterday", "status": "warn", "note": "meters offline"},
+        {"value": "134 mm", "label": "Roof tank", "status": "ok", "note": "refills normal"},
+        {"value": "OK", "label": "Pool plant", "status": "ok", "note": "filter D+S run · UV on"},
+        {"value": "NORMAL", "label": "FAHU filter / smoke", "status": "ok", "note": "filter status OK"}
+      ]
+    },
+    {
+      "kind": "check_table",
+      "title": "Safety & Plant Positive Check (06:00)",
+      "icon": "🛡",
+      "subtitle": "Daily confirmation — all items below must read normal",
+      "rows": [
+        {
+          "system": "FAHU (fresh-air handling)",
+          "state": {"label": "RUNNING", "level": "ok"},
+          "detail": "Supply 15.7 °C · RA 15.4 °C · cooling valve 50% · filter OK"
+        },
+        {
+          "system": "FAHU smoke + filter status",
+          "state": {"label": "CLEAR", "level": "ok"},
+          "detail": "No smoke alarm · filter status normal · coil tracking"
+        },
+        {
+          "system": "Circulation pumps 1 / 2",
+          "state": {"label": "BOTH RUN", "level": "ok"},
+          "detail": "P1 + P2 running · selector auto · flow proven"
+        },
+        {
+          "system": "Pressurization / Dosing",
+          "state": {"label": "RUNNING", "level": "ok"},
+          "detail": "Pressurization set running · dosing pump running"
+        },
+        {
+          "system": "Roof tank / GF tank",
+          "state": {"label": "GF PENDING", "level": "warn"},
+          "detail": "Roof level 134 mm normal · GF tank sensor reads 0 — site check"
+        },
+        {
+          "system": "Pool plant (DDC-RF)",
+          "state": {"label": "ON SCHEDULE", "level": "ok"},
+          "detail": "Filter D + S running · UV on during filtration"
+        }
+      ]
+    },
+    {
+      "kind": "exceptions",
+      "title": "Overnight Exceptions (22:00–06:00)",
+      "icon": "🌙",
+      "subtitle": "Ranked worst-first",
+      "rows": [
+        {
+          "rank": 1,
+          "event": "Energy meters reporting 0 (MDB + sub-DBs)",
+          "asset": "Power metering",
+          "assessment": "MDB and sub-DB meters reading zero — data-feed/wiring issue, energy KPIs suppressed rather than shown as 0; verify on site",
+          "owner": "MEP / ELV"
+        },
+        {
+          "rank": 2,
+          "event": "GF water tank level reads 0 mm",
+          "asset": "Tank GF level sensor",
+          "assessment": "Roof tank healthy at 134 mm; GF sensor flat at 0 — likely calibration/access pending, not an empty tank",
+          "owner": "Plumbing"
+        },
+        {
+          "rank": 3,
+          "event": "FAHU off-coil 15.8 °C vs supply 15.7 °C",
+          "asset": "FAHU",
+          "assessment": "Coil ΔT 21.2 °C, cooling valve 50% — unit on setpoint; monitor approach as ambient climbs",
+          "owner": "HVAC"
+        }
+      ]
+    },
+    {
+      "kind": "trend_pair",
+      "charts": [
+        {
+          "title": "Energy — last 7 days (MWh)",
+          "icon": "⚡",
+          "subtitle": "MDB · last published week (meters currently offline)",
+          "unit": "MWh",
+          "series": [
+            {"label": "Thu", "value": 1.92},
+            {"label": "Fri", "value": 1.98},
+            {"label": "Sat", "value": 2.05},
+            {"label": "Sun", "value": 1.96},
+            {"label": "Mon", "value": 2.02},
+            {"label": "Tue", "value": 2.08},
+            {"label": "Wed", "value": 2.14}
+          ],
+          "highlight_last": true,
+          "color": "#2e5bd7",
+          "highlight_color": "#dd4257",
+          "decimals": 2
+        },
+        {
+          "title": "FAHU supply-air offset — last 7 days (°C)",
+          "icon": "🔁",
+          "subtitle": "supply vs return-air ΔT · daily avg",
+          "unit": "°C",
+          "series": [
+            {"label": "Thu", "value": 5.2},
+            {"label": "Fri", "value": 5.1},
+            {"label": "Sat", "value": 5.1},
+            {"label": "Sun", "value": 5.0},
+            {"label": "Mon", "value": 5.0},
+            {"label": "Tue", "value": 4.9},
+            {"label": "Wed", "value": 4.9}
+          ],
+          "highlight_last": true,
+          "color": "#16a571",
+          "highlight_color": "#e0a512",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "kind": "ai_insight",
+      "title": "AI brief:",
+      "text": "Plant is healthy this morning — FAHU on setpoint (supply 15.7 °C, coil ΔT 21.2 °C), both circulation pumps running and pool plant on schedule. The two open items are data-health, not equipment: the MDB/sub-DB energy meters are reading zero and the GF tank sensor is flat at 0 mm. Restoring both feeds is the only thing standing between this villa and a fully green brief."
+    },
+    {
+      "kind": "actions",
+      "title": "Today's Actions",
+      "icon": "✅",
+      "subtitle": "Auto-built from open exceptions",
+      "rows": [
+        {"due": "Today", "action": "Verify MDB + sub-DB energy meters on site (reading 0)", "owner": "MEP / ELV"},
+        {"due": "Today", "action": "Check GF tank level sensor (flat at 0 mm)", "owner": "Plumbing"},
+        {"due": "Today", "action": "Monitor FAHU coil approach as ambient climbs", "owner": "HVAC"}
+      ]
+    },
+    {
+      "kind": "footer",
+      "note": "Auto-generated by the IFM NETIX AI Platform from live Villa 63 points. Known faulty sensors (fan-flow DPS ×9, AHU-4 off-coil, water meter) are excluded from every percentage — see Data Health.",
+      "distribution": ["Engineering Managers", "Operations Head"],
+      "links": [
+        {"label": "Open live dashboard", "url": "#"},
+        {"label": "Alert stream", "url": "#"},
+        {"label": "Manage subscription", "url": "#"}
+      ],
+      "buttons": [
+        {"label": "Open Live Dashboard", "url": "#"},
+        {"label": "Acknowledge All", "url": "#", "ghost": true}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% block content %}
+<div class="band band-{{ payload.severity }}">{{ t("alarm_triggered") }}: {{ payload.alarm_name }}</div>
+{% if payload.asset_name or payload.triggered_at_label %}
+<table class="kv" cellpadding="0" cellspacing="0">
+  {% if payload.asset_name %}
+  <tr>
+    <td class="k">{{ t("asset") }}</td>
+    <td class="v">{{ payload.asset_name }}</td>
+  </tr>
+  {% endif %}
+  {% if payload.triggered_at_label %}
+  <tr>
+    <td class="k">{{ t("triggered_at") }}</td>
+    <td class="v">{{ payload.triggered_at_label }}</td>
+  </tr>
+  {% endif %}
+</table>
+{% endif %}
+<p class="p" style="white-space: pre-line">{{ payload.body_text }}</p>
+{{ m.fields_table(payload.fields) }}
+{{ m.cta_button(payload.cta) }}
+{% endblock %}

@@ -1,0 +1,24 @@
+{% macro pill(state) -%}
+<span class="pill p-{{ state.level }}">{{ state.label }}</span>
+{%- endmacro %}
+{% macro fields_table(fields) -%}
+{% if fields %}
+<table class="kv" cellpadding="0" cellspacing="0">
+  {% for field in fields %}
+  <tr>
+    <td class="k">{{ field.label }}</td>
+    <td class="v">{{ field.value }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{%- endmacro %}
+{% macro cta_button(cta) -%}
+{% if cta %}
+<table cellpadding="0" cellspacing="0" style="margin: 16px 0 4px">
+  <tr>
+    <td class="btn-td"><a href="{{ cta.url }}">{{ cta.label }}</a></td>
+  </tr>
+</table>
+{% endif %}
+{%- endmacro %}

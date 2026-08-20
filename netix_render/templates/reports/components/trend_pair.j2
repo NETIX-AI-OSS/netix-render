@@ -1,0 +1,16 @@
+{% import "components/section_h2.j2" as heading %}
+{% macro trend_pair(section) -%}
+{% if section.charts | length == 2 %}
+<div class="twocol">
+  {% for chart in section.charts %}
+  <div>
+    {{ heading.section_h2(chart.title, chart.icon, chart.subtitle) }}
+    {{ sparkline(chart, false) }}
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+{{ heading.section_h2(section.charts[0].title, section.charts[0].icon, section.charts[0].subtitle) }}
+{{ sparkline(section.charts[0], true) }}
+{% endif %}
+{%- endmacro %}

@@ -1,0 +1,366 @@
+{% import "components/genbar.j2" as genbar_c -%}
+{% import "components/mast.j2" as mast_c -%}
+{% import "components/banner.j2" as banner_c -%}
+{% import "components/kpi_grid.j2" as kpi_c -%}
+{% import "components/check_table.j2" as check_c -%}
+{% import "components/exceptions_table.j2" as exceptions_c -%}
+{% import "components/trend_pair.j2" as trend_c -%}
+{% import "components/ai_box.j2" as ai_c -%}
+{% import "components/actions_table.j2" as actions_c -%}
+{% import "components/data_table.j2" as table_c -%}
+{% import "components/twocol.j2" as twocol_c -%}
+{% import "components/hbar_chart.j2" as hbar_c -%}
+{% import "components/rings.j2" as rings_c -%}
+{% import "components/foot.j2" as foot_c -%}
+<!doctype html>
+<html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ doc.meta.title }} — {{ doc.meta.asset.name }}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef1f6;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1c2434;
+      }
+      .wrap {
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 18px 12px 40px;
+      }
+      .mast {
+        background: linear-gradient(120deg, {{ doc.meta.accent.gradient[0] }}, {{ doc.meta.accent.gradient[1] }} 70%, {{ doc.meta.accent.gradient[2] }});
+        border-radius: 14px 14px 0 0;
+        padding: 22px 26px;
+        color: #fff;
+      }
+      .mast .logo {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+      .mast .logo span {
+        color: {{ doc.meta.accent.logo_color }};
+      }
+      .mast h1 {
+        font-size: 21px;
+        margin: 10px 0 4px;
+        font-weight: 800;
+      }
+      .mast .meta {
+        font-size: 12px;
+        color: #aebde0;
+        letter-spacing: 0.4px;
+      }
+      .mast .tag {
+        display: inline-block;
+        background: #ffffff22;
+        border: 1px solid #ffffff44;
+        border-radius: 14px;
+        padding: 2px 12px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
+      }
+      .sheet {
+        background: #fff;
+        border: 1px solid #dde3ee;
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        padding: 22px 26px 26px;
+      }
+      .banner {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+      .bn-ok {
+        background: #e9f9f2;
+        border: 1px solid #bfe9d8;
+        color: #0c6b4b;
+      }
+      .bn-warn {
+        background: #fdf6e3;
+        border: 1px solid #f1e0ad;
+        color: #8a6410;
+      }
+      .bn-crit {
+        background: #fdecee;
+        border: 1px solid #f5c6cd;
+        color: #a02030;
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .d-ok {
+        background: #16a571;
+      }
+      .d-warn {
+        background: #e0a512;
+      }
+      .d-crit {
+        background: #dd4257;
+      }
+      .kpis {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .kpi {
+        flex: 1;
+        min-width: 104px;
+        background: #f6f8fc;
+        border: 1px solid #e3e9f4;
+        border-radius: 10px;
+        padding: 11px 13px;
+      }
+      .kpi .v {
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .kpi .l {
+        font-size: 9.5px;
+        color: #7585a8;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .kpi .s {
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-top: 3px;
+      }
+      .ok {
+        color: #16a571;
+      }
+      .warn {
+        color: #c08a10;
+      }
+      .crit {
+        color: #dd4257;
+      }
+      .mut {
+        color: #7585a8;
+      }
+      h2 {
+        font-size: 14px;
+        margin: 24px 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2 .ic {
+        font-size: 15px;
+      }
+      .sub {
+        font-size: 11px;
+        color: #7585a8;
+        margin: 0 0 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 6px 0 2px;
+      }
+      th {
+        background: #f1f4fa;
+        color: #5a6a8e;
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid #dde3ee;
+      }
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #edf0f7;
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .b {
+        font-weight: 700;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 9px;
+        border-radius: 10px;
+        letter-spacing: 0.4px;
+      }
+      .p-ok {
+        background: #e9f9f2;
+        color: #0c6b4b;
+      }
+      .p-warn {
+        background: #fdf6e3;
+        color: #8a6410;
+      }
+      .p-crit {
+        background: #fdecee;
+        color: #a02030;
+      }
+      .p-grey {
+        background: #eef1f6;
+        color: #5a6a8e;
+      }
+      .ai {
+        background: #f3f1fd;
+        border: 1px solid #ddd6f5;
+        border-left: 4px solid #7a5cd6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #3c3470;
+        margin: 10px 0;
+      }
+      .ai b {
+        color: #241d52;
+      }
+      .chart {
+        margin: 8px 0;
+      }
+      .twocol {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .twocol > div {
+        flex: 1;
+        min-width: 300px;
+      }
+      .foot {
+        margin-top: 26px;
+        padding-top: 14px;
+        border-top: 1px solid #e3e9f4;
+        font-size: 10.5px;
+        color: #8a97b5;
+        line-height: 1.6;
+      }
+      .foot a {
+        color: #3a6fd8;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .btn {
+        display: inline-block;
+        background: #2e5bd7;
+        color: #fff !important;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        margin: 6px 8px 0 0;
+      }
+      .btn.ghost {
+        background: #eef2fc;
+        color: #2e5bd7 !important;
+        border: 1px solid #c8d6f5;
+      }
+
+      /* --- platform generation chrome --- */
+      .genbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 13px;
+        background: #0e1320;
+        border: 1px solid #28324c;
+        border-radius: 10px;
+        padding: 9px 16px;
+        margin-bottom: 10px;
+        font-size: 10.5px;
+        color: #8b97b5;
+      }
+      .genbar .gb-badge {
+        background: #123a30;
+        color: #27c08a;
+        border: 1px solid #1d5c47;
+        border-radius: 10px;
+        padding: 2px 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        font-size: 9px;
+      }
+      .genbar b {
+        color: #e8edf6;
+        font-weight: 700;
+      }
+      .genbar .gb-right {
+        margin-left: auto;
+        color: #27c08a;
+        font-weight: 700;
+      }
+      .genfoot {
+        margin-top: 12px;
+        text-align: center;
+        font-size: 9.5px;
+        color: #8a97b5;
+        letter-spacing: 0.3px;
+      }
+      .genfoot b {
+        color: #41557f;
+      }
+      {%- if doc.meta.dir == "rtl" %}
+
+      /* --- RTL overrides --- */
+      th,
+      td {
+        text-align: right;
+      }
+      .genbar .gb-right {
+        margin-left: 0;
+        margin-right: auto;
+      }
+      .ai {
+        border-left: 1px solid #ddd6f5;
+        border-right: 4px solid #7a5cd6;
+      }
+      .btn {
+        margin: 6px 0 0 8px;
+      }
+      {%- endif %}
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      {{ genbar_c.genbar(doc.meta) }}
+      {{ mast_c.mast(doc.meta) }}
+      <div class="sheet">
+        {% for section in doc.sections %}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
+        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section) }}
+        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section) }}
+        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section) }}
+        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section) }}
+        {%- elif section.kind == "ai_insight" %}{{ ai_c.ai_box(section) }}
+        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section) }}
+        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section) }}
+        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section) }}
+        {%- elif section.kind == "hbar_chart" %}{{ hbar_c.hbar_chart(section) }}
+        {%- elif section.kind == "rings" %}{{ rings_c.rings(section) }}
+        {%- elif section.kind == "footer" %}{{ foot_c.footer(section, doc.meta) }}
+        {%- endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>

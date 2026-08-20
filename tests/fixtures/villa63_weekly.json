@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "report_id": "NTX-V63-WKL-260615",
+    "engine_version": "v4.2.1",
+    "generated_at": "2026-06-15T07:00:00",
+    "period": {
+      "start": "2026-06-08T00:00:00",
+      "end": "2026-06-14T23:59:59",
+      "label": "Week 24 · 8–14 June 2026 · issued Monday 15 June 07:00"
+    },
+    "asset": {
+      "id": "villa-63",
+      "name": "Villa 63",
+      "location": "Jumeirah, Dubai"
+    },
+    "title": "Villa 63 — Weekly Report",
+    "tag_line": "WEEKLY TRENDS & RELIABILITY · MONDAY 07:00",
+    "language": "en",
+    "dir": "ltr",
+    "accent": {
+      "gradient": ["#0e1320", "#173d33", "#1f7a5c"],
+      "logo_color": "#7fe0bf"
+    },
+    "timezone_label": "GST",
+    "manual_edits": 0
+  },
+  "sections": [
+    {
+      "kind": "banner",
+      "level": "warn",
+      "text": "Week 24: comfort 98.0% (FAHU on setpoint, supply 15.7 °C) · zero safety events · energy meters offline (no kWh) · GF tank sensor reads 0 — both raised as data-health."
+    },
+    {
+      "kind": "kpi_grid",
+      "items": [
+        {"value": "98.0%", "label": "Comfort avg", "status": "warn", "note": "worst: Bedroom-3"},
+        {"value": "—", "label": "Energy (wk)", "status": "warn", "note": "meters offline"},
+        {"value": "21.2°C", "label": "FAHU coil ΔT", "status": "ok", "note": "on 37.1 → off 15.8 °C"},
+        {"value": "0", "label": "Safety events", "status": "ok", "note": "FAHU/smoke clean"},
+        {"value": "100%", "label": "Pool uptime", "status": "ok", "note": "on schedule"},
+        {"value": "2", "label": "Data-gap items", "status": "warn", "note": "energy + GF tank"}
+      ]
+    },
+    {
+      "kind": "hbar_chart",
+      "title": "Comfort Compliance by Space",
+      "icon": "🌡",
+      "subtitle": "% time-in-band · target ≥ 95% · thermostats + IAQ",
+      "scale_max": 100,
+      "rows": [
+        {"label": "Majlis (AHU-1)", "value": 99.1, "display": "99.1%", "status": "ok"},
+        {"label": "Master Bedroom (AHU-6)", "value": 98.8, "display": "98.8%", "status": "ok"},
+        {"label": "Study (AHU-4)", "value": 98.4, "display": "98.4%", "status": "ok"},
+        {"label": "Bedroom-1 (AHU-5)", "value": 98.2, "display": "98.2%", "status": "ok"},
+        {"label": "Bedroom-2 (AHU-7)", "value": 97.6, "display": "97.6%", "status": "ok"},
+        {"label": "Bedroom-3 (AHU-8)", "value": 93.8, "display": "93.8% ▼", "status": "warn"},
+        {"label": "Stairs GF/FF (AHU-2/3)", "value": 98.9, "display": "98.9%", "status": "ok"}
+      ]
+    },
+    {
+      "kind": "ai_insight",
+      "text": "Bedroom-3 is the only laggard — valve-feedback lag on AHU-8 confirmed Tue; actuator part ordered. Note: AHU-4 off-coil sensor remains faulty, so Study coil ΔT is AI-estimated (soft sensor)."
+    },
+    {
+      "kind": "data_table",
+      "title": "FAHU & Cooling Plant — Week Review",
+      "icon": "🔁",
+      "subtitle": "coil ΔT, supply air and pump balance",
+      "columns": ["Item", "This week", "Norm", "Finding"],
+      "rows": [
+        [
+          {"text": "FAHU coil ΔT (on→off)", "bold": true},
+          {"text": "21.2 °C", "bold": true, "status": "ok"},
+          {"text": "~20 °C"},
+          {"text": "On-coil 37.1 → off-coil 15.8 °C · cooling valve 50%", "pill": {"label": "OK", "level": "ok"}}
+        ],
+        [
+          {"text": "FAHU supply / return air", "bold": true},
+          {"text": "15.7 / 15.4 °C"},
+          {"text": "SP ~16 °C"},
+          {"text": "On setpoint · filter status normal", "pill": {"label": "OK", "level": "ok"}}
+        ],
+        [
+          {"text": "Circulation pumps 1 / 2", "bold": true},
+          {"text": "2 RUN", "bold": true, "status": "ok"},
+          {"text": "2 run"},
+          {"text": "Both running on auto · flow proven — balanced", "pill": {"label": "OK", "level": "ok"}}
+        ],
+        [
+          {"text": "Supply air vs setpoint", "bold": true},
+          {"text": "+0.1 °C"},
+          {"text": "±0.2"},
+          {"text": "Setpoint held", "pill": {"label": "OK", "level": "ok"}}
+        ]
+      ]
+    },
+    {
+      "kind": "hbar_chart",
+      "title": "CHW Pump Run-Hour Balance",
+      "icon": "⚙️",
+      "subtitle": "duty rotation across pumps 01/02/03",
+      "rows": [
+        {"label": "CHWP-02", "value": 81, "display": "81 h (48%)", "status": "warn"},
+        {"label": "CHWP-01", "value": 54, "display": "54 h (32%)", "status": "neutral"},
+        {"label": "CHWP-03", "value": 33, "display": "33 h (20%)", "status": "neutral"}
+      ]
+    },
+    {
+      "kind": "ai_insight",
+      "text": "Pump-02 is carrying nearly half the load — rotate duty order next schedule cycle to even wear (recommendation auto-pushed to BMS team)."
+    },
+    {
+      "kind": "twocol",
+      "panels": [
+        {
+          "title": "Filter & Maintenance Watch",
+          "icon": "🧰",
+          "subtitle": "hours-based fallback (DPS sensors faulty)",
+          "columns": ["Asset", "Status", "Due"],
+          "rows": [
+            [
+              {"text": "AHU-1 (Majlis) filter", "bold": true},
+              {"text": "2,890 h", "bold": true, "status": "warn"},
+              {"text": "~2 wks", "bold": true, "status": "warn"}
+            ],
+            [
+              {"text": "FAHU filter", "bold": true},
+              {"text": "2,810 h", "bold": true, "status": "warn"},
+              {"text": "~2 wks", "bold": true, "status": "warn"}
+            ],
+            [
+              {"text": "AHU-2…8 filters", "bold": true},
+              {"text": "1,900–2,400 h"},
+              {"text": "4–7 wks"}
+            ],
+            [
+              {"text": "Pool UV lamp", "bold": true},
+              {"text": "61% life"},
+              {"text": "—"}
+            ]
+          ]
+        },
+        {
+          "title": "Power Quality (boards)",
+          "icon": "⚡",
+          "subtitle": "weekly sustained exceptions",
+          "columns": ["Board", "PF", "V-imbalance", "State"],
+          "rows": [
+            [
+              {"text": "DB_AC", "bold": true},
+              {"text": "0.89", "bold": true, "status": "warn"},
+              {"text": "0.8%"},
+              {"pill": {"label": "PF LOW", "level": "warn"}}
+            ],
+            [
+              {"text": "MDB", "bold": true},
+              {"text": "0.93"},
+              {"text": "0.6%"},
+              {"pill": {"label": "OK", "level": "ok"}}
+            ],
+            [
+              {"text": "Chiller panels", "bold": true},
+              {"text": "0.92"},
+              {"text": "0.7%"},
+              {"pill": {"label": "OK", "level": "ok"}}
+            ],
+            [
+              {"text": "DB_GF / DB_FF", "bold": true},
+              {"text": "0.94"},
+              {"text": "0.5%"},
+              {"pill": {"label": "OK", "level": "ok"}}
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "trend_pair",
+      "charts": [
+        {
+          "title": "Energy Benchmark — 6 weeks (MWh)",
+          "icon": "⚡",
+          "subtitle": "MDB · last published weeks (meters currently offline)",
+          "unit": "MWh",
+          "series": [
+            {"label": "wk19", "value": 13.1},
+            {"label": "wk20", "value": 13.3},
+            {"label": "wk21", "value": 13.5},
+            {"label": "wk22", "value": 13.6},
+            {"label": "wk23", "value": 13.7},
+            {"label": "wk24", "value": 14.2}
+          ],
+          "highlight_last": true,
+          "color": "#2e5bd7",
+          "highlight_color": "#dd4257",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "Watchlist Going Into Week 25",
+      "icon": "🔧",
+      "subtitle": "ranked by risk × cost",
+      "columns": ["Asset", "Issue", "State", "Plan"],
+      "rows": [
+        [
+          {"text": "Energy meters (MDB + sub-DBs)", "bold": true},
+          {"text": "Reading 0 — energy analytics blocked"},
+          {"pill": {"label": "OPEN", "level": "crit"}},
+          {"text": "On-site meter/wiring verification"}
+        ],
+        [
+          {"text": "GF water tank sensor", "bold": true},
+          {"text": "Flat at 0 mm (roof OK at 134 mm)"},
+          {"pill": {"label": "DATA GAP", "level": "warn"}},
+          {"text": "Calibration + access visit"}
+        ],
+        [
+          {"text": "FAHU filter", "bold": true},
+          {"text": "Hours-based fallback (DPS faulty)"},
+          {"pill": {"label": "~2 wks", "level": "warn"}},
+          {"text": "Filter change at 3,000 h"}
+        ],
+        [
+          {"text": "FAHU coil approach", "bold": true},
+          {"text": "Monitor as ambient climbs (30.9 °C outside)"},
+          {"pill": {"label": "WATCH", "level": "ok"}},
+          {"text": "Trend on-/off-coil ΔT"}
+        ],
+        [
+          {"text": "Pool UV lamp", "bold": true},
+          {"text": "61% life remaining"},
+          {"pill": {"label": "OK", "level": "ok"}},
+          {"text": "Replace at end of life"}
+        ]
+      ]
+    },
+    {
+      "kind": "footer",
+      "note": "Auto-generated by the IFM NETIX AI Platform from live Villa 63 points. Known faulty sensors (fan-flow DPS ×9, AHU-4 off-coil, water meter) are excluded from every percentage — see Data Health.",
+      "distribution": ["Engineering Managers", "Operations Head"],
+      "links": [
+        {"label": "Open live dashboard", "url": "#"},
+        {"label": "Alert stream", "url": "#"},
+        {"label": "Manage subscription", "url": "#"}
+      ],
+      "buttons": [
+        {"label": "Open Weekly Analytics", "url": "#"},
+        {"label": "Export PDF", "url": "#", "ghost": true}
+      ]
+    }
+  ]
+}

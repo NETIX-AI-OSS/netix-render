@@ -1,0 +1,7 @@
+{{ t("report_ready") }}{% if payload.report_label %} — {{ payload.report_label }}{% endif %}
+
+{{ payload.file_name }}
+{{ t("download") }}: {{ payload.download_url }}
+{% if payload.expiry_note %}
+{{ payload.expiry_note }}
+{% endif %}

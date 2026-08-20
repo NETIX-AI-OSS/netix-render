@@ -1,0 +1,55 @@
+# netix-render
+
+NETIX's HTML render engine: one brand-token source, a sandboxed Jinja2 component library, and
+validated contracts for reports and transactional email. Consumed in-process by backend services
+and exposed as `documents.*` MCP tools by ml-engine.
+
+## What it renders
+
+- **Report documents** (`netix_render.render_report` / `render_email`) — the `ReportDocument`
+  contract extracted from ml-engine's report engine: discriminated-union sections (banner,
+  kpi_grid, check_table, exceptions, trend_pair, ai_insight, actions, data_table, twocol,
+  hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
+- **Transactional email** (`netix_render.render_email_template`) — registered templates
+  (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
+  `feedback_request`), each with a strict pydantic contract, en/ar/es chrome strings, RTL
+  support, and a plain-text alternative:
+
+```python
+from netix_render import render_email_template
+
+rendered = render_email_template(
+    "otp_code",
+    {"meta": {"locale": "ar"}, "code": "482913", "expires_minutes": 10},
+)
+rendered.subject, rendered.html, rendered.text
+```
+
+Every render is deterministic: validation happens against the template's contract
+(`extra="forbid"`), CSS is inlined via `css-inline`, and callers never hand-build HTML.
+
+## Design tokens
+
+`netix_render/tokens.json` is the single brand source, derived from
+`frontend-template/app/assets/styles/globals.css` (see the `source.hsl` block; the
+`netix tokens check` workspace command and `tests/test_tokens.py` guard drift).
+`DESIGN.md` is the human/agent-facing design skill describing how to use them.
+
+## Development
+
+```bash
+uv sync --group dev
+uv run pytest                      # golden-file snapshots; UPDATE_SNAPSHOTS=1 to regenerate
+uv run ruff check . && uv run mypy
+```
+
+Snapshot updates must be reviewed by eye — open the changed file under `tests/snapshots/`
+in a browser before committing.
+
+## Adding an email template
+
+1. Contract model in `netix_render/email/schema.py` (extend `TransactionalEmail`).
+2. `netix_render/templates/email/<id>.html.j2` (extend `email/base.html.j2`) and `<id>.txt.j2`.
+3. Register in `netix_render/email/registry.py` with a description, default subject, and a
+   realistic sample.
+4. `UPDATE_SNAPSHOTS=1 uv run pytest` and review the new snapshot.

@@ -1,0 +1,6 @@
+{% macro banner(section) -%}
+<div class="banner bn-{{ section.level }}">
+  <div class="dot d-{{ section.level }}"></div>
+  {{ section.text }}
+</div>
+{%- endmacro %}

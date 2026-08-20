@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Villa 63 — Weekly Report — Villa 63</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef1f6;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1c2434;
+      }
+      .wrap {
+        max-width: 740px;
+        margin: 0 auto;
+        padding: 18px 12px 40px;
+      }
+      .mast {
+        background: linear-gradient(120deg, #0e1320, #173d33 70%, #1f7a5c);
+        border-radius: 14px 14px 0 0;
+        padding: 22px 26px;
+        color: #fff;
+      }
+      .mast .logo {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
+      }
+      .mast .logo span {
+        color: #7fe0bf;
+      }
+      .mast h1 {
+        font-size: 21px;
+        margin: 10px 0 4px;
+        font-weight: 800;
+      }
+      .mast .meta {
+        font-size: 12px;
+        color: #aebde0;
+        letter-spacing: 0.4px;
+      }
+      .mast .tag {
+        display: inline-block;
+        background: #ffffff22;
+        border: 1px solid #ffffff44;
+        border-radius: 14px;
+        padding: 2px 12px;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        margin-bottom: 6px;
+      }
+      .sheet {
+        background: #fff;
+        border: 1px solid #dde3ee;
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        padding: 22px 26px 26px;
+      }
+      .banner {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 18px;
+      }
+      .bn-ok {
+        background: #e9f9f2;
+        border: 1px solid #bfe9d8;
+        color: #0c6b4b;
+      }
+      .bn-warn {
+        background: #fdf6e3;
+        border: 1px solid #f1e0ad;
+        color: #8a6410;
+      }
+      .bn-crit {
+        background: #fdecee;
+        border: 1px solid #f5c6cd;
+        color: #a02030;
+      }
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .d-ok {
+        background: #16a571;
+      }
+      .d-warn {
+        background: #e0a512;
+      }
+      .d-crit {
+        background: #dd4257;
+      }
+      .kpis {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+      .kpi {
+        flex: 1;
+        min-width: 104px;
+        background: #f6f8fc;
+        border: 1px solid #e3e9f4;
+        border-radius: 10px;
+        padding: 11px 13px;
+      }
+      .kpi .v {
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .kpi .l {
+        font-size: 9.5px;
+        color: #7585a8;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .kpi .s {
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-top: 3px;
+      }
+      .ok {
+        color: #16a571;
+      }
+      .warn {
+        color: #c08a10;
+      }
+      .crit {
+        color: #dd4257;
+      }
+      .mut {
+        color: #7585a8;
+      }
+      h2 {
+        font-size: 14px;
+        margin: 24px 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2 .ic {
+        font-size: 15px;
+      }
+      .sub {
+        font-size: 11px;
+        color: #7585a8;
+        margin: 0 0 10px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 6px 0 2px;
+      }
+      th {
+        background: #f1f4fa;
+        color: #5a6a8e;
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid #dde3ee;
+      }
+      td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #edf0f7;
+        vertical-align: top;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      .b {
+        font-weight: 700;
+      }
+      .pill {
+        display: inline-block;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 9px;
+        border-radius: 10px;
+        letter-spacing: 0.4px;
+      }
+      .p-ok {
+        background: #e9f9f2;
+        color: #0c6b4b;
+      }
+      .p-warn {
+        background: #fdf6e3;
+        color: #8a6410;
+      }
+      .p-crit {
+        background: #fdecee;
+        color: #a02030;
+      }
+      .p-grey {
+        background: #eef1f6;
+        color: #5a6a8e;
+      }
+      .ai {
+        background: #f3f1fd;
+        border: 1px solid #ddd6f5;
+        border-left: 4px solid #7a5cd6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #3c3470;
+        margin: 10px 0;
+      }
+      .ai b {
+        color: #241d52;
+      }
+      .chart {
+        margin: 8px 0;
+      }
+      .twocol {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .twocol > div {
+        flex: 1;
+        min-width: 300px;
+      }
+      .foot {
+        margin-top: 26px;
+        padding-top: 14px;
+        border-top: 1px solid #e3e9f4;
+        font-size: 10.5px;
+        color: #8a97b5;
+        line-height: 1.6;
+      }
+      .foot a {
+        color: #3a6fd8;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .btn {
+        display: inline-block;
+        background: #2e5bd7;
+        color: #fff !important;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 9px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        margin: 6px 8px 0 0;
+      }
+      .btn.ghost {
+        background: #eef2fc;
+        color: #2e5bd7 !important;
+        border: 1px solid #c8d6f5;
+      }
+
+      /* --- platform generation chrome --- */
+      .genbar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 13px;
+        background: #0e1320;
+        border: 1px solid #28324c;
+        border-radius: 10px;
+        padding: 9px 16px;
+        margin-bottom: 10px;
+        font-size: 10.5px;
+        color: #8b97b5;
+      }
+      .genbar .gb-badge {
+        background: #123a30;
+        color: #27c08a;
+        border: 1px solid #1d5c47;
+        border-radius: 10px;
+        padding: 2px 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        font-size: 9px;
+      }
+      .genbar b {
+        color: #e8edf6;
+        font-weight: 700;
+      }
+      .genbar .gb-right {
+        margin-left: auto;
+        color: #27c08a;
+        font-weight: 700;
+      }
+      .genfoot {
+        margin-top: 12px;
+        text-align: center;
+        font-size: 9.5px;
+        color: #8a97b5;
+        letter-spacing: 0.3px;
+      }
+      .genfoot b {
+        color: #41557f;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="genbar">
+  <span class="gb-badge">⬡ SYSTEM-GENERATED</span><span>Report ID&nbsp;<b>NTX-V63-WKL-260615</b></span
+  ><span>Generated&nbsp;<b>15 Jun 2026 07:00 GST</b></span
+  ><span>Engine v4.2.1 · 0 manual edits</span><span class="gb-right">✓ SHA-256 verified</span>
+</div>
+      <div class="mast">
+  <div class="logo">IFM <span>NETIX</span> · AI PLATFORM</div>
+  <div style="margin-top: 10px"><span class="tag">WEEKLY TRENDS &amp; RELIABILITY · MONDAY 07:00</span></div>
+  <h1>Villa 63 — Weekly Report</h1>
+  <div class="meta">Week 24 · 8–14 June 2026 · issued Monday 15 June 07:00</div>
+</div>
+      <div class="sheet">
+        <div class="banner bn-warn">
+  <div class="dot d-warn"></div>
+  Week 24: comfort 98.0% (FAHU on setpoint, supply 15.7 °C) · zero safety events · energy meters offline (no kWh) · GF tank sensor reads 0 — both raised as data-health.
+</div>
+        <div class="kpis">
+  
+  <div class="kpi">
+    <div class="v warn">98.0%</div>
+    <div class="l">Comfort avg</div>
+    <div class="s warn">worst: Bedroom-3</div>
+  </div>
+  
+  <div class="kpi">
+    <div class="v warn">—</div>
+    <div class="l">Energy (wk)</div>
+    <div class="s warn">meters offline</div>
+  </div>
+  
+  <div class="kpi">
+    <div class="v ok">21.2°C</div>
+    <div class="l">FAHU coil ΔT</div>
+    <div class="s ok">on 37.1 → off 15.8 °C</div>
+  </div>
+  
+  <div class="kpi">
+    <div class="v ok">0</div>
+    <div class="l">Safety events</div>
+    <div class="s ok">FAHU/smoke clean</div>
+  </div>
+  
+  <div class="kpi">
+    <div class="v ok">100%</div>
+    <div class="l">Pool uptime</div>
+    <div class="s ok">on schedule</div>
+  </div>
+  
+  <div class="kpi">
+    <div class="v warn">2</div>
+    <div class="l">Data-gap items</div>
+    <div class="s warn">energy + GF tank</div>
+  </div>
+  
+</div>
+        <h2><span class="ic">🌡</span>Comfort Compliance by Space</h2>
+<p class="sub">% time-in-band · target ≥ 95% · thermostats + IAQ</p>
+<svg class="chart" width="100%" viewBox="0 0 640 172" xmlns="http://www.w3.org/2000/svg"><text x="142" y="14.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Majlis (AHU-1)</text><rect x="150" y="2" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="2" width="416" height="17" rx="4" fill="#16a571" /><text x="574" y="14.5" font-size="10.5" fill="#1c2434" font-weight="700">99.1%</text><text x="142" y="38.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Master Bedroom (AHU-6)</text><rect x="150" y="26" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="26" width="415" height="17" rx="4" fill="#16a571" /><text x="573" y="38.5" font-size="10.5" fill="#1c2434" font-weight="700">98.8%</text><text x="142" y="62.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Study (AHU-4)</text><rect x="150" y="50" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="50" width="413" height="17" rx="4" fill="#16a571" /><text x="571" y="62.5" font-size="10.5" fill="#1c2434" font-weight="700">98.4%</text><text x="142" y="86.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Bedroom-1 (AHU-5)</text><rect x="150" y="74" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="74" width="412" height="17" rx="4" fill="#16a571" /><text x="570" y="86.5" font-size="10.5" fill="#1c2434" font-weight="700">98.2%</text><text x="142" y="110.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Bedroom-2 (AHU-7)</text><rect x="150" y="98" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="98" width="410" height="17" rx="4" fill="#16a571" /><text x="568" y="110.5" font-size="10.5" fill="#1c2434" font-weight="700">97.6%</text><text x="142" y="134.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Bedroom-3 (AHU-8)</text><rect x="150" y="122" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="122" width="394" height="17" rx="4" fill="#e0a512" /><text x="552" y="134.5" font-size="10.5" fill="#1c2434" font-weight="700">93.8% ▼</text><text x="142" y="158.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">Stairs GF/FF (AHU-2/3)</text><rect x="150" y="146" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="146" width="415" height="17" rx="4" fill="#16a571" /><text x="573" y="158.5" font-size="10.5" fill="#1c2434" font-weight="700">98.9%</text></svg>
+        <div class="ai">
+  🤖 Bedroom-3 is the only laggard — valve-feedback lag on AHU-8 confirmed Tue; actuator part ordered. Note: AHU-4 off-coil sensor remains faulty, so Study coil ΔT is AI-estimated (soft sensor).
+</div>
+        <h2><span class="ic">🔁</span>FAHU &amp; Cooling Plant — Week Review</h2>
+<p class="sub">coil ΔT, supply air and pump balance</p>
+<table>
+  <tr>
+    <th>Item</th><th>This week</th><th>Norm</th><th>Finding</th>
+  </tr>
+  
+  <tr>
+    
+<td class="b">FAHU coil ΔT (on→off)</td>
+<td class="ok b">21.2 °C</td>
+<td>~20 °C</td>
+<td>On-coil 37.1 → off-coil 15.8 °C · cooling valve 50% <span class="pill p-ok">OK</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">FAHU supply / return air</td>
+<td>15.7 / 15.4 °C</td>
+<td>SP ~16 °C</td>
+<td>On setpoint · filter status normal <span class="pill p-ok">OK</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Circulation pumps 1 / 2</td>
+<td class="ok b">2 RUN</td>
+<td>2 run</td>
+<td>Both running on auto · flow proven — balanced <span class="pill p-ok">OK</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Supply air vs setpoint</td>
+<td>+0.1 °C</td>
+<td>±0.2</td>
+<td>Setpoint held <span class="pill p-ok">OK</span></td>
+  </tr>
+  
+</table>
+        <h2><span class="ic">⚙️</span>CHW Pump Run-Hour Balance</h2>
+<p class="sub">duty rotation across pumps 01/02/03</p>
+<svg class="chart" width="100%" viewBox="0 0 640 76" xmlns="http://www.w3.org/2000/svg"><text x="142" y="14.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">CHWP-02</text><rect x="150" y="2" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="2" width="420" height="17" rx="4" fill="#e0a512" /><text x="578" y="14.5" font-size="10.5" fill="#1c2434" font-weight="700">81 h (48%)</text><text x="142" y="38.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">CHWP-01</text><rect x="150" y="26" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="26" width="280" height="17" rx="4" fill="#2e5bd7" /><text x="438" y="38.5" font-size="10.5" fill="#1c2434" font-weight="700">54 h (32%)</text><text x="142" y="62.5" font-size="10.5" fill="#5a6a8e" text-anchor="end" font-weight="600">CHWP-03</text><rect x="150" y="50" width="420" height="17" rx="4" fill="#eef1f6" /><rect x="150" y="50" width="171" height="17" rx="4" fill="#2e5bd7" /><text x="329" y="62.5" font-size="10.5" fill="#1c2434" font-weight="700">33 h (20%)</text></svg>
+        <div class="ai">
+  🤖 Pump-02 is carrying nearly half the load — rotate duty order next schedule cycle to even wear (recommendation auto-pushed to BMS team).
+</div>
+        <div class="twocol">
+  
+  <div>
+    <h2><span class="ic">🧰</span>Filter &amp; Maintenance Watch</h2>
+<p class="sub">hours-based fallback (DPS sensors faulty)</p>
+<table>
+  <tr>
+    <th>Asset</th><th>Status</th><th>Due</th>
+  </tr>
+  
+  <tr>
+    
+<td class="b">AHU-1 (Majlis) filter</td>
+<td class="warn b">2,890 h</td>
+<td class="warn b">~2 wks</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">FAHU filter</td>
+<td class="warn b">2,810 h</td>
+<td class="warn b">~2 wks</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">AHU-2…8 filters</td>
+<td>1,900–2,400 h</td>
+<td>4–7 wks</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Pool UV lamp</td>
+<td>61% life</td>
+<td>—</td>
+  </tr>
+  
+</table>
+  </div>
+  
+  <div>
+    <h2><span class="ic">⚡</span>Power Quality (boards)</h2>
+<p class="sub">weekly sustained exceptions</p>
+<table>
+  <tr>
+    <th>Board</th><th>PF</th><th>V-imbalance</th><th>State</th>
+  </tr>
+  
+  <tr>
+    
+<td class="b">DB_AC</td>
+<td class="warn b">0.89</td>
+<td>0.8%</td>
+<td><span class="pill p-warn">PF LOW</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">MDB</td>
+<td>0.93</td>
+<td>0.6%</td>
+<td><span class="pill p-ok">OK</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Chiller panels</td>
+<td>0.92</td>
+<td>0.7%</td>
+<td><span class="pill p-ok">OK</span></td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">DB_GF / DB_FF</td>
+<td>0.94</td>
+<td>0.5%</td>
+<td><span class="pill p-ok">OK</span></td>
+  </tr>
+  
+</table>
+  </div>
+  
+</div>
+        
+<h2><span class="ic">⚡</span>Energy Benchmark — 6 weeks (MWh)</h2>
+<p class="sub">MDB · last published weeks (meters currently offline)</p>
+<svg class="chart" width="100%" viewBox="0 0 640 136" xmlns="http://www.w3.org/2000/svg"><rect x="30" y="21" width="62" height="89" rx="3" fill="#2e5bd7" opacity="0.55" /><text x="61" y="16" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">13.1</text><text x="61" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk19</text><rect x="130" y="20" width="62" height="90" rx="3" fill="#2e5bd7" opacity="0.55" /><text x="161" y="15" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">13.3</text><text x="161" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk20</text><rect x="230" y="19" width="62" height="91" rx="3" fill="#2e5bd7" opacity="0.55" /><text x="261" y="14" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">13.5</text><text x="261" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk21</text><rect x="330" y="18" width="62" height="92" rx="3" fill="#2e5bd7" opacity="0.55" /><text x="361" y="13" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">13.6</text><text x="361" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk22</text><rect x="430" y="17" width="62" height="93" rx="3" fill="#2e5bd7" opacity="0.55" /><text x="461" y="12" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">13.7</text><text x="461" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk23</text><rect x="530" y="14" width="62" height="96" rx="3" fill="#dd4257" opacity="1" /><text x="561" y="9" font-size="9" fill="#5a6a8e" text-anchor="middle" font-weight="700">14.2</text><text x="561" y="124" font-size="9" fill="#8a97b5" text-anchor="middle">wk24</text></svg>
+
+        <h2><span class="ic">🔧</span>Watchlist Going Into Week 25</h2>
+<p class="sub">ranked by risk × cost</p>
+<table>
+  <tr>
+    <th>Asset</th><th>Issue</th><th>State</th><th>Plan</th>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Energy meters (MDB + sub-DBs)</td>
+<td>Reading 0 — energy analytics blocked</td>
+<td><span class="pill p-crit">OPEN</span></td>
+<td>On-site meter/wiring verification</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">GF water tank sensor</td>
+<td>Flat at 0 mm (roof OK at 134 mm)</td>
+<td><span class="pill p-warn">DATA GAP</span></td>
+<td>Calibration + access visit</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">FAHU filter</td>
+<td>Hours-based fallback (DPS faulty)</td>
+<td><span class="pill p-warn">~2 wks</span></td>
+<td>Filter change at 3,000 h</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">FAHU coil approach</td>
+<td>Monitor as ambient climbs (30.9 °C outside)</td>
+<td><span class="pill p-ok">WATCH</span></td>
+<td>Trend on-/off-coil ΔT</td>
+  </tr>
+  
+  <tr>
+    
+<td class="b">Pool UV lamp</td>
+<td>61% life remaining</td>
+<td><span class="pill p-ok">OK</span></td>
+<td>Replace at end of life</td>
+  </tr>
+  
+</table>
+        <a class="btn" href="#">Open Weekly Analytics</a><a class="btn ghost" href="#">Export PDF</a>
+<div class="foot">
+  Auto-generated by the IFM NETIX AI Platform from live Villa 63 points. Known faulty sensors (fan-flow DPS ×9, AHU-4 off-coil, water meter) are excluded from every percentage — see Data Health. To: Engineering Managers · Operations Head &nbsp;|&nbsp; <a href="#">Open live dashboard</a> · <a href="#">Alert stream</a> · <a href="#">Manage subscription</a>
+</div>
+<div class="genfoot">
+  Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID NTX-V63-WKL-260615 · Rendered 15 Jun 2026 07:00 GST · Verify authenticity: Platform → Reports → Verify · © 2026 IFM NETIX
+</div>
+        
+      </div>
+    </div>
+  </body>
+</html>

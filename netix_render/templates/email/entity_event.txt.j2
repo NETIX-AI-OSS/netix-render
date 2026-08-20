@@ -1,0 +1,11 @@
+{{ payload.entity_type }}{% if payload.entity_ref %} · {{ payload.entity_ref }}{% endif %}
+{{ payload.title }}{% if payload.status %} [{{ payload.status.label }}]{% endif %}
+{% if payload.body_text %}
+{{ payload.body_text }}
+{% endif %}{% for field in payload.fields %}
+{{ field.label }}: {{ field.value }}{% endfor %}
+{% if payload.cta %}
+{{ payload.cta.label }}: {{ payload.cta.url }}
+{% endif %}{% if payload.note %}
+{{ payload.note }}
+{% endif %}

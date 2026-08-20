@@ -1,0 +1,5 @@
+{% import "components/section_h2.j2" as heading %}
+{% macro hbar_chart(section) -%}
+{{ heading.section_h2(section.title, section.icon, section.subtitle) }}
+{{ hbar(section) }}
+{%- endmacro %}

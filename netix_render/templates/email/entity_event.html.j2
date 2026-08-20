@@ -1,0 +1,10 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% block content %}
+<p class="small" style="text-transform: uppercase; letter-spacing: 1px">{{ payload.entity_type }}{% if payload.entity_ref %} · {{ payload.entity_ref }}{% endif %}</p>
+<h1 class="h1">{{ payload.title }}{% if payload.status %} {{ m.pill(payload.status) }}{% endif %}</h1>
+{% if payload.body_text %}<p class="p">{{ payload.body_text }}</p>{% endif %}
+{{ m.fields_table(payload.fields) }}
+{{ m.cta_button(payload.cta) }}
+{% if payload.note %}<p class="small">{{ payload.note }}</p>{% endif %}
+{% endblock %}

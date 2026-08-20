@@ -1,0 +1,8 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% block content %}
+<div class="band band-{{ payload.severity }}">{{ payload.heading }}</div>
+{% for line in payload.body_lines %}<p class="p">{{ line }}</p>{% endfor %}
+{{ m.fields_table(payload.fields) }}
+{{ m.cta_button(payload.cta) }}
+{% endblock %}

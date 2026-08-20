@@ -1,0 +1,271 @@
+{
+  "meta": {
+    "report_id": "NTX-V63-MTH-260601",
+    "engine_version": "v4.2.1",
+    "generated_at": "2026-06-01T07:00:00",
+    "period": {
+      "start": "2026-05-01T00:00:00",
+      "end": "2026-05-31T23:59:59",
+      "label": "May 2026 · issued 1 June 2026 · for Engineering Managers, Operations Head & Owner pack"
+    },
+    "asset": {
+      "id": "villa-63",
+      "name": "Villa 63",
+      "location": "Jumeirah, Dubai"
+    },
+    "title": "Villa 63 — Monthly Report",
+    "tag_line": "MONTHLY MANAGEMENT & COMPLIANCE PACK",
+    "language": "en",
+    "dir": "ltr",
+    "accent": {
+      "gradient": ["#0e1320", "#173d33", "#1f7a5c"],
+      "logo_color": "#7fe0bf"
+    },
+    "timezone_label": "GST",
+    "manual_edits": 0
+  },
+  "sections": [
+    {
+      "kind": "banner",
+      "level": "ok",
+      "text": "May 2026: zero safety events · comfort 98.2% · FAHU cooling on setpoint (supply 15.7 °C) · pool plant 100% scheduled uptime · energy metering offline — restoring meters the month's main ask."
+    },
+    {
+      "kind": "rings",
+      "items": [
+        {"pct": 98, "value_label": "98%", "label": "Comfort", "sublabel": "98.2% in-band avg", "status": "ok"},
+        {"pct": 97, "value_label": "97%", "label": "Availability", "sublabel": "plant & air-side", "status": "info"},
+        {"pct": 100, "value_label": "100%", "label": "Safety", "sublabel": "LPG · smoke · dosing", "status": "ok"},
+        {"pct": 86, "value_label": "86%", "label": "Data trust", "sublabel": "energy + GF tank gaps", "status": "warn"}
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "Executive Summary",
+      "icon": "📋",
+      "subtitle": "The five things to know about May",
+      "columns": ["", "Headline", "Detail"],
+      "rows": [
+        [
+          {"text": "1"},
+          {"text": "Safety: clean month", "bold": true},
+          {"text": "LPG and FAHU smoke clear all month; dosing alarms resolved same-day (×2)"}
+        ],
+        [
+          {"text": "2"},
+          {"text": "FAHU cooling on setpoint", "bold": true},
+          {"text": "Fresh-air handling unit holding supply 15.7 °C (RA 15.4 °C), coil ΔT 21.2 °C, cooling valve 50% — no comfort plant issues"}
+        ],
+        [
+          {"text": "3"},
+          {"text": "Energy metering offline", "bold": true},
+          {"text": "MDB and sub-DB meters reading 0 — no kWh this month; reported as offline rather than zero. On-site meter check is the priority fix"}
+        ],
+        [
+          {"text": "4"},
+          {"text": "Comfort 98.2%", "bold": true},
+          {"text": "Best: Majlis 99.3% · worst: Bedroom-3 94.1% (AHU-8 actuator — fixed 9 Jun)"}
+        ],
+        [
+          {"text": "5"},
+          {"text": "Data-trust gap", "bold": true},
+          {"text": "Main open items: energy meters (reading 0) + GF tank sensor (flat 0 mm) + fan-flow DPS sensors — blocking energy & water analytics"}
+        ]
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "FAHU & Cooling Plant Performance",
+      "icon": "🔁",
+      "subtitle": "fresh-air handling + circulation — month detail",
+      "columns": ["Metric", "Value", "Note"],
+      "rows": [
+        [
+          {"text": "FAHU coil ΔT (on→off)", "bold": true},
+          {"text": "21.2 °C", "bold": true, "status": "ok"},
+          {"text": "on-coil 37.1 → off-coil 15.8 °C · target ≥ 20"}
+        ],
+        [
+          {"text": "Supply / return air", "bold": true},
+          {"text": "15.7 / 15.4 °C"},
+          {"text": "on setpoint · cooling valve 50%"}
+        ],
+        [
+          {"text": "Filter status", "bold": true},
+          {"text": "OK", "bold": true, "status": "ok"},
+          {"text": "normal · hours-based watch (DPS faulty)"}
+        ],
+        [
+          {"text": "Trips / diagnostics", "bold": true},
+          {"text": "0"},
+          {"text": "clean"}
+        ],
+        [
+          {"text": "Circulation pumps 1 / 2", "bold": true},
+          {"text": "both running"},
+          {"text": "auto · flow proven · balanced"}
+        ]
+      ]
+    },
+    {
+      "kind": "trend_pair",
+      "charts": [
+        {
+          "title": "Energy & Cost",
+          "icon": "⚡",
+          "subtitle": "MDB + 5 sub-boards · 6-month trend (MWh) · meters offline in May — figures are last-published",
+          "unit": "MWh",
+          "series": [
+            {"label": "Dec", "value": 52.9},
+            {"label": "Jan", "value": 50.8},
+            {"label": "Feb", "value": 52.2},
+            {"label": "Mar", "value": 54.6},
+            {"label": "Apr", "value": 57.9},
+            {"label": "May", "value": 61.3}
+          ],
+          "highlight_last": true,
+          "color": "#2e5bd7",
+          "highlight_color": "#dd4257",
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "kind": "data_table",
+      "columns": ["Meter", "May kWh", "Share", "PQ note"],
+      "rows": [
+        [
+          {"text": "FAHU + cooling plant", "bold": true},
+          {"text": "35,550"},
+          {"text": "58%", "bold": true},
+          {"text": "PF 0.92 · last-published"}
+        ],
+        [
+          {"text": "DB_AC", "bold": true},
+          {"text": "9,200"},
+          {"text": "15%"},
+          {"text": "PF 0.89 — correction advised", "status": "warn"}
+        ],
+        [
+          {"text": "DB_GF + DB_FF", "bold": true},
+          {"text": "13,500"},
+          {"text": "22%"},
+          {"text": "OK"}
+        ],
+        [
+          {"text": "Other (MDB residual)", "bold": true},
+          {"text": "3,050"},
+          {"text": "5%"},
+          {"text": "OK"}
+        ]
+      ]
+    },
+    {
+      "kind": "hbar_chart",
+      "title": "Comfort & IAQ Scorecard",
+      "icon": "🌡",
+      "subtitle": "per space, May average",
+      "scale_max": 100,
+      "rows": [
+        {"label": "Majlis", "value": 99.3, "display": "99.3%", "status": "ok"},
+        {"label": "Master Bedroom", "value": 99.0, "display": "99.0%", "status": "ok"},
+        {"label": "Study", "value": 98.6, "display": "98.6%", "status": "ok"},
+        {"label": "Bedroom-1", "value": 98.3, "display": "98.3%", "status": "ok"},
+        {"label": "Bedroom-2", "value": 97.9, "display": "97.9%", "status": "ok"},
+        {"label": "Bedroom-3", "value": 94.1, "display": "94.1% ▼", "status": "warn"}
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "Water · Pool · Environment",
+      "icon": "💧",
+      "subtitle": "service-block plant and pending water analytics",
+      "columns": ["Item", "May", "Status"],
+      "rows": [
+        [
+          {"text": "Pool filtration (1D/1S)", "bold": true},
+          {"text": "100% scheduled uptime · duty swap 16 May"},
+          {"pill": {"label": "HEALTHY", "level": "ok"}}
+        ],
+        [
+          {"text": "UV system / heater chiller / fountain", "bold": true},
+          {"text": "On-schedule; UV interlocked with filtration"},
+          {"pill": {"label": "HEALTHY", "level": "ok"}}
+        ],
+        [
+          {"text": "Dosing unit", "bold": true},
+          {"text": "2 low-level alarms · refilled same day"},
+          {"pill": {"label": "CLOSED", "level": "ok"}}
+        ],
+        [
+          {"text": "Roof tank", "bold": true},
+          {"text": "Refill cycles normal (3.1/day avg)"},
+          {"pill": {"label": "NORMAL", "level": "ok"}}
+        ],
+        [
+          {"text": "Water meter / GF tank", "bold": true},
+          {"text": "Not reporting — consumption & leak analytics blocked"},
+          {"pill": {"label": "DATA GAP", "level": "grey"}}
+        ]
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "Maintenance & Capital Recommendations",
+      "icon": "🛠",
+      "subtitle": "ranked · payback shown",
+      "columns": ["#", "Recommendation", "Cost", "Benefit / payback"],
+      "rows": [
+        [
+          {"text": "1"},
+          {"text": "Restore MDB + sub-DB energy metering", "bold": true},
+          {"text": "Low"},
+          {"text": "Unblocks energy & cost analytics (currently reading 0) · <1 month"}
+        ],
+        [
+          {"text": "2"},
+          {"text": "Replace 9× TR606 DPS (filter/fan proving)", "bold": true},
+          {"text": "Low"},
+          {"text": "Restores airflow analytics & filter automation"}
+        ],
+        [
+          {"text": "3"},
+          {"text": "AHU-4 off-coil sensor + water meter + GF tank fixes", "bold": true},
+          {"text": "Low"},
+          {"text": "Closes 3 data gaps; unlocks water/leak analytics"}
+        ],
+        [
+          {"text": "4"},
+          {"text": "PF correction on DB_AC", "bold": true},
+          {"text": "Low"},
+          {"text": "Avoids utility penalty exposure"}
+        ],
+        [
+          {"text": "5"},
+          {"text": "EV-charger CT install", "bold": true},
+          {"text": "Low"},
+          {"text": "Completes sub-metering picture"}
+        ]
+      ]
+    },
+    {
+      "kind": "ai_insight",
+      "title": "AI outlook for June:",
+      "text": "comfort and FAHU cooling are healthy heading into the heat (supply 15.7 °C on setpoint), so the June priority is data, not plant — restoring the MDB/sub-DB energy meters and the GF tank sensor closes the only open gaps. Pre-cooling of bedrooms 16:00–17:30 recommended for the Eid occupancy pattern."
+    },
+    {
+      "kind": "footer",
+      "note": "Auto-generated by the IFM NETIX AI Platform from live Villa 63 points. Known faulty sensors (fan-flow DPS ×9, AHU-4 off-coil, water meter) are excluded from every percentage — see Data Health.",
+      "distribution": ["Engineering Managers", "Operations Head"],
+      "links": [
+        {"label": "Open live dashboard", "url": "#"},
+        {"label": "Alert stream", "url": "#"},
+        {"label": "Manage subscription", "url": "#"}
+      ],
+      "buttons": [
+        {"label": "Open Monthly Pack in Platform", "url": "#"},
+        {"label": "Download PDF", "url": "#", "ghost": true}
+      ]
+    }
+  ]
+}

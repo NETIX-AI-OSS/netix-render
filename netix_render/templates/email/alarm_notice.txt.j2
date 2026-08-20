@@ -1,0 +1,10 @@
+{{ t("alarm_triggered") }}: {{ payload.alarm_name }}
+{% if payload.asset_name %}{{ t("asset") }}: {{ payload.asset_name }}
+{% endif %}{% if payload.triggered_at_label %}{{ t("triggered_at") }}: {{ payload.triggered_at_label }}
+{% endif %}
+{{ payload.body_text }}
+{% for field in payload.fields %}
+{{ field.label }}: {{ field.value }}{% endfor %}
+{% if payload.cta %}
+{{ payload.cta.label }}: {{ payload.cta.url }}
+{% endif %}
