@@ -1,0 +1,6 @@
+{{ t("verification_code") }} — {{ payload.product_name }}
+
+{{ payload.code }}
+
+{% if payload.expires_minutes %}{{ t("code_expires", minutes=payload.expires_minutes) }}
+{% endif %}{{ t("code_ignore") }}

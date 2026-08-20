@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["netix_render", "netix_render.email"]
+
+[tool.setuptools.package-data]
+netix_render = ["tokens.json", "templates/**/*.j2"]
+
+[project]
+name = "netix-render"
+description = "NETIX HTML render engine: brand tokens, report documents, and transactional email templates"
+readme = "README.md"
+requires-python = ">=3.14,<4.0"
+keywords = ["netix", "html", "email", "reports", "design-tokens"]
+license = "AGPL-3.0-only"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "css-inline>=0.21.0",
+    "jinja2>=3.1.6",
+    "markupsafe>=2.1",
+    "pydantic>=2.7",
+]
+version = "0.1.0"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.13",
+    "pip-audit>=2.10.0",
+    "pytest>=9.0.0",
+    "ruff>=0.9.10",
+]
+
+[tool.pytest.ini_options]
+markers = ["unit: fast, dependency-free unit tests"]
+addopts = "-q"
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.14"
+files = ["netix_render"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+check_untyped_defs = true
+
+[tool.pyright]
+venvPath = "."
+venv = ".venv"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP"]

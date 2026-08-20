@@ -1,0 +1,10 @@
+{% import "components/data_table.j2" as tables %}
+{% macro twocol(section) -%}
+<div class="twocol">
+  {% for panel in section.panels %}
+  <div>
+    {{ tables.data_table(panel) }}
+  </div>
+  {% endfor %}
+</div>
+{%- endmacro %}

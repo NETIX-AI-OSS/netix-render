@@ -1,0 +1,10 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% block content %}
+<h1 class="h1">{{ t("hello") }}{% if payload.greeting_name %} {{ payload.greeting_name }}{% endif %},</h1>
+<p class="p">{{ t("feedback_intro") }}</p>
+<p class="p">{{ payload.prompt_text }}</p>
+{% if payload.entity_ref %}<p class="p mut">{{ t("reference") }}: {{ payload.entity_ref }}</p>{% endif %}
+{{ m.cta_button(payload.cta) }}
+{% if payload.note %}<p class="small">{{ payload.note }}</p>{% endif %}
+{% endblock %}

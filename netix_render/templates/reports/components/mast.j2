@@ -1,0 +1,8 @@
+{% macro mast(meta) -%}
+<div class="mast">
+  <div class="logo">{% if meta.logo_line %}{{ meta.logo_line }}{% else %}IFM <span>NETIX</span> · AI PLATFORM{% endif %}</div>
+  <div style="margin-top: 10px"><span class="tag">{{ meta.tag_line }}</span></div>
+  <h1>{{ meta.title }}</h1>
+  <div class="meta">{{ meta.period.label }}</div>
+</div>
+{%- endmacro %}

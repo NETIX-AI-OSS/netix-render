@@ -1,0 +1,18 @@
+{% import "components/section_h2.j2" as heading %}
+{% macro check_table(section) -%}
+{{ heading.section_h2(section.title, section.icon, section.subtitle) }}
+<table>
+  <tr>
+    <th>System</th>
+    <th>State</th>
+    <th>Detail</th>
+  </tr>
+  {% for row in section.rows %}
+  <tr>
+    <td class="b">{{ row.system }}</td>
+    <td><span class="pill p-{{ row.state.level }}">{{ row.state.label }}</span></td>
+    <td>{{ row.detail }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{%- endmacro %}

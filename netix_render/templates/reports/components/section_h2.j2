@@ -1,0 +1,4 @@
+{% macro section_h2(title, icon=none, subtitle=none) -%}
+<h2>{% if icon %}<span class="ic">{{ icon }}</span>{% endif %}{{ title }}</h2>
+{% if subtitle %}<p class="sub">{{ subtitle }}</p>{% endif %}
+{%- endmacro %}

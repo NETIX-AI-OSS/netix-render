@@ -1,0 +1,8 @@
+{{ payload.heading }}
+{% for line in payload.body_lines %}
+{{ line }}{% endfor %}
+{% for field in payload.fields %}
+{{ field.label }}: {{ field.value }}{% endfor %}
+{% if payload.cta %}
+{{ payload.cta.label }}: {{ payload.cta.url }}
+{% endif %}

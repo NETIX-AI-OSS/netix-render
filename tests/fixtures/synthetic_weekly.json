@@ -1,0 +1,294 @@
+{
+  "meta": {
+    "report_id": "EXAMPLE-WEEKLY-20300108",
+    "engine_version": "test-1",
+    "generated_at": "2030-01-08T08:00:00+00:00",
+    "period": {
+      "start": "2030-01-01T00:00:00+00:00",
+      "end": "2030-01-08T00:00:00+00:00",
+      "label": "7-day fictional reporting period ending 8 January 2030"
+    },
+    "asset": {
+      "id": "example-research-hub",
+      "name": "Example Research Hub",
+      "location": "Fictional site"
+    },
+    "title": "Weekly Brief",
+    "tag_line": "SYNTHETIC DATA · WEEKLY",
+    "timezone_label": "UTC",
+    "accent": {
+      "gradient": [
+        "#0e1320",
+        "#173d33",
+        "#1f7a5c"
+      ],
+      "logo_color": "#7fe0bf"
+    }
+  },
+  "sections": [
+    {
+      "kind": "banner",
+      "level": "ok",
+      "text": "Synthetic example: sampled equipment is available; one demonstration sensor requires review."
+    },
+    {
+      "kind": "kpi_grid",
+      "items": [
+        {
+          "value": "18°C",
+          "label": "Example supply temperature",
+          "status": "ok",
+          "note": "Synthetic setpoint: 18°C"
+        },
+        {
+          "value": "75%",
+          "label": "Sample coverage",
+          "status": "warn",
+          "note": "3 of 4 invented sensors"
+        },
+        {
+          "value": "4.00 MWh",
+          "label": "Example consumption",
+          "status": "ok",
+          "note": "Artificial daily total"
+        }
+      ]
+    },
+    {
+      "kind": "check_table",
+      "title": "Example Equipment Checks",
+      "icon": "🛡",
+      "subtitle": "Illustrative observations only",
+      "rows": [
+        {
+          "system": "Example air unit A",
+          "state": {
+            "label": "AVAILABLE",
+            "level": "ok"
+          },
+          "detail": "Artificial sample: supply temperature 18°C"
+        },
+        {
+          "system": "Example sensor B",
+          "state": {
+            "label": "REVIEW",
+            "level": "warn"
+          },
+          "detail": "No sample in the synthetic interval"
+        }
+      ]
+    },
+    {
+      "kind": "exceptions",
+      "title": "Example Exceptions",
+      "icon": "🌙",
+      "subtitle": "Fictional issue for layout testing",
+      "rows": [
+        {
+          "rank": 1,
+          "event": "Missing demonstration sample",
+          "asset": "Example sensor B",
+          "assessment": "An invented data gap; equipment condition cannot be inferred.",
+          "owner": "Example operations team"
+        }
+      ]
+    },
+    {
+      "kind": "trend_pair",
+      "charts": [
+        {
+          "title": "Example Energy Trend",
+          "icon": "⚡",
+          "subtitle": "All values are synthetic",
+          "unit": "MWh",
+          "series": [
+            {
+              "label": "Mon",
+              "value": 2
+            },
+            {
+              "label": "Tue",
+              "value": 3
+            },
+            {
+              "label": "Wed",
+              "value": 4
+            },
+            {
+              "label": "Thu",
+              "value": 5
+            },
+            {
+              "label": "Fri",
+              "value": 6
+            },
+            {
+              "label": "Sat",
+              "value": 7
+            },
+            {
+              "label": "Sun",
+              "value": 8
+            }
+          ],
+          "decimals": 2
+        },
+        {
+          "title": "Example Temperature Trend",
+          "icon": "🔁",
+          "subtitle": "All values are synthetic",
+          "unit": "°C",
+          "series": [
+            {
+              "label": "Mon",
+              "value": 18
+            },
+            {
+              "label": "Tue",
+              "value": 19
+            },
+            {
+              "label": "Wed",
+              "value": 18
+            },
+            {
+              "label": "Thu",
+              "value": 20
+            },
+            {
+              "label": "Fri",
+              "value": 19
+            },
+            {
+              "label": "Sat",
+              "value": 18
+            },
+            {
+              "label": "Sun",
+              "value": 18
+            }
+          ],
+          "decimals": 1
+        }
+      ]
+    },
+    {
+      "kind": "ai_insight",
+      "title": "Example interpretation:",
+      "text": "**Coverage is incomplete** in this fictional dataset. Review the missing sample before drawing conclusions about equipment condition."
+    },
+    {
+      "kind": "actions",
+      "title": "Example Follow-up Actions",
+      "icon": "✅",
+      "subtitle": "Demonstration workflow",
+      "rows": [
+        {
+          "due": "Next review",
+          "action": "Inspect the synthetic sensor connection and compare a fresh sample.",
+          "owner": "Example operations team"
+        }
+      ]
+    },
+    {
+      "kind": "hbar_chart",
+      "title": "Example Coverage",
+      "icon": "📊",
+      "scale_max": 100,
+      "rows": [
+        {
+          "label": "Example zone A",
+          "value": 80,
+          "display": "80%",
+          "status": "ok"
+        },
+        {
+          "label": "Example zone B",
+          "value": 60,
+          "display": "60%",
+          "status": "warn"
+        }
+      ]
+    },
+    {
+      "kind": "hbar_chart",
+      "title": "Example Runtime",
+      "icon": "⏱",
+      "rows": [
+        {
+          "label": "Example pump A",
+          "value": 30,
+          "display": "30 h (50%)",
+          "status": "warn"
+        },
+        {
+          "label": "Example pump B",
+          "value": 20,
+          "display": "20 h (33%)"
+        },
+        {
+          "label": "Example pump C",
+          "value": 10,
+          "display": "10 h (17%)"
+        }
+      ]
+    },
+    {
+      "kind": "data_table",
+      "title": "Example comparison",
+      "icon": "📋",
+      "columns": [
+        "Item",
+        "Observation"
+      ],
+      "rows": [
+        [
+          {
+            "text": "Sample A",
+            "bold": true
+          },
+          {
+            "text": "Available",
+            "pill": {
+              "label": "OK",
+              "level": "ok"
+            }
+          }
+        ],
+        [
+          {
+            "text": "Sample B"
+          },
+          {
+            "text": "Missing",
+            "status": "warn"
+          }
+        ]
+      ]
+    },
+    {
+      "kind": "footer",
+      "note": "Entirely fictional test data. No customer readings, assets or operational incidents are represented.",
+      "distribution": [
+        "Example reviewers"
+      ],
+      "links": [
+        {
+          "label": "Example dashboard",
+          "url": "https://example.invalid/dashboard"
+        }
+      ],
+      "buttons": [
+        {
+          "label": "View Example",
+          "url": "https://example.invalid/report"
+        },
+        {
+          "label": "Example Settings",
+          "url": "https://example.invalid/settings",
+          "ghost": true
+        }
+      ]
+    }
+  ]
+}

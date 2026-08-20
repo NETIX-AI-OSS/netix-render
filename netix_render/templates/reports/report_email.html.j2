@@ -1,0 +1,447 @@
+{% macro heading(title, icon=none, subtitle=none) -%}
+{% if title %}
+<h2 class="eh2">{% if icon %}{{ icon }} {% endif %}{{ title }}</h2>
+{% if subtitle %}<p class="esub">{{ subtitle }}</p>{% endif %}
+{% endif %}
+{%- endmacro %}
+{% macro pill(state) -%}
+<span class="pill p-{{ state.level }}">{{ state.label }}</span>
+{%- endmacro %}
+{% macro chart_table(chart) -%}
+{{ heading(chart.title, chart.icon, chart.subtitle) }}
+<table class="etable" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    <th>Period</th>
+    <th>Value ({{ chart.unit }})</th>
+  </tr>
+  {% for point in chart.series %}
+  <tr>
+    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{{ point.label }}</td>
+    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{% if point.value is none %}—{% else %}{{ "%.*f" | format(chart.decimals, point.value) }}{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+{%- endmacro %}
+{% macro data_table(panel) -%}
+{{ heading(panel.title, panel.icon, panel.subtitle) }}
+<table class="etable" width="100%" cellpadding="0" cellspacing="0">
+  <tr>
+    {% for column in panel.columns %}<th>{{ column }}</th>{% endfor %}
+  </tr>
+  {% for row in panel.rows %}
+  <tr>
+    {% for cell in row %}{% set classes = ((cell.status or "") ~ (" b" if cell.bold else "")).strip() %}<td{% if classes %} class="{{ classes }}"{% endif %}>{% if cell.text %}{{ cell.text }}{% if cell.pill %} {% endif %}{% endif %}{% if cell.pill %}{{ pill(cell.pill) }}{% endif %}</td>{% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+{%- endmacro %}
+<!doctype html>
+<html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{ doc.meta.title }} — {{ doc.meta.asset.name }}</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #eef1f6;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #1c2434;
+      }
+      .canvas {
+        background: #eef1f6;
+      }
+      .frame {
+        width: 640px;
+        max-width: 100%;
+      }
+      .genbar-td {
+        background: #0e1320;
+        border: 1px solid #28324c;
+        border-radius: 10px;
+        padding: 9px 16px;
+        font-size: 10.5px;
+        color: #8b97b5;
+      }
+      .gb-badge {
+        color: #27c08a;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        font-size: 9px;
+      }
+      .genbar-td b {
+        color: #e8edf6;
+        font-weight: 700;
+      }
+      .mast-td {
+        background: {{ doc.meta.accent.gradient[1] }};
+        border-radius: 14px 14px 0 0;
+        padding: 22px 26px;
+        color: #ffffff;
+      }
+      .logo {
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #ffffff;
+      }
+      .logo span {
+        color: {{ doc.meta.accent.logo_color }};
+      }
+      .tag {
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+      }
+      .mast-h1 {
+        font-size: 21px;
+        margin: 10px 0 4px;
+        font-weight: 800;
+        color: #ffffff;
+      }
+      .mast-meta {
+        font-size: 12px;
+        color: #aebde0;
+        letter-spacing: 0.4px;
+      }
+      .sheet-td {
+        background: #ffffff;
+        border: 1px solid #dde3ee;
+        border-top: none;
+        border-radius: 0 0 14px 14px;
+        padding: 22px 26px 26px;
+      }
+      .banner-td {
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .bn-ok {
+        background: #e9f9f2;
+        border: 1px solid #bfe9d8;
+        color: #0c6b4b;
+      }
+      .bn-warn {
+        background: #fdf6e3;
+        border: 1px solid #f1e0ad;
+        color: #8a6410;
+      }
+      .bn-crit {
+        background: #fdecee;
+        border: 1px solid #f5c6cd;
+        color: #a02030;
+      }
+      .kpi-td {
+        background: #f6f8fc;
+        border: 1px solid #e3e9f4;
+        border-radius: 10px;
+        padding: 11px 13px;
+      }
+      .kpi-v {
+        font-size: 19px;
+        font-weight: 800;
+      }
+      .kpi-l {
+        font-size: 9.5px;
+        color: #7585a8;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        margin-top: 2px;
+      }
+      .kpi-s {
+        font-size: 10.5px;
+        font-weight: 700;
+        margin-top: 3px;
+      }
+      .ok {
+        color: #16a571;
+      }
+      .warn {
+        color: #c08a10;
+      }
+      .crit {
+        color: #dd4257;
+      }
+      .mut {
+        color: #7585a8;
+      }
+      .eh2 {
+        font-size: 14px;
+        margin: 24px 0 4px;
+        color: #1c2434;
+      }
+      .esub {
+        font-size: 11px;
+        color: #7585a8;
+        margin: 0 0 10px;
+      }
+      .etable {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 6px 0 2px;
+      }
+      .etable th {
+        background: #f1f4fa;
+        color: #5a6a8e;
+        font-size: 9.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid #dde3ee;
+      }
+      .etable td {
+        padding: 8px 10px;
+        border-bottom: 1px solid #edf0f7;
+        vertical-align: top;
+      }
+      .b {
+        font-weight: 700;
+      }
+      .pill {
+        font-size: 9px;
+        font-weight: 800;
+        padding: 2px 9px;
+        border-radius: 10px;
+        letter-spacing: 0.4px;
+      }
+      .p-ok {
+        background: #e9f9f2;
+        color: #0c6b4b;
+      }
+      .p-warn {
+        background: #fdf6e3;
+        color: #8a6410;
+      }
+      .p-crit {
+        background: #fdecee;
+        color: #a02030;
+      }
+      .p-grey {
+        background: #eef1f6;
+        color: #5a6a8e;
+      }
+      .ai-td {
+        background: #f3f1fd;
+        border: 1px solid #ddd6f5;
+        border-left: 4px solid #7a5cd6;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 12px;
+        color: #3c3470;
+      }
+      .btn-td {
+        background: #2e5bd7;
+        border-radius: 8px;
+        padding: 9px 18px;
+      }
+      .btn-td a {
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        text-decoration: none;
+      }
+      .btn-td.ghost {
+        background: #eef2fc;
+        border: 1px solid #c8d6f5;
+      }
+      .btn-td.ghost a {
+        color: #2e5bd7;
+      }
+      .foot-td {
+        padding-top: 14px;
+        border-top: 1px solid #e3e9f4;
+        font-size: 10.5px;
+        color: #8a97b5;
+        line-height: 1.6;
+      }
+      .foot-td a {
+        color: #3a6fd8;
+        text-decoration: none;
+        font-weight: 700;
+      }
+      .genfoot-td {
+        text-align: center;
+        font-size: 9.5px;
+        color: #8a97b5;
+        letter-spacing: 0.3px;
+        padding-top: 12px;
+      }
+      .genfoot-td b {
+        color: #41557f;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="canvas" width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td align="center" style="padding: 18px 12px 40px">
+          <table class="frame" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="genbar-td">
+                <span class="gb-badge">⬡ SYSTEM-GENERATED</span> · Report ID <b>{{ doc.meta.report_id }}</b>
+                · Generated <b>{{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</b>
+                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · ✓ SHA-256 verified
+              </td>
+            </tr>
+            <tr>
+              <td style="font-size: 10px; line-height: 10px">&nbsp;</td>
+            </tr>
+            <tr>
+              <td class="mast-td">
+                <div class="logo">{% if doc.meta.logo_line %}{{ doc.meta.logo_line }}{% else %}IFM <span>NETIX</span> · AI PLATFORM{% endif %}</div>
+                <div style="margin-top: 10px"><span class="tag">{{ doc.meta.tag_line }}</span></div>
+                <div class="mast-h1">{{ doc.meta.title }}</div>
+                <div class="mast-meta">{{ doc.meta.period.label }}</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="sheet-td">
+                {% for section in doc.sections %}
+                {%- if section.kind == "banner" %}
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td class="banner-td bn-{{ section.level }}">{{ section.text }}</td>
+                  </tr>
+                </table>
+                {%- elif section.kind == "kpi_grid" %}
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 12px">
+                  {% for row in section.items | batch(3) %}
+                  <tr>
+                    {% for item in row %}
+                    <td class="kpi-td" width="33%">
+                      <div class="kpi-v {{ item.status }}">{{ item.value }}</div>
+                      <div class="kpi-l">{{ item.label }}</div>
+                      {% if item.note %}<div class="kpi-s {{ item.note_status or item.status }}">{{ item.note }}</div>{% endif %}
+                    </td>
+                    {% endfor %}
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "check_table" %}
+                {{ heading(section.title, section.icon, section.subtitle) }}
+                <table class="etable" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>System</th>
+                    <th>State</th>
+                    <th>Detail</th>
+                  </tr>
+                  {% for row in section.rows %}
+                  <tr>
+                    <td class="b">{{ row.system }}</td>
+                    <td>{{ pill(row.state) }}</td>
+                    <td>{{ row.detail }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "exceptions" %}
+                {{ heading(section.title, section.icon, section.subtitle) }}
+                <table class="etable" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>#</th>
+                    <th>Event</th>
+                    <th>Asset</th>
+                    <th>AI assessment</th>
+                    <th>Owner</th>
+                  </tr>
+                  {% for row in section.rows %}
+                  <tr>
+                    <td>{{ row.rank }}</td>
+                    <td class="b">{{ row.event }}</td>
+                    <td>{{ row.asset }}</td>
+                    <td>{{ row.assessment }}</td>
+                    <td>{{ row.owner }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "trend_pair" %}
+                {% for chart in section.charts %}{{ chart_table(chart) }}{% endfor %}
+                {%- elif section.kind == "ai_insight" %}
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 10px 0">
+                  <tr>
+                    <td class="ai-td">🤖 {% if section.title %}<b>{{ section.title }}</b> {% endif %}{{ section.text | bold_markup }}</td>
+                  </tr>
+                </table>
+                {%- elif section.kind == "actions" %}
+                {{ heading(section.title, section.icon, section.subtitle) }}
+                <table class="etable" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>Action</th>
+                    <th>Due</th>
+                    <th>Owner</th>
+                  </tr>
+                  {% for row in section.rows %}
+                  <tr>
+                    <td class="b">{{ row.action }}</td>
+                    <td>{{ row.due }}</td>
+                    <td>{{ row.owner }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "data_table" %}
+                {{ data_table(section) }}
+                {%- elif section.kind == "twocol" %}
+                {% for panel in section.panels %}{{ data_table(panel) }}{% endfor %}
+                {%- elif section.kind == "hbar_chart" %}
+                {{ heading(section.title, section.icon, section.subtitle) }}
+                <table class="etable" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>Item</th>
+                    <th>Value</th>
+                  </tr>
+                  {% for row in section.rows %}
+                  <tr>
+                    <td>{{ row.label }}</td>
+                    <td class="b{% if row.status != "neutral" %} {{ row.status }}{% endif %}">{{ row.display }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "rings" %}
+                <table class="etable" width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <th>Score</th>
+                    <th>Value</th>
+                    <th>Detail</th>
+                  </tr>
+                  {% for item in section.items %}
+                  <tr>
+                    <td class="b">{{ item.label }}</td>
+                    <td class="b{% if item.status in ("warn", "crit") %} {{ item.status }}{% endif %}">{{ item.value_label }}</td>
+                    <td>{{ item.sublabel }}</td>
+                  </tr>
+                  {% endfor %}
+                </table>
+                {%- elif section.kind == "footer" %}
+                <table cellpadding="0" cellspacing="0" style="margin-top: 6px">
+                  <tr>
+                    {% for button in section.buttons %}
+                    <td class="btn-td{% if button.ghost %} ghost{% endif %}"><a href="{{ button.url }}">{{ button.label }}</a></td>
+                    <td width="8">&nbsp;</td>
+                    {% endfor %}
+                  </tr>
+                </table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 26px">
+                  <tr>
+                    <td class="foot-td">
+                      {{ section.note }}{% if section.distribution %} To: {{ section.distribution | join(" · ") }}{% endif %}{% if section.links %} | {% for link in section.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="genfoot-td">
+                      Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }} · Verify authenticity: Platform → Reports → Verify · © {{ doc.meta.generated_at.year }} IFM NETIX
+                    </td>
+                  </tr>
+                </table>
+                {%- endif %}
+                {% endfor %}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -1,0 +1,10 @@
+{{ payload.pack_label }}{% if payload.period_label %} — {{ payload.period_label }}{% endif %}
+
+{{ t("report_pack_intro") }}
+{% for file in payload.files %}
+- {{ file.name }}{% if file.size_label %} ({{ file.size_label }}){% endif %}{% endfor %}
+{% if payload.portal %}
+{{ payload.portal.label }}: {{ payload.portal.url }}
+{% endif %}{% if payload.note %}
+{{ payload.note }}
+{% endif %}

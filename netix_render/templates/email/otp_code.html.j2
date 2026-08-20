@@ -1,0 +1,8 @@
+{% extends "email/base.html.j2" %}
+{% block content %}
+<h1 class="h1">{{ t("verification_code") }}</h1>
+<p class="p">{{ payload.product_name }}</p>
+<div class="code">{{ payload.code }}</div>
+{% if payload.expires_minutes %}<p class="p mut">{{ t("code_expires", minutes=payload.expires_minutes) }}</p>{% endif %}
+<p class="small">{{ t("code_ignore") }}</p>
+{% endblock %}

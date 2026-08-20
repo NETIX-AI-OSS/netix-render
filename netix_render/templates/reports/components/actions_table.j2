@@ -1,0 +1,21 @@
+{% import "components/section_h2.j2" as heading %}
+{% macro actions_table(section) -%}
+{{ heading.section_h2(section.title, section.icon, section.subtitle) }}
+{% set with_source = section.rows | selectattr("source") | list | length > 0 %}
+<table>
+  <tr>
+    <th>Action</th>
+    <th>Due</th>
+    <th>Owner</th>
+    {% if with_source %}<th>Source</th>{% endif %}
+  </tr>
+  {% for row in section.rows %}
+  <tr>
+    <td class="b">{{ row.action }}</td>
+    <td>{{ row.due }}</td>
+    <td>{{ row.owner }}</td>
+    {% if with_source %}<td>{{ row.source or "—" }}</td>{% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{%- endmacro %}

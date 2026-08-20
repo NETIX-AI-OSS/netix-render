@@ -1,0 +1,5 @@
+{% macro ai_box(section) -%}
+<div class="ai">
+  🤖 {% if section.title %}<b>{{ section.title }}</b> {% endif %}{{ section.text | bold_markup }}
+</div>
+{%- endmacro %}
