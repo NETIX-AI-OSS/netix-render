@@ -33,7 +33,7 @@ Every render is deterministic: validation happens against the template's contrac
 `netix_render/tokens.json` is the single brand source, derived from
 `frontend-template/app/assets/styles/globals.css` (see the `source.hsl` block; the
 `netix tokens check` workspace command and `tests/test_tokens.py` guard drift).
-`DESIGN.md` is the human/agent-facing design skill describing how to use them.
+`netix_render/DESIGN.md` is the human/agent-facing design skill describing how to use them.
 
 ## Development
 

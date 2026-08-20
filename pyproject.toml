@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 packages = ["netix_render", "netix_render.email"]
 
 [tool.setuptools.package-data]
-netix_render = ["tokens.json", "templates/**/*.j2"]
+netix_render = ["DESIGN.md", "tokens.json", "templates/**/*.j2"]
 
 [project]
 name = "netix-render"
@@ -24,7 +24,7 @@ dependencies = [
     "markupsafe>=2.1",
     "pydantic>=2.7",
 ]
-version = "0.1.0"
+version = "0.1.1"
 
 [dependency-groups]
 dev = [
