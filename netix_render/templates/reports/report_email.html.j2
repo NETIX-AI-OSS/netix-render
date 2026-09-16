@@ -284,7 +284,7 @@
               <td class="genbar-td">
                 <span class="gb-badge">⬡ SYSTEM-GENERATED</span> · Report ID <b>{{ doc.meta.report_id }}</b>
                 · Generated <b>{{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</b>
-                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · ✓ SHA-256 verified
+                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · {% if doc.meta.sha256 %}Artifact fingerprint recorded{% else %}Automatically generated{% endif %}
               </td>
             </tr>
             <tr>

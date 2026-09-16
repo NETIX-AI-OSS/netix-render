@@ -25,6 +25,15 @@ RING_STATUS_COLORS = {
 }
 
 
+def value_caption(value: float, decimals: int) -> str:
+    """Keep a seven-point chart legible without long overlapping register labels."""
+    if abs(value) >= 1_000_000:
+        return f"{value / 1_000_000:.2f}M"
+    if abs(value) >= 10_000:
+        return f"{value / 1_000:.1f}k"
+    return f"{value:.{decimals}f}"
+
+
 def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals
     series: list[TrendPoint],
     _unit: str,
@@ -44,7 +53,10 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
     right_margin = round(width * 0.075)
     pitch = (width - x_start - bar_width - right_margin) / (len(series) - 1) if len(series) > 1 else 0.0
     values = [point.value for point in series if point.value is not None]
-    max_value = max(values) if values else 0.0
+    low = min([0.0, *values])
+    high = max([0.0, *values])
+    span = high - low
+    zero_y = baseline - round(max_bar * -low / span) if span else baseline
 
     parts = [f'<svg class="chart" width="100%" viewBox="0 0 {width} {height}" {SVG_XMLNS}>']
     for index, point in enumerate(series):
@@ -54,8 +66,9 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
             caption = "—"
             caption_y = baseline - 5
         else:
-            bar_height = round(max_bar * point.value / max_value) if max_value else 0
-            bar_y = baseline - bar_height
+            value_y = baseline - round(max_bar * (point.value - low) / span) if span else baseline
+            bar_height = abs(value_y - zero_y)
+            bar_y = min(value_y, zero_y)
             highlighted = highlight_last and index == len(series) - 1
             fill = highlight_color if highlighted else color
             opacity = "1" if highlighted else "0.55"
@@ -63,8 +76,8 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
                 f'<rect x="{bar_x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" rx="3" '
                 f'fill="{escape(fill)}" opacity="{opacity}" />'
             )
-            caption = f"{point.value:.{decimals}f}"  # noqa: E231
-            caption_y = bar_y - 5
+            caption = value_caption(point.value, decimals)  # noqa: E231
+            caption_y = value_y - 5 if point.value >= 0 else value_y + 10
         parts.append(
             f'<text x="{center}" y="{caption_y}" font-size="9" fill="{BAR_CAPTION_COLOR}" '
             f'text-anchor="middle" font-weight="700">{escape(caption)}</text>'

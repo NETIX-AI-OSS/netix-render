@@ -19,15 +19,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ doc.meta.title }} — {{ doc.meta.asset.name }}</title>
     <style>
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         padding: 0;
         background: #eef1f6;
         font-family: 'Segoe UI', Arial, sans-serif;
+        line-height: 1.5;
         color: #1c2434;
       }
       .wrap {
-        max-width: 740px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 18px 12px 40px;
       }
@@ -114,14 +116,14 @@
         background: #dd4257;
       }
       .kpis {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
         margin-bottom: 6px;
       }
       .kpi {
         flex: 1;
-        min-width: 104px;
+        min-width: 0;
         background: #f6f8fc;
         border: 1px solid #e3e9f4;
         border-radius: 10px;
@@ -132,11 +134,10 @@
         font-weight: 800;
       }
       .kpi .l {
-        font-size: 9.5px;
-        color: #7585a8;
+        font-size: 11px;
+        color: #5a6a8e;
         letter-spacing: 0.6px;
-        text-transform: uppercase;
-        margin-top: 2px;
+        margin-top: 5px;
       }
       .kpi .s {
         font-size: 10.5px;
@@ -172,6 +173,7 @@
       }
       table {
         width: 100%;
+        table-layout: fixed;
         border-collapse: collapse;
         font-size: 12px;
         margin: 6px 0 2px;
@@ -244,7 +246,7 @@
       }
       .twocol > div {
         flex: 1;
-        min-width: 300px;
+        min-width: 0;
       }
       .foot {
         margin-top: 26px;
@@ -338,6 +340,31 @@
         margin: 6px 0 0 8px;
       }
       {%- endif %}
+      .kpi, h2, td, th, .sub, .banner, .ai { overflow-wrap: anywhere; }
+      .twocol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .empty { padding: 12px 0; color: #5a6a8e; font-size: 12px; }
+      .chart { display: block; max-width: 100%; }
+      @media (max-width: 600px) {
+        .wrap { padding: 10px; }
+        .mast, .sheet { padding: 18px; }
+        .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .kpi .v { font-size: 18px; }
+        .twocol { grid-template-columns: minmax(0, 1fr); }
+        .responsive-table, .responsive-table tbody, .responsive-table tr,
+        .responsive-table td { display: block; width: 100%; }
+        .responsive-table tr:first-child { display: none; }
+        .responsive-table tr { border: 1px solid #dde3ee; border-radius: 8px; margin: 10px 0; padding: 10px; }
+        .responsive-table td { border: none; padding: 3px 0; }
+        .responsive-table td::before { content: attr(data-label) ": "; font-weight: 600; color: #5a6a8e; }
+      }
+      @media print {
+        body { background: white; }
+        .wrap { max-width: none; padding: 0; }
+        .sheet { border: 0; padding: 12px; }
+        .genbar, .btn { display: none; }
+        .kpi, .ai, tr, svg { break-inside: avoid; }
+        h2 { break-after: avoid; }
+      }
     </style>
   </head>
   <body>
