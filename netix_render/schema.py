@@ -133,6 +133,31 @@ class AiInsightSection(StrictModel):
     text: str
 
 
+class HeadlineEvidence(StrictModel):
+    evidence_id: str
+    label: str
+    observation: str
+    context: str
+    source: str
+
+
+class HeadlineDetail(StrictModel):
+    headline_id: str
+    title: str
+    finding: str
+    impact: str
+    uncertainty: str
+    checks: list[str] = Field(max_length=3)
+    action: str
+    owner: str
+    evidence: list[HeadlineEvidence] = Field(max_length=4)
+
+
+class HeadlineDetailsSection(StrictModel):
+    kind: Literal["headline_details"]
+    items: list[HeadlineDetail] = Field(max_length=3)
+
+
 class ActionRow(StrictModel):
     due: str
     action: str
@@ -227,6 +252,7 @@ ReportSection = Annotated[
     | ExceptionsSection
     | TrendPairSection
     | AiInsightSection
+    | HeadlineDetailsSection
     | ActionsSection
     | DataTableSection
     | TwoColSection

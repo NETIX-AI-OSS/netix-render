@@ -11,6 +11,7 @@ from jinja2.sandbox import SandboxedEnvironment
 from markupsafe import Markup, escape
 
 from netix_render import charts
+from netix_render.pages import compose_pages
 from netix_render.schema import HBarChartSection, ReportDocument, RingItem, TrendChart
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
@@ -82,7 +83,8 @@ def local_document(document: ReportDocument) -> ReportDocument:
 
 def render_report(document: ReportDocument) -> str:
     """Render the canonical web report for a validated Report Document."""
-    return environment().get_template("reports/report_base.html.j2").render(doc=local_document(document))
+    document = local_document(document)
+    return environment().get_template("reports/report_base.html.j2").render(doc=document, pages=compose_pages(document))
 
 
 def render_email(document: ReportDocument) -> str:

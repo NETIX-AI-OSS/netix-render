@@ -365,6 +365,18 @@
                     <td class="ai-td">🤖 {% if section.title %}<b>{{ section.title }}</b> {% endif %}{{ section.text | bold_markup }}</td>
                   </tr>
                 </table>
+                {%- elif section.kind == "headline_details" %}
+                {% for item in section.items %}
+                {{ heading(item.title, "", "Headline deep dive") }}
+                <p><b>Finding.</b> {{ item.finding }}</p>
+                <p><b>Why it matters.</b> {{ item.impact }}</p>
+                <p><b>Uncertainty.</b> {{ item.uncertainty }}</p>
+                <p><b>Supporting evidence</b></p>
+                {% for record in item.evidence %}<p>{{ record.label }} · {{ record.observation }}<br><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></p>{% endfor %}
+                <p><b>Investigation steps</b></p>
+                <ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol>
+                <p><b>Action · {{ item.owner }}.</b> {{ item.action }}</p>
+                {% endfor %}
                 {%- elif section.kind == "actions" %}
                 {{ heading(section.title, section.icon, section.subtitle) }}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">

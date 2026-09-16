@@ -365,9 +365,27 @@
         .kpi, .ai, tr, svg { break-inside: avoid; }
         h2 { break-after: avoid; }
       }
+{% if pages %}{% include "reports/paged_styles.css.j2" %}{% endif %}
     </style>
   </head>
   <body>
+{% macro render_section(section) -%}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
+        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section) }}
+        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section) }}
+        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section) }}
+        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section) }}
+        {%- elif section.kind == "ai_insight" %}{{ ai_c.ai_box(section) }}
+        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section) }}
+        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section) }}
+        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section) }}
+        {%- elif section.kind == "hbar_chart" %}{{ hbar_c.hbar_chart(section) }}
+        {%- elif section.kind == "rings" %}{{ rings_c.rings(section) }}
+        {%- elif section.kind == "footer" %}{{ foot_c.footer(section, doc.meta) }}
+        {%- endif %}
+
+{%- endmacro %}
+{% if pages %}{% include "reports/paged_body.j2" %}{% else %}
     <div class="wrap">
       {{ genbar_c.genbar(doc.meta) }}
       {{ mast_c.mast(doc.meta) }}
@@ -389,5 +407,6 @@
         {% endfor %}
       </div>
     </div>
+{% endif %}
   </body>
 </html>

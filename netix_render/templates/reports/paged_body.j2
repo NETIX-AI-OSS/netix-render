@@ -1,0 +1,38 @@
+<main class="report-pages">
+  <nav class="page-nav" aria-label="Report pages">
+    {% for page in pages %}<a href="#report-page-{{ loop.index }}">{{ loop.index }}. {{ page.title }}</a>{% endfor %}
+  </nav>
+  {% for page in pages %}
+  <article class="report-page" id="report-page-{{ loop.index }}" aria-label="{{ page.title }}">
+    <div class="page-body">
+      <div class="page-kicker">IFM NETIX · {{ doc.meta.asset.name }}</div>
+      <h1 class="page-title">{{ page.title }}</h1>
+      <div class="page-period">{{ doc.meta.period.label }} · {{ doc.meta.title }}</div>
+      {% if page.detail %}
+        {% set item = page.detail %}
+        <p class="detail-lead">{{ item.finding }}</p>
+        <div class="detail-grid">
+          <div class="detail-block"><h2>Why it matters</h2><p>{{ item.impact }}</p></div>
+          <div class="detail-block"><h2>What remains uncertain</h2><p>{{ item.uncertainty }}</p></div>
+        </div>
+        <h2 class="evidence-heading">Evidence behind this headline</h2>
+        {% for record in item.evidence %}
+        <div class="evidence-record"><b>{{ record.label }}</b> · {{ record.observation }}
+          <small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small>
+        </div>
+        {% endfor %}
+        <div class="detail-grid">
+          <div class="detail-block"><h2>Investigation steps</h2><ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol></div>
+          <div class="detail-block detail-action"><h2>Recommended action · {{ item.owner }}</h2><p>{{ item.action }}</p></div>
+        </div>
+      {% endif %}
+      {% for section in page.sections %}{{ render_section(section) }}{% endfor %}
+      {% if page.headlines %}
+      <h2>Headline deep dives</h2>
+      {% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }} →</a>{% endfor %}
+      {% endif %}
+    </div>
+    <footer class="page-foot"><span>{{ doc.meta.report_id }} · Generated {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</span><span>{{ loop.index }} / {{ pages | length }}</span></footer>
+  </article>
+  {% endfor %}
+</main>
