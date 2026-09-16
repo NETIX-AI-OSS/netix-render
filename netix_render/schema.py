@@ -44,7 +44,7 @@ class ReportMeta(StrictModel):
     language: str = "en"
     dir: Literal["ltr", "rtl"] = "ltr"
     accent: ReportAccent = ReportAccent(gradient=["#0e1320", "#1d2b52", "#2e4a8c"])
-    # Branding override for masthead logo; None keeps the builtin NETIX line.
+    # Caller-supplied report branding; None leaves organization branding absent.
     logo_line: str | None = None
     timezone_label: str = "GST"
     manual_edits: int = 0
@@ -131,6 +131,31 @@ class AiInsightSection(StrictModel):
     kind: Literal["ai_insight"]
     title: str | None = None
     text: str
+
+
+class HeadlineEvidence(StrictModel):
+    evidence_id: str
+    label: str
+    observation: str
+    context: str
+    source: str
+
+
+class HeadlineDetail(StrictModel):
+    headline_id: str
+    title: str
+    finding: str
+    impact: str
+    uncertainty: str
+    checks: list[str] = Field(max_length=3)
+    action: str
+    owner: str
+    evidence: list[HeadlineEvidence] = Field(max_length=4)
+
+
+class HeadlineDetailsSection(StrictModel):
+    kind: Literal["headline_details"]
+    items: list[HeadlineDetail] = Field(max_length=3)
 
 
 class ActionRow(StrictModel):
@@ -227,6 +252,7 @@ ReportSection = Annotated[
     | ExceptionsSection
     | TrendPairSection
     | AiInsightSection
+    | HeadlineDetailsSection
     | ActionsSection
     | DataTableSection
     | TwoColSection

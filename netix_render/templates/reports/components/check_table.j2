@@ -1,18 +1,20 @@
 {% import "components/section_h2.j2" as heading %}
 {% macro check_table(section) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
-<table>
+{% if section.rows %}
+<table class="responsive-table">
   <tr>
-    <th>System</th>
-    <th>State</th>
-    <th>Detail</th>
+    <th style="width: 43%">System</th>
+    <th style="width: 16%">State</th>
+    <th style="width: 41%">Detail</th>
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td class="b">{{ row.system }}</td>
-    <td><span class="pill p-{{ row.state.level }}">{{ row.state.label }}</span></td>
-    <td>{{ row.detail }}</td>
+    <td data-label="System" class="b">{{ row.system }}</td>
+    <td data-label="State"><span class="pill p-{{ row.state.level }}">{{ row.state.label }}</span></td>
+    <td data-label="Detail">{{ row.detail }}</td>
   </tr>
   {% endfor %}
 </table>
+{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
 {%- endmacro %}

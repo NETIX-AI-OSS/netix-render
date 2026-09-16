@@ -1,22 +1,24 @@
 {% import "components/section_h2.j2" as heading %}
 {% macro exceptions_table(section) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
-<table>
+{% if section.rows %}
+<table class="responsive-table">
   <tr>
-    <th>#</th>
-    <th>Event</th>
-    <th>Asset</th>
-    <th>AI assessment</th>
-    <th>Owner</th>
+    <th style="width: 5%">#</th>
+    <th style="width: 26%">Event</th>
+    <th style="width: 18%">Asset</th>
+    <th style="width: 35%">AI assessment</th>
+    <th style="width: 16%">Owner</th>
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td>{{ row.rank }}</td>
-    <td class="b">{{ row.event }}</td>
-    <td>{{ row.asset }}</td>
-    <td>{{ row.assessment }}</td>
-    <td>{{ row.owner }}</td>
+    <td data-label="Rank">{{ row.rank }}</td>
+    <td data-label="Event" class="b">{{ row.event }}</td>
+    <td data-label="Asset">{{ row.asset }}</td>
+    <td data-label="Assessment">{{ row.assessment }}</td>
+    <td data-label="Owner">{{ row.owner }}</td>
   </tr>
   {% endfor %}
 </table>
+{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
 {%- endmacro %}

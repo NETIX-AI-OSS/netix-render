@@ -11,6 +11,7 @@ from jinja2.sandbox import SandboxedEnvironment
 from markupsafe import Markup, escape
 
 from netix_render import charts
+from netix_render.pages import compose_pages
 from netix_render.schema import HBarChartSection, ReportDocument, RingItem, TrendChart
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
@@ -71,12 +72,22 @@ def environment() -> SandboxedEnvironment:
     return env
 
 
+def local_document(document: ReportDocument) -> ReportDocument:
+    """Align generation time with the report period's explicit timezone, including saved artifacts."""
+    zone = document.meta.period.end.tzinfo
+    if zone is None or document.meta.generated_at.tzinfo is None:
+        return document
+    meta = document.meta.model_copy(update={"generated_at": document.meta.generated_at.astimezone(zone)})
+    return document.model_copy(update={"meta": meta})
+
+
 def render_report(document: ReportDocument) -> str:
     """Render the canonical web report for a validated Report Document."""
-    return environment().get_template("reports/report_base.html.j2").render(doc=document)
+    document = local_document(document)
+    return environment().get_template("reports/report_base.html.j2").render(doc=document, pages=compose_pages(document))
 
 
 def render_email(document: ReportDocument) -> str:
     """Render the email-safe variant: table layout, no SVG, styles inlined per element."""
-    html = environment().get_template("reports/report_email.html.j2").render(doc=document)
+    html = environment().get_template("reports/report_email.html.j2").render(doc=local_document(document))
     return css_inline.inline(html)

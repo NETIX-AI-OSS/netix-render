@@ -2,20 +2,22 @@
 {% macro actions_table(section) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
 {% set with_source = section.rows | selectattr("source") | list | length > 0 %}
-<table>
+{% if section.rows %}
+<table class="responsive-table">
   <tr>
-    <th>Action</th>
-    <th>Due</th>
-    <th>Owner</th>
-    {% if with_source %}<th>Source</th>{% endif %}
+    <th style="width: {{ '45%' if with_source else '65%' }}">Action</th>
+    <th style="width: 12%">Due</th>
+    <th style="width: {{ '18%' if with_source else '23%' }}">Owner</th>
+    {% if with_source %}<th style="width: 25%">Source</th>{% endif %}
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td class="b">{{ row.action }}</td>
-    <td>{{ row.due }}</td>
-    <td>{{ row.owner }}</td>
-    {% if with_source %}<td>{{ row.source or "—" }}</td>{% endif %}
+    <td data-label="Action" class="b">{{ row.action }}</td>
+    <td data-label="Due">{{ row.due }}</td>
+    <td data-label="Owner">{{ row.owner }}</td>
+    {% if with_source %}<td data-label="Source">{{ row.source or "—" }}</td>{% endif %}
   </tr>
   {% endfor %}
 </table>
+{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
 {%- endmacro %}

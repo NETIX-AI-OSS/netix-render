@@ -90,21 +90,33 @@ def test_accent_gradient_is_parameterized():
     assert ".mast .logo span {\n        color: #7fb0ff;" in rendered
 
 
-def test_default_logo_line_keeps_builtin_branding():
-    rendered = render_report(load_document("synthetic_daily"))
-    assert "IFM <span>NETIX</span> · AI PLATFORM" in rendered
+@pytest.mark.parametrize("brand", [None, "", "Example Operations", "<b>Example & Company</b>"])
+@pytest.mark.parametrize("paged", [False, True])
+def test_report_branding_is_caller_supplied_on_every_surface(brand, paged):
+    from html import escape
 
-
-def test_logo_line_override_renders_in_mast_and_email():
+    from netix_render.pages import compose_pages
     from netix_render.renderer import render_email
+    from tests.test_report_pages import multipage_document
 
-    payload = load_fixture_json("synthetic_daily")
-    payload["meta"]["logo_line"] = "ACME FM · OPS"
-    document = ReportDocument.model_validate(payload)
-    rendered = render_report(document)
-    assert "ACME FM · OPS" in rendered
-    assert "IFM <span>NETIX</span> · AI PLATFORM" not in rendered
-    assert "ACME FM · OPS" in render_email(document)
+    document = multipage_document() if paged else load_document("synthetic_daily")
+    document.meta.logo_line = brand
+    html = render_report(document)
+    email = render_email(document)
+    for output in (html, email):
+        assert "IFM" not in output
+        assert "NETIX" not in output
+        assert "©" not in output
+        assert "Platform → Reports → Verify" not in output
+        if brand:
+            assert escape(brand) in output
+            assert "<b>Example & Company</b>" not in output
+        else:
+            assert 'class="logo"' not in output
+    if paged:
+        kicker = f"{escape(brand)} · " if brand else ""
+        expected = f'<div class="page-kicker">{kicker}{document.meta.asset.name}</div>'
+        assert html.count(expected) == len(compose_pages(document))
 
 
 def test_ai_insight_bold_markers_render_as_bold():

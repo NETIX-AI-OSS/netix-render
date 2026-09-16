@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Monthly Brief — Example Research Hub</title>
     <style>
+      * { box-sizing: border-box; }
       body {
         margin: 0;
         padding: 0;
         background: #eef1f6;
         font-family: 'Segoe UI', Arial, sans-serif;
+        line-height: 1.5;
         color: #1c2434;
       }
       .wrap {
-        max-width: 740px;
+        max-width: 900px;
         margin: 0 auto;
         padding: 18px 12px 40px;
       }
@@ -100,14 +102,14 @@
         background: #dd4257;
       }
       .kpis {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
         margin-bottom: 6px;
       }
       .kpi {
         flex: 1;
-        min-width: 104px;
+        min-width: 0;
         background: #f6f8fc;
         border: 1px solid #e3e9f4;
         border-radius: 10px;
@@ -118,11 +120,10 @@
         font-weight: 800;
       }
       .kpi .l {
-        font-size: 9.5px;
-        color: #7585a8;
+        font-size: 11px;
+        color: #5a6a8e;
         letter-spacing: 0.6px;
-        text-transform: uppercase;
-        margin-top: 2px;
+        margin-top: 5px;
       }
       .kpi .s {
         font-size: 10.5px;
@@ -158,6 +159,7 @@
       }
       table {
         width: 100%;
+        table-layout: fixed;
         border-collapse: collapse;
         font-size: 12px;
         margin: 6px 0 2px;
@@ -230,7 +232,7 @@
       }
       .twocol > div {
         flex: 1;
-        min-width: 300px;
+        min-width: 0;
       }
       .foot {
         margin-top: 26px;
@@ -305,17 +307,45 @@
       .genfoot b {
         color: #41557f;
       }
+      .kpi, h2, td, th, .sub, .banner, .ai { overflow-wrap: anywhere; }
+      .twocol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .empty { padding: 12px 0; color: #5a6a8e; font-size: 12px; }
+      .chart { display: block; max-width: 100%; }
+      @media (max-width: 600px) {
+        .wrap { padding: 10px; }
+        .mast, .sheet { padding: 18px; }
+        .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .kpi .v { font-size: 18px; }
+        .twocol { grid-template-columns: minmax(0, 1fr); }
+        .responsive-table, .responsive-table tbody, .responsive-table tr,
+        .responsive-table td { display: block; width: 100%; }
+        .responsive-table tr:first-child { display: none; }
+        .responsive-table tr { border: 1px solid #dde3ee; border-radius: 8px; margin: 10px 0; padding: 10px; }
+        .responsive-table td { border: none; padding: 3px 0; }
+        .responsive-table td::before { content: attr(data-label) ": "; font-weight: 600; color: #5a6a8e; }
+      }
+      @media print {
+        body { background: white; }
+        .wrap { max-width: none; padding: 0; }
+        .sheet { border: 0; padding: 12px; }
+        .genbar, .btn { display: none; }
+        .kpi, .ai, tr, svg { break-inside: avoid; }
+        h2 { break-after: avoid; }
+      }
+
     </style>
   </head>
   <body>
+
+
     <div class="wrap">
       <div class="genbar">
   <span class="gb-badge">⬡ SYSTEM-GENERATED</span><span>Report ID&nbsp;<b>EXAMPLE-MONTHLY-20300108</b></span
   ><span>Generated&nbsp;<b>08 Jan 2030 08:00 UTC</b></span
-  ><span>Engine test-1 · 0 manual edits</span><span class="gb-right">✓ SHA-256 verified</span>
+  ><span>Engine test-1 · 0 manual edits</span><span class="gb-right">Automatically generated</span>
 </div>
       <div class="mast">
-  <div class="logo">IFM <span>NETIX</span> · AI PLATFORM</div>
+  
   <div style="margin-top: 10px"><span class="tag">SYNTHETIC DATA · MONTHLY</span></div>
   <h1>Monthly Brief</h1>
   <div class="meta">31-day fictional reporting period ending 8 January 2030</div>
@@ -348,46 +378,50 @@
 </div>
         <h2><span class="ic">🛡</span>Example Equipment Checks</h2>
 <p class="sub">Illustrative observations only</p>
-<table>
+
+<table class="responsive-table">
   <tr>
-    <th>System</th>
-    <th>State</th>
-    <th>Detail</th>
+    <th style="width: 43%">System</th>
+    <th style="width: 16%">State</th>
+    <th style="width: 41%">Detail</th>
   </tr>
   
   <tr>
-    <td class="b">Example air unit A</td>
-    <td><span class="pill p-ok">AVAILABLE</span></td>
-    <td>Artificial sample: supply temperature 18°C</td>
+    <td data-label="System" class="b">Example air unit A</td>
+    <td data-label="State"><span class="pill p-ok">AVAILABLE</span></td>
+    <td data-label="Detail">Artificial sample: supply temperature 18°C</td>
   </tr>
   
   <tr>
-    <td class="b">Example sensor B</td>
-    <td><span class="pill p-warn">REVIEW</span></td>
-    <td>No sample in the synthetic interval</td>
+    <td data-label="System" class="b">Example sensor B</td>
+    <td data-label="State"><span class="pill p-warn">REVIEW</span></td>
+    <td data-label="Detail">No sample in the synthetic interval</td>
   </tr>
   
 </table>
+
         <h2><span class="ic">🌙</span>Example Exceptions</h2>
 <p class="sub">Fictional issue for layout testing</p>
-<table>
+
+<table class="responsive-table">
   <tr>
-    <th>#</th>
-    <th>Event</th>
-    <th>Asset</th>
-    <th>AI assessment</th>
-    <th>Owner</th>
+    <th style="width: 5%">#</th>
+    <th style="width: 26%">Event</th>
+    <th style="width: 18%">Asset</th>
+    <th style="width: 35%">AI assessment</th>
+    <th style="width: 16%">Owner</th>
   </tr>
   
   <tr>
-    <td>1</td>
-    <td class="b">Missing demonstration sample</td>
-    <td>Example sensor B</td>
-    <td>An invented data gap; equipment condition cannot be inferred.</td>
-    <td>Example operations team</td>
+    <td data-label="Rank">1</td>
+    <td data-label="Event" class="b">Missing demonstration sample</td>
+    <td data-label="Asset">Example sensor B</td>
+    <td data-label="Assessment">An invented data gap; equipment condition cannot be inferred.</td>
+    <td data-label="Owner">Example operations team</td>
   </tr>
   
 </table>
+
         
 <div class="twocol">
   
@@ -411,22 +445,24 @@
         <h2><span class="ic">✅</span>Example Follow-up Actions</h2>
 <p class="sub">Demonstration workflow</p>
 
-<table>
+
+<table class="responsive-table">
   <tr>
-    <th>Action</th>
-    <th>Due</th>
-    <th>Owner</th>
+    <th style="width: 65%">Action</th>
+    <th style="width: 12%">Due</th>
+    <th style="width: 23%">Owner</th>
     
   </tr>
   
   <tr>
-    <td class="b">Inspect the synthetic sensor connection and compare a fresh sample.</td>
-    <td>Next review</td>
-    <td>Example operations team</td>
+    <td data-label="Action" class="b">Inspect the synthetic sensor connection and compare a fresh sample.</td>
+    <td data-label="Due">Next review</td>
+    <td data-label="Owner">Example operations team</td>
     
   </tr>
   
 </table>
+
         <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px">
   <svg width="178" height="96" viewBox="0 0 178 96"><circle cx="48" cy="48" r="34" fill="none" stroke="#eef1f6" stroke-width="11" /><circle cx="48" cy="48" r="34" fill="none" stroke="#16a571" stroke-width="11" stroke-linecap="round" stroke-dasharray="160 214" transform="rotate(-90 48 48)" /><text x="48" y="53" font-size="16" font-weight="800" text-anchor="middle" fill="#1c2434">75%</text><text x="100" y="44" font-size="11.5" font-weight="800" fill="#1c2434">Coverage</text><text x="100" y="60" font-size="10" fill="#7585a8">3 / 4 samples</text></svg>
 </div>
@@ -484,10 +520,11 @@
   Entirely fictional test data. No customer readings, assets or operational incidents are represented. To: Example reviewers &nbsp;|&nbsp; <a href="https://example.invalid/dashboard">Example dashboard</a>
 </div>
 <div class="genfoot">
-  Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID EXAMPLE-MONTHLY-20300108 · Rendered 08 Jan 2030 08:00 UTC · Verify authenticity: Platform → Reports → Verify · © 2030 IFM NETIX
+  Generated automatically · Report ID EXAMPLE-MONTHLY-20300108 · Rendered 08 Jan 2030 08:00 UTC
 </div>
         
       </div>
     </div>
+
   </body>
 </html>

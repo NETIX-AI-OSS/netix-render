@@ -284,7 +284,7 @@
               <td class="genbar-td">
                 <span class="gb-badge">⬡ SYSTEM-GENERATED</span> · Report ID <b>{{ doc.meta.report_id }}</b>
                 · Generated <b>{{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</b>
-                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · ✓ SHA-256 verified
+                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · {% if doc.meta.sha256 %}Artifact fingerprint recorded{% else %}Automatically generated{% endif %}
               </td>
             </tr>
             <tr>
@@ -292,7 +292,7 @@
             </tr>
             <tr>
               <td class="mast-td">
-                <div class="logo">{% if doc.meta.logo_line %}{{ doc.meta.logo_line }}{% else %}IFM <span>NETIX</span> · AI PLATFORM{% endif %}</div>
+                {% if doc.meta.logo_line %}<div class="logo">{{ doc.meta.logo_line }}</div>{% endif %}
                 <div style="margin-top: 10px"><span class="tag">{{ doc.meta.tag_line }}</span></div>
                 <div class="mast-h1">{{ doc.meta.title }}</div>
                 <div class="mast-meta">{{ doc.meta.period.label }}</div>
@@ -365,6 +365,18 @@
                     <td class="ai-td">🤖 {% if section.title %}<b>{{ section.title }}</b> {% endif %}{{ section.text | bold_markup }}</td>
                   </tr>
                 </table>
+                {%- elif section.kind == "headline_details" %}
+                {% for item in section.items %}
+                {{ heading(item.title, "", "Headline deep dive") }}
+                <p><b>Finding.</b> {{ item.finding }}</p>
+                <p><b>Why it matters.</b> {{ item.impact }}</p>
+                <p><b>Uncertainty.</b> {{ item.uncertainty }}</p>
+                <p><b>Supporting evidence</b></p>
+                {% for record in item.evidence %}<p>{{ record.label }} · {{ record.observation }}<br><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></p>{% endfor %}
+                <p><b>Investigation steps</b></p>
+                <ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol>
+                <p><b>Action · {{ item.owner }}.</b> {{ item.action }}</p>
+                {% endfor %}
                 {%- elif section.kind == "actions" %}
                 {{ heading(section.title, section.icon, section.subtitle) }}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
@@ -431,7 +443,7 @@
                   </tr>
                   <tr>
                     <td class="genfoot-td">
-                      Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }} · Verify authenticity: Platform → Reports → Verify · © {{ doc.meta.generated_at.year }} IFM NETIX
+                      Generated automatically{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}
                     </td>
                   </tr>
                 </table>
