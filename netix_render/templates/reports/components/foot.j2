@@ -8,7 +8,7 @@
 {%- endmacro %}
 {% macro genfoot(meta) -%}
 <div class="genfoot">
-  Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID {{ meta.report_id }} · Rendered {{ meta.generated_at | display_datetime }} {{ meta.timezone_label }} · Verify authenticity: Platform → Reports → Verify · © {{ meta.generated_at.year }} IFM NETIX
+  Generated automatically{% if meta.logo_line %} · {{ meta.logo_line }}{% endif %} · Report ID {{ meta.report_id }} · Rendered {{ meta.generated_at | display_datetime }} {{ meta.timezone_label }}
 </div>
 {%- endmacro %}
 {% macro footer(section, meta) -%}

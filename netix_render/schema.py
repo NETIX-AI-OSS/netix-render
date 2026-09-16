@@ -44,7 +44,7 @@ class ReportMeta(StrictModel):
     language: str = "en"
     dir: Literal["ltr", "rtl"] = "ltr"
     accent: ReportAccent = ReportAccent(gradient=["#0e1320", "#1d2b52", "#2e4a8c"])
-    # Branding override for masthead logo; None keeps the builtin NETIX line.
+    # Caller-supplied report branding; None leaves organization branding absent.
     logo_line: str | None = None
     timezone_label: str = "GST"
     manual_edits: int = 0

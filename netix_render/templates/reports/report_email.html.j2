@@ -292,7 +292,7 @@
             </tr>
             <tr>
               <td class="mast-td">
-                <div class="logo">{% if doc.meta.logo_line %}{{ doc.meta.logo_line }}{% else %}IFM <span>NETIX</span> · AI PLATFORM{% endif %}</div>
+                {% if doc.meta.logo_line %}<div class="logo">{{ doc.meta.logo_line }}</div>{% endif %}
                 <div style="margin-top: 10px"><span class="tag">{{ doc.meta.tag_line }}</span></div>
                 <div class="mast-h1">{{ doc.meta.title }}</div>
                 <div class="mast-meta">{{ doc.meta.period.label }}</div>
@@ -443,7 +443,7 @@
                   </tr>
                   <tr>
                     <td class="genfoot-td">
-                      Generated automatically by <b>IFM NETIX AI PLATFORM</b> · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }} · Verify authenticity: Platform → Reports → Verify · © {{ doc.meta.generated_at.year }} IFM NETIX
+                      Generated automatically{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}
                     </td>
                   </tr>
                 </table>

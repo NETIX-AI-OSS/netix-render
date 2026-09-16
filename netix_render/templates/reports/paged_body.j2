@@ -5,7 +5,7 @@
   {% for page in pages %}
   <article class="report-page" id="report-page-{{ loop.index }}" aria-label="{{ page.title }}">
     <div class="page-body">
-      <div class="page-kicker">IFM NETIX · {{ doc.meta.asset.name }}</div>
+      <div class="page-kicker">{% if doc.meta.logo_line %}{{ doc.meta.logo_line }} · {% endif %}{{ doc.meta.asset.name }}</div>
       <h1 class="page-title">{{ page.title }}</h1>
       <div class="page-period">{{ doc.meta.period.label }} · {{ doc.meta.title }}</div>
       {% if page.detail %}

@@ -63,3 +63,5 @@ Web reports include in-document navigation. A4 print styles insert page breaks a
 ### Public example data
 
 Report fixtures and snapshots must be authored from scratch with fictional assets, readings, incidents and `example.invalid` links. Renaming a customer or site is insufficient. Keep production reports, screenshots, raw payloads and validation artifacts outside this public repository, including PR descriptions and attachments. The `synthetic_*` fixtures are deliberately fictional and exercise daily, weekly and monthly report components.
+
+Report branding is supplied through `meta.logo_line`. It is escaped and used consistently in HTML, email and every multipage header. Omitting it renders reports without an organization label. Report metadata supplies asset names and timestamps; the renderer does not invent copyright ownership or verification destinations.
