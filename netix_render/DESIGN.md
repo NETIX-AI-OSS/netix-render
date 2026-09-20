@@ -9,14 +9,14 @@ colors or type.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `color.primary` | `#196594` | Brand blue: header bands, buttons, links, emphasis |
-| `color.primary_soft` | `#e1edf4` | Tinted fills behind primary-colored text |
+| `color.primary` | `#196796` | Brand blue: header bands, buttons, links, emphasis |
+| `color.primary_soft` | `#e4f0fa` | Tinted fills behind primary-colored text |
 | `color.accent` | `#30bce4` | Wordmark suffix and small highlights only — never body text |
 | `color.ink` | `#2d2e2f` | Body text |
 | `color.ink_soft` / `ink_faint` | `#5d7482` / `#8298a4` | Secondary text, labels, footers |
 | `color.surface` / `surface_soft` | `#ffffff` / `#f4f6f8` | Card / page canvas |
 | `color.line` | `#e5eaf0` | Borders, table rules |
-| `color.status.ok/warn/crit/muted` | `#12914d` / `#da9901` / `#ff3838` / `#a1b0ba` | Semantic state only — never decoration |
+| `color.status.ok/warn/crit/muted` | `#007d39` / `#b97600` / `#d72828` / `#4b5156` | Semantic state only — never decoration |
 | `color.status_soft.*` | tinted equivalents | Pill and band backgrounds |
 | `color.print.navy` | `#1F4E78` | Print/docx documents only |
 
