@@ -96,8 +96,10 @@ def render_report(
             update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
         )
         pages = compose_pages(paged_document)
-    return environment().get_template("reports/report_base.html.j2").render(
-        doc=document, pages=pages, layout=layout, cover_image=cover_image
+    return (
+        environment()
+        .get_template("reports/report_base.html.j2")
+        .render(doc=document, pages=pages, layout=layout, cover_image=cover_image)
     )
 
 

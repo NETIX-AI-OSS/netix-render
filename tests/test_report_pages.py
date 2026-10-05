@@ -110,10 +110,10 @@ def test_community_cover_rejects_external_images_and_escapes_branding():
     import pytest
 
     document = multipage_document()
-    document.meta.logo_line = '<script>brand</script>'
+    document.meta.logo_line = "<script>brand</script>"
     html = render_report(document, layout="community", cover_image="data:image/jpeg;base64,YQ==")
-    assert '<script>brand</script>' not in html
-    assert '&lt;script&gt;brand&lt;/script&gt;' in html
+    assert "<script>brand</script>" not in html
+    assert "&lt;script&gt;brand&lt;/script&gt;" in html
     with pytest.raises(ValueError, match="embedded"):
         render_report(document, layout="community", cover_image="https://example.com/cover.jpg")
 
