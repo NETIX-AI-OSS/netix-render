@@ -138,14 +138,14 @@ def ring_svg(item: RingItem) -> str:
     )
 
 
-def analysis_svg(chart) -> str:
+def analysis_svg(chart, wide: bool = False) -> str:
     """Axes, readable legends and gap-preserving lines for weekly diagnostics."""
     if any(len(series.values) != len(chart.labels) for series in chart.series):
         raise ValueError("Analysis chart labels and series must have equal lengths")
     if chart.kind == "ranked":
         return _ranked_analysis(chart)
-    width, height = 360, 210
-    left, top, right, bottom = 38, 30, 350, 167
+    width, height = (640, 175) if wide else (360, 210)
+    left, top, right, bottom = 38, 30, width - 10, height - 43
     maximum = (
         max(
             (
@@ -218,7 +218,7 @@ def analysis_svg(chart) -> str:
                         f'stroke-width="2.5" />'
                     )
     for i, series in enumerate(chart.series):
-        x = left + i * 150
+        x = left + i * (150 if len(chart.series) <= 2 else 100)
         parts.append(f'<rect x="{x}" y="9" width="14" height="8" fill="{escape(series.color)}" />')
         parts.append(f'<text x="{x + 20}" y="17" font-size="12" fill="#303234">{escape(series.name)}</text>')
     parts.append(f'<text x="{left}" y="{height - 8}" font-size="11" fill="#668398">{escape(chart.unit)}</text></svg>')

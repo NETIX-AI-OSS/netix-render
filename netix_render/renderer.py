@@ -61,8 +61,8 @@ def _hbar(section: HBarChartSection) -> Markup:
     return Markup(charts.hbar_svg(section.rows, section.scale_max))
 
 
-def _analysis(chart: AnalysisChart) -> Markup:
-    return Markup(charts.analysis_svg(chart))
+def _analysis(chart: AnalysisChart, wide: bool = False) -> Markup:
+    return Markup(charts.analysis_svg(chart, wide=wide))
 
 
 def _ring(item: RingItem) -> Markup:
@@ -80,6 +80,7 @@ def environment() -> SandboxedEnvironment:
     )
     env.filters["display_datetime"] = display_datetime
     env.filters["bold_markup"] = bold_markup
+    env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")
     env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring, analysis_chart=_analysis)
     return env
 
@@ -104,13 +105,13 @@ def render_report(
     document = local_document(document)
     if cover_image and not cover_image.startswith(("data:image/jpeg;base64,", "data:image/png;base64,")):
         raise ValueError("Cover images must be embedded JPEG or PNG data URLs.")
-    pages = compose_pages(document)
+    pages = compose_pages(document, compact_sources=layout == "community")
     if layout == "community" and not pages:
         # Apply the same bounded composition to older weekly documents without deep dives.
         paged_document = document.model_copy(
             update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
         )
-        pages = compose_pages(paged_document)
+        pages = compose_pages(paged_document, compact_sources=True)
     return (
         environment()
         .get_template("reports/report_base.html.j2")

@@ -27,6 +27,9 @@
       {% if page.detail %}
       {% set item = page.detail %}
       <p class="detail-lead">{{ item.finding }}</p>
+      {% if item.evidence | selectattr('source', 'hourly_source') | list %}
+        {% for chart in analysis_charts if chart.kind == 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart, true) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}
+      {% endif %}
       <div class="community-columns">
         <section class="evidence-column"><h2>Supporting evidence</h2>
           {% for record in item.evidence %}<div class="evidence-record"><b>{{ record.label }}</b><p>{{ record.observation }}</p><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></div>{% endfor %}
@@ -39,7 +42,7 @@
       {% elif page.headlines %}
         {% for section in page.sections if section.kind in ['banner', 'kpi_grid'] %}{{ render_section(section) }}{% endfor %}
         <div class="community-columns overview-columns">
-          <section class="overview-evidence">{% if analysis_charts %}{% for chart in analysis_charts %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}{% else %}{% for section in page.sections if section.kind not in ['banner', 'kpi_grid', 'ai_insight', 'footer'] %}{{ render_section(section) }}{% endfor %}{% endif %}</section>
+          <section class="overview-evidence">{% if analysis_charts %}{% for chart in analysis_charts if chart.kind != 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}{% else %}{% for section in page.sections if section.kind not in ['banner', 'kpi_grid', 'ai_insight', 'footer'] %}{{ render_section(section) }}{% endfor %}{% endif %}</section>
           <aside>{% for section in page.sections if section.kind == 'ai_insight' %}{{ render_section(section) }}{% endfor %}
             <h2>Key findings</h2>{% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }}</a>{% endfor %}
           </aside>

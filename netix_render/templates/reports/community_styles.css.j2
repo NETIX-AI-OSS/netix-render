@@ -14,6 +14,8 @@
 .community .ai, .comment { color: #303234; background: #f3f6f9; border: 1px solid #dce5ee; border-inline-start: 3px solid #196796; border-radius: 4px; padding: 12px 14px; font-size: 12px; line-height: 1.5; }
 .community .ai b { color: #196796; }
 .analysis-note { font-size: 10px; color: #5e7b8e; margin: 2px 0 14px; line-height: 1.4; }
+.overview-evidence h2 { margin: 10px 0 5px; }
+.overview-evidence .analysis-note { margin-bottom: 8px; }
 .overview-evidence .twocol { grid-template-columns: 1fr; }
 .overview-columns .headline-link { font-size: 12px; }
 .community-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
@@ -59,12 +61,14 @@
 }
 @page { size: A4; margin: 0; }
 @media print {
-  .community .report-page { min-height: 296mm; padding: 12mm 14mm 10mm; border: 0; }
+  .community .report-page { min-height: 296mm; break-inside: avoid; padding: 12mm 14mm 10mm; border: 0; }
   .community .cover { height: 296mm; padding: 0; }
   .community-columns { grid-template-columns: 1fr 1fr; }
   .community .page-title { font-size: 19px; }
   .community .detail-lead { font-size: 12px; }
-  .community .comment, .community .evidence-record { font-size: 10.5px; }
+  .community .comment, .community .evidence-record { font-size: 10px; line-height: 1.4; }
+  .community .comment { padding: 10px 12px; margin-bottom: 10px; }
+  .community .comment h3 { margin-top: 10px; }
   .community .evidence-record small { font-size: 8px; }
   .community .comment h2 { font-size: 11px; }
   .community .page-foot { margin-top: 16px; }

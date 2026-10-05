@@ -126,3 +126,41 @@ def test_community_layout_paginates_legacy_weekly_document_without_mutation():
     assert 'id="report-page-1"' in html
     assert 'id="report-page-2"' in html
     assert document.model_dump() == before
+
+
+def test_hourly_chart_follows_the_detail_that_cites_its_evidence():
+    from netix_render.schema import AnalysisChart, AnalysisSeries
+
+    document = multipage_document()
+    detail = document.sections[-1].items[0]
+    detail.title = "Pump 2 · Overnight load on Pump 2"
+    detail.evidence[0].source = "data_query:hourly:tag:3"
+    chart = AnalysisChart(
+        kind="line",
+        title="Hourly pump duty",
+        unit="kW",
+        labels=["Mon", "Tue"],
+        series=[AnalysisSeries(name="Pump 2", values=[2, 4], color="#196796")],
+        note="Hourly means.",
+    )
+    before = document.model_dump()
+    html = render_report(document, layout="community", analysis_charts=[chart])
+    summary, detail_page = html.split('id="report-page-2"', 1)
+    assert "Hourly pump duty" not in summary
+    assert "Hourly pump duty" in detail_page
+    assert "2. Overnight load on Pump 2" in detail_page
+    assert document.model_dump() == before
+
+
+def test_compact_planning_keeps_source_metadata_without_spending_layout_budget():
+    document = multipage_document()
+    document.sections = [s for s in document.sections if s.kind != "kpi_grid"]
+    for section in document.sections:
+        if section.kind in ("exceptions", "actions"):
+            section.rows = section.rows[:1]
+            for row in section.rows:
+                if hasattr(row, "source"):
+                    row.source = "source-evidence-" * 120
+    assert not any(p.title == "Issues and coming-week priorities" for p in compose_pages(document))
+    assert any(p.title == "Issues and coming-week priorities" for p in compose_pages(document, compact_sources=True))
+    assert "source-evidence-" in render_report(document, layout="community")

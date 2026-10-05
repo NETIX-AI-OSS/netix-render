@@ -13,7 +13,7 @@ class ReportPage:
     headlines: list[HeadlineDetail] = field(default_factory=list)
 
 
-def compose_pages(document: ReportDocument) -> list[ReportPage]:
+def compose_pages(document: ReportDocument, *, compact_sources: bool = False) -> list[ReportPage]:
     details = next((s for s in document.sections if s.kind == "headline_details"), None)
     if details is None:
         return []
@@ -24,7 +24,7 @@ def compose_pages(document: ReportDocument) -> list[ReportPage]:
     summary: list[ReportSection] = [s for s in document.sections if s.kind in summary_kinds]
     # Site context already appears in the page kicker; avoid repeating it in every headline.
     headlines = [
-        item.model_copy(update={"title": item.title.removeprefix(f"{document.meta.asset.name} · ")})
+        item.model_copy(update={"title": _display_title(item.title, document.meta.asset.name)})
         for item in details.items
     ]
     pages = [ReportPage("Executive summary", summary, headlines=headlines)]
@@ -52,11 +52,22 @@ def compose_pages(document: ReportDocument) -> list[ReportPage]:
         if issues.kind != "exceptions" or actions.kind != "actions":
             continue
         rows = [*issues.rows, *actions.rows]
-        text_size = sum(len(str(value)) for row in rows for value in row.model_dump().values())
-        if len(issues.rows) <= 3 and len(actions.rows) <= 3 and text_size <= 1300:
+        text_size = sum(
+            len(str(value))
+            for row in rows
+            for key, value in row.model_dump().items()
+            if not (compact_sources and key == "source")
+        )
+        if len(issues.rows) <= 3 and len(actions.rows) <= 3 and text_size <= (1600 if compact_sources else 1300):
             previous.title = "Issues and coming-week priorities"
             previous.sections.append(actions)
             pages.pop(index)
     footers = [s for s in document.sections if s.kind == "footer"]
     pages[-1].sections.extend(footers)
     return pages
+
+
+def _display_title(title: str, site: str) -> str:
+    title = title.removeprefix(f"{site} · ")
+    prefix, separator, finding = title.partition(" · ")
+    return finding if separator and prefix in finding else title
