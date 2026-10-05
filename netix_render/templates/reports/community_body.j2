@@ -39,7 +39,7 @@
       {% elif page.headlines %}
         {% for section in page.sections if section.kind in ['banner', 'kpi_grid'] %}{{ render_section(section) }}{% endfor %}
         <div class="community-columns overview-columns">
-          <section class="overview-evidence">{% for section in page.sections if section.kind not in ['banner', 'kpi_grid', 'ai_insight', 'footer'] %}{{ render_section(section) }}{% endfor %}</section>
+          <section class="overview-evidence">{% if analysis_charts %}{% for chart in analysis_charts %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}{% else %}{% for section in page.sections if section.kind not in ['banner', 'kpi_grid', 'ai_insight', 'footer'] %}{{ render_section(section) }}{% endfor %}{% endif %}</section>
           <aside>{% for section in page.sections if section.kind == 'ai_insight' %}{{ render_section(section) }}{% endfor %}
             <h2>Key findings</h2>{% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }}</a>{% endfor %}
           </aside>

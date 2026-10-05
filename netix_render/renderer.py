@@ -13,7 +13,14 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
-from netix_render.schema import HBarChartSection, HeadlineDetailsSection, ReportDocument, RingItem, TrendChart
+from netix_render.schema import (
+    AnalysisChart,
+    HBarChartSection,
+    HeadlineDetailsSection,
+    ReportDocument,
+    RingItem,
+    TrendChart,
+)
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
@@ -54,6 +61,10 @@ def _hbar(section: HBarChartSection) -> Markup:
     return Markup(charts.hbar_svg(section.rows, section.scale_max))
 
 
+def _analysis(chart: AnalysisChart) -> Markup:
+    return Markup(charts.analysis_svg(chart))
+
+
 def _ring(item: RingItem) -> Markup:
     return Markup(charts.ring_svg(item))
 
@@ -69,7 +80,7 @@ def environment() -> SandboxedEnvironment:
     )
     env.filters["display_datetime"] = display_datetime
     env.filters["bold_markup"] = bold_markup
-    env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring)
+    env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring, analysis_chart=_analysis)
     return env
 
 
@@ -83,7 +94,11 @@ def local_document(document: ReportDocument) -> ReportDocument:
 
 
 def render_report(
-    document: ReportDocument, *, layout: Literal["standard", "community"] = "standard", cover_image: str | None = None
+    document: ReportDocument,
+    *,
+    layout: Literal["standard", "community"] = "standard",
+    cover_image: str | None = None,
+    analysis_charts: list[AnalysisChart] | None = None,
 ) -> str:
     """Render the canonical web report for a validated Report Document."""
     document = local_document(document)
@@ -99,7 +114,9 @@ def render_report(
     return (
         environment()
         .get_template("reports/report_base.html.j2")
-        .render(doc=document, pages=pages, layout=layout, cover_image=cover_image)
+        .render(
+            doc=document, pages=pages, layout=layout, cover_image=cover_image, analysis_charts=analysis_charts or []
+        )
     )
 
 
