@@ -140,6 +140,7 @@ def test_analysis_line_keeps_missing_hours_as_gaps_and_escapes_labels():
 
 def test_analysis_chart_rejects_mismatched_axis_lengths():
     import pytest
+
     from netix_render.charts import analysis_svg
     from netix_render.schema import AnalysisChart
 

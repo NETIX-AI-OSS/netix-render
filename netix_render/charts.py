@@ -210,8 +210,8 @@ def analysis_svg(chart) -> str:
                 paths.append(path)
             for segment in paths:
                 if len(segment) == 1:
-                    x, y = segment[0][1:].split(",")
-                    parts.append(f'<circle cx="{x}" cy="{y}" r="2.5" fill="{escape(series.color)}" />')
+                    circle_x, circle_y = segment[0][1:].split(",")
+                    parts.append(f'<circle cx="{circle_x}" cy="{circle_y}" r="2.5" fill="{escape(series.color)}" />')
                 else:
                     parts.append(
                         f'<path d="{" ".join(segment)}" fill="none" stroke="{escape(series.color)}" '
