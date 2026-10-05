@@ -164,3 +164,20 @@ def test_compact_planning_keeps_source_metadata_without_spending_layout_budget()
     assert not any(p.title == "Issues and coming-week priorities" for p in compose_pages(document))
     assert any(p.title == "Issues and coming-week priorities" for p in compose_pages(document, compact_sources=True))
     assert "source-evidence-" in render_report(document, layout="community")
+
+
+def test_community_asset_links_are_clickable_escaped_and_do_not_mutate_document():
+    document = multipage_document()
+    before = document.model_dump()
+    url = "https://viz.example.com/assets/3?from=100&to=200"
+    html = render_report(document, layout="community", source_links={"tag:3": [{"url": url, "label": "Pump <2>"}]})
+    assert 'href="https://viz.example.com/assets/3?from=100&amp;to=200"' in html
+    assert "Pump &lt;2&gt; · View in Viz" in html
+    assert document.model_dump() == before
+
+
+def test_report_links_reject_executable_urls():
+    import pytest
+
+    with pytest.raises(ValueError, match="HTTP"):
+        render_report(multipage_document(), source_links={"tag:3": [{"url": "javascript:alert(1)", "label": "Unsafe"}]})

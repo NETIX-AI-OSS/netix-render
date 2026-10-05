@@ -27,12 +27,13 @@
       {% if page.detail %}
       {% set item = page.detail %}
       <p class="detail-lead">{{ item.finding }}</p>
+      <div class="asset-links">{% for link in links_for(item.evidence | map(attribute="source") | join(";")) %}<a href="{{ link.url }}">{{ link.label }} · View in Viz ↗</a>{% endfor %}</div>
       {% if item.evidence | selectattr('source', 'hourly_source') | list %}
         {% for chart in analysis_charts if chart.kind == 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart, true) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}
       {% endif %}
       <div class="community-columns">
         <section class="evidence-column"><h2>Supporting evidence</h2>
-          {% for record in item.evidence %}<div class="evidence-record"><b>{{ record.label }}</b><p>{{ record.observation }}</p><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></div>{% endfor %}
+          {% for record in item.evidence %}<div class="evidence-record"><b>{{ record.label }}</b><p>{{ record.observation }}</p><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small>{% for link in links_for(record.source) %}<a class="evidence-link" href="{{ link.url }}">{{ link.label }} · View in Viz ↗</a>{% endfor %}</div>{% endfor %}
         </section>
         <aside class="comment-column">
           <div class="comment"><h2>Comment · operational impact</h2><p>{{ item.impact }}</p><h3>What remains uncertain</h3><p>{{ item.uncertainty }}</p></div>
@@ -44,7 +45,7 @@
         <div class="community-columns overview-columns">
           <section class="overview-evidence">{% if analysis_charts %}{% for chart in analysis_charts if chart.kind != 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}{% else %}{% for section in page.sections if section.kind not in ['banner', 'kpi_grid', 'ai_insight', 'footer'] %}{{ render_section(section) }}{% endfor %}{% endif %}</section>
           <aside>{% for section in page.sections if section.kind == 'ai_insight' %}{{ render_section(section) }}{% endfor %}
-            <h2>Key findings</h2>{% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }}</a>{% endfor %}
+            <h2>Key findings</h2>{% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }}</a><div class="asset-links">{% for link in links_for(item.evidence | map(attribute="source") | join(";")) %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}</div>{% endfor %}
           </aside>
         </div>
       {% else %}

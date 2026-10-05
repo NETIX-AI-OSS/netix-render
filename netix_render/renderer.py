@@ -5,6 +5,7 @@ from datetime import datetime
 from functools import cache
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlsplit
 
 import css_inline
 from jinja2 import FileSystemLoader
@@ -100,11 +101,37 @@ def render_report(
     layout: Literal["standard", "community"] = "standard",
     cover_image: str | None = None,
     analysis_charts: list[AnalysisChart] | None = None,
+    source_links: dict[str, list[dict[str, str]]] | None = None,
 ) -> str:
     """Render the canonical web report for a validated Report Document."""
     document = local_document(document)
     if cover_image and not cover_image.startswith(("data:image/jpeg;base64,", "data:image/png;base64,")):
         raise ValueError("Cover images must be embedded JPEG or PNG data URLs.")
+    validated_links: dict[str, list[dict[str, str]]] = {}
+    for source, links in (source_links or {}).items():
+        validated_links[source] = []
+        for link in links:
+            url = link["url"]
+            parsed = urlsplit(url)
+            if (
+                parsed.scheme not in {"http", "https"}
+                or not parsed.netloc
+                or parsed.username
+                or parsed.password
+                or any(ord(char) < 32 for char in url)
+            ):
+                raise ValueError("Report links must be HTTP(S) URLs without credentials or control characters.")
+            validated_links[source].append({"url": url, "label": link["label"]})
+
+    def links_for(sources):
+        result, seen = [], set()
+        for source in sources.split(";"):
+            for link in validated_links.get(source.strip(), []):
+                if link["url"] not in seen:
+                    result.append(link)
+                    seen.add(link["url"])
+        return result
+
     pages = compose_pages(document, compact_sources=layout == "community")
     if layout == "community" and not pages:
         # Apply the same bounded composition to older weekly documents without deep dives.
@@ -116,7 +143,12 @@ def render_report(
         environment()
         .get_template("reports/report_base.html.j2")
         .render(
-            doc=document, pages=pages, layout=layout, cover_image=cover_image, analysis_charts=analysis_charts or []
+            doc=document,
+            pages=pages,
+            layout=layout,
+            cover_image=cover_image,
+            analysis_charts=analysis_charts or [],
+            links_for=links_for,
         )
     )
 
