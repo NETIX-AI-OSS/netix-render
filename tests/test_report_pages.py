@@ -181,3 +181,16 @@ def test_report_links_reject_executable_urls():
 
     with pytest.raises(ValueError, match="HTTP"):
         render_report(multipage_document(), source_links={"tag:3": [{"url": "javascript:alert(1)", "label": "Unsafe"}]})
+
+
+def test_action_source_links_reach_the_table_macro():
+    document = multipage_document()
+    action = next(section for section in document.sections if section.kind == "actions")
+    action.rows[0].source = "tag:3; tag:4"
+    html = render_report(
+        document,
+        layout="community",
+        source_links={"tag:3": [{"url": "https://viz.example.com/assets/3", "label": "Pump 3"}]},
+    )
+    table = html.split('data-source="tag:3; tag:4"', 1)[1]
+    assert 'href="https://viz.example.com/assets/3"' in table
