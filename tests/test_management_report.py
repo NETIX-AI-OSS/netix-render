@@ -85,3 +85,10 @@ def test_daily_cycle_chart_highlights_validated_focus_index():
     chart.focus_index = 2
     with pytest.raises(ValueError, match="existing label"):
         analysis_svg(chart)
+
+
+def test_evidence_precision_keeps_timestamps_and_original_document_intact():
+    from netix_render.renderer import evidence_text
+
+    assert evidence_text("-1.5295 kW · quality ok") == "-1.53 kW"
+    assert evidence_text("2026-10-04T17:18:31.337325Z") == "2026-10-04T17:18:31.337325Z"

@@ -7,7 +7,7 @@
   <p class="takeaway">{{ item.finding }}</p>
   {{ asset_links(item) }}
   <div class="finding-grid">
-    <div><h3>Evidence</h3>{% for record in item.evidence %}<p class="compact-evidence" data-source="{{ record.source }}"><b>{{ record.label }}</b><br>{{ record.observation }}</p>{% endfor %}</div>
+    <div><h3>Evidence</h3>{% for record in item.evidence %}<p class="compact-evidence" data-source="{{ record.source }}"><b>{{ record.label }}</b><br>{{ record.observation | evidence_text }}</p>{% endfor %}</div>
     <aside class="comment"><h3>Management implication</h3><p>{{ item.impact }}</p><h3>Next step · {{ item.owner }}</h3><p>{{ item.action }}</p><p class="limitation">{{ item.uncertainty | replace('WARNING: ', '') }}</p></aside>
   </div>
 </section>
@@ -27,7 +27,7 @@
   <h2>{{ item.title | replace(doc.meta.asset.name ~ ' · ', '') }}</h2>
   <p class="takeaway">{{ item.finding }}</p>{{ asset_links(item) }}
   {% for chart in analysis_charts if chart.kind == 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart, true) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}
-  <div class="finding-grid"><section><h3>Measured evidence</h3>{% for record in item.evidence %}<p class="compact-evidence"><b>{{ record.label }}</b><br>{{ record.observation }}</p>{% endfor %}</section><aside class="comment"><h3>Operating implication</h3><p>{{ item.impact }}</p><h3>Required check · {{ item.owner }}</h3><p>{{ item.action }}</p><p class="limitation">{{ item.uncertainty | replace('WARNING: ', '') }}</p></aside></div>
+  <div class="finding-grid"><section><h3>Measured evidence</h3>{% for record in item.evidence %}<p class="compact-evidence"><b>{{ record.label }}</b><br>{{ record.observation | evidence_text }}</p>{% endfor %}</section><aside class="comment"><h3>Operating implication</h3><p>{{ item.impact }}</p><h3>Required check · {{ item.owner }}</h3><p>{{ item.action }}</p><p class="limitation">{{ item.uncertainty | replace('WARNING: ', '') }}</p></aside></div>
 {% elif page.title == 'Supporting measurements' %}
   {% for section in page.sections %}{{ render_section(section) }}{% endfor %}
 {% elif page.title == 'Priorities for the coming week' %}

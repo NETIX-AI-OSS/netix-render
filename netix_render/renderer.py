@@ -42,6 +42,15 @@ def bold_markup(value: str) -> Markup:
     return Markup(BOLD_MARKER_PATTERN.sub(r"<b>\1</b>", escaped))
 
 
+def evidence_text(value: str) -> str:
+    """Readable analog precision; source records retain their original values and timestamps."""
+    return re.sub(
+        r"(?<![\w.])([+−-]?\d+\.\d{3,})(?![\w.])",
+        lambda match: format(float(match.group(1).replace("−", "-")), ".2f"),
+        value.replace(" · quality ok", ""),
+    )
+
+
 def _sparkline(chart: TrendChart, wide: bool) -> Markup:
     width, height = (640, 136) if wide else (330, 126)
     return Markup(
@@ -81,6 +90,7 @@ def environment() -> SandboxedEnvironment:
     )
     env.filters["display_datetime"] = display_datetime
     env.filters["bold_markup"] = bold_markup
+    env.filters["evidence_text"] = evidence_text
     env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")
     env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring, analysis_chart=_analysis)
     return env
