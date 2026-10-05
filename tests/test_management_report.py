@@ -92,3 +92,13 @@ def test_evidence_precision_keeps_timestamps_and_original_document_intact():
 
     assert evidence_text("-1.5295 kW · quality ok") == "-1.53 kW"
     assert evidence_text("2026-10-04T17:18:31.337325Z") == "2026-10-04T17:18:31.337325Z"
+
+
+def test_composite_measurements_show_means_without_repeating_ranges():
+    from netix_render.renderer import evidence_text
+
+    source = "Room: Hourly mean readings: minimum 21.00, maximum 26.00, mean 24.00 Degrees Celsius. "
+    source += "Setpoint: Hourly mean readings: minimum 22.00, maximum 22.00, mean 22.00 Degrees Celsius."
+    result = evidence_text(source)
+    assert "mean 24.00 °C" in result and "mean 22.00 °C" in result
+    assert "minimum" not in result

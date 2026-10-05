@@ -44,6 +44,10 @@ def bold_markup(value: str) -> Markup:
 
 def evidence_text(value: str) -> str:
     """Readable analog precision; source records retain their original values and timestamps."""
+    if value.count("Hourly mean readings:") > 1:
+        value = re.sub(r"Hourly mean readings: minimum [^,]+, maximum [^,]+, mean ", "mean ", value)
+    value = re.sub(r"\bDegrees Celsius\b", "°C", value)
+    value = re.sub(r"\bKilowatt\b", "kW", value)
     return re.sub(
         r"(?<![\w.])([+−-]?\d+\.\d{3,})(?![\w.])",
         lambda match: format(float(match.group(1).replace("−", "-")), ".2f"),
