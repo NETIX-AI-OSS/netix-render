@@ -1,0 +1,39 @@
+{% macro asset_links(item) -%}
+<div class="asset-links">{% for link in links_for(item.evidence | map(attribute="source") | join(";")) %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}</div>
+{%- endmacro %}
+{% macro finding(item) -%}
+<section class="management-finding">
+  <h2>{{ item.title | replace(doc.meta.asset.name ~ ' · ', '') }}</h2>
+  <p class="takeaway">{{ item.finding }}</p>
+  {{ asset_links(item) }}
+  <div class="finding-grid">
+    <div><h3>Evidence</h3>{% for record in item.evidence %}<p class="compact-evidence" data-source="{{ record.source }}"><b>{{ record.label }}</b><br>{{ record.observation }}</p>{% endfor %}</div>
+    <aside class="comment"><h3>Management implication</h3><p>{{ item.impact }}</p><h3>Next step · {{ item.owner }}</h3><p>{{ item.action }}</p><p class="limitation">{{ item.uncertainty | replace('WARNING: ', '') }}</p></aside>
+  </div>
+</section>
+{%- endmacro %}
+{% if page.title == 'Executive summary' %}
+  <div class="executive-brief">{% for section in page.sections %}<p>{{ section.text | bold_markup }}</p>{% endfor %}</div>
+  <div class="management-metrics">{% for metric in management.metrics %}<div><span>{{ metric.label }}</span><strong>{{ metric.value }}</strong><small>{{ metric.note }}</small></div>{% endfor %}</div>
+  <h2>Where the alarm workload sits</h2>
+  <table class="family-table"><thead><tr><th>Alarm family</th><th>Events</th><th>Equipment</th><th>Share</th></tr></thead><tbody>{% for row in management.families %}<tr><td>{{ row.label }}</td><td>{{ row.count }}</td><td>{{ row.equipment_count }}</td><td>{{ '%.1f' | format(row.share_pct) }}%</td></tr>{% endfor %}</tbody></table>
+  <div class="management-chart-row">
+    <section>{% for chart in analysis_charts if chart.kind == 'stacked' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}{% endfor %}<p class="analysis-note">Daily counts of raised events. Current open alarms are shown separately above.</p></section>
+    <aside class="comment"><h3>What changed since last week</h3>{% if management.comparison.complete %}<p>{{ management.comparison.evidence[0].observation }}</p>{% for row in management.comparison.rows[:3] %}<p><b>{{ row.label }}</b><br>{{ row.previous }} → {{ row.current }} events ({{ '%+d' | format(row.change) }}).</p>{% endfor %}{% else %}<p>A complete previous-period comparison is unavailable. No improvement or deterioration is inferred.</p>{% endif %}</aside>
+  </div>
+  <p class="coverage-note">{{ management.coverage }}</p>
+{% elif page.detail %}
+  {% set item = page.detail %}
+  <h2>{{ item.title | replace(doc.meta.asset.name ~ ' · ', '') }}</h2>
+  <p class="takeaway">{{ item.finding }}</p>{{ asset_links(item) }}
+  {% for chart in analysis_charts if chart.kind == 'line' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart, true) }}<p class="analysis-note">{{ chart.note }}</p>{% endfor %}
+  <div class="finding-grid"><section><h3>Measured evidence</h3>{% for record in item.evidence %}<p class="compact-evidence"><b>{{ record.label }}</b><br>{{ record.observation }}</p>{% endfor %}</section><aside class="comment"><h3>Operating implication</h3><p>{{ item.impact }}</p><h3>Required check · {{ item.owner }}</h3><p>{{ item.action }}</p><p class="limitation">{{ item.uncertainty | replace('WARNING: ', '') }}</p></aside></div>
+{% elif page.title == 'Supporting measurements' %}
+  {% for section in page.sections %}{{ render_section(section) }}{% endfor %}
+{% elif page.title == 'Priorities for the coming week' %}
+  <p class="takeaway">Recommended work for the weekly planning meeting. Owners are proposed disciplines; confirm assignment and dates in the work-order system.</p>
+  <table class="action-register"><thead><tr><th>Priority / owner</th><th>Action and completion evidence</th></tr></thead><tbody>{% for item in page.headlines %}<tr><td><b>{{ loop.index }} · {{ item.owner }}</b><p>Proposed: this week</p></td><td><b>{{ item.action }}</b>{{ asset_links(item) }}<ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol></td></tr>{% endfor %}</tbody></table>
+  <div class="coverage-note"><b>How to use this report</b><p>Alarm events and their raised-signal durations describe monitoring activity, not verified failures, downtime or completed repairs. Current alarm counts are a collection-time snapshot. Telemetry charts show measured power; savings require an approved operating baseline.</p><p>{{ management.coverage }}</p></div>
+{% else %}
+  {% for item in page.headlines %}{{ finding(item) }}{% endfor %}
+{% endif %}

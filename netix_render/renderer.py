@@ -102,6 +102,7 @@ def render_report(
     cover_image: str | None = None,
     analysis_charts: list[AnalysisChart] | None = None,
     source_links: dict[str, list[dict[str, str]]] | None = None,
+    management: dict | None = None,
 ) -> str:
     """Render the canonical web report for a validated Report Document."""
     document = local_document(document)
@@ -139,6 +140,11 @@ def render_report(
             update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
         )
         pages = compose_pages(paged_document, compact_sources=True)
+    if management and layout == "community":
+        from netix_render.management import management_pages, validate_context
+
+        management = validate_context(management)
+        pages = management_pages(document)
     return (
         environment()
         .get_template("reports/report_base.html.j2")
@@ -149,6 +155,7 @@ def render_report(
             cover_image=cover_image,
             analysis_charts=analysis_charts or [],
             links_for=links_for,
+            management=management,
         )
     )
 

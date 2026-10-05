@@ -24,7 +24,9 @@
     <header class="community-header"><strong>{{ doc.meta.logo_line or 'Facilities management' }}</strong><span>{{ doc.meta.asset.name }} · {{ doc.meta.period.label }}</span></header>
     <div class="page-body">
       <h1 class="page-title">{{ loop.index }}. {{ page.title }}</h1>
-      {% if page.detail %}
+      {% if management %}
+        {% include "reports/management_body.j2" %}
+      {% elif page.detail %}
       {% set item = page.detail %}
       <p class="detail-lead">{{ item.finding }}</p>
       <div class="asset-links">{% for link in links_for(item.evidence | map(attribute="source") | join(";")) %}<a href="{{ link.url }}">{{ link.label }} · View in Viz ↗</a>{% endfor %}</div>
