@@ -32,7 +32,7 @@
   {% for section in page.sections %}{{ render_section(section) }}{% endfor %}
 {% elif page.title == 'Priorities for the coming week' %}
   <p class="takeaway">Recommended work for the weekly planning meeting. Owners are proposed disciplines; confirm assignment and dates in the work-order system.</p>
-  <table class="action-register"><thead><tr><th>Priority / owner</th><th>Action and completion evidence</th></tr></thead><tbody>{% for item in page.headlines %}<tr><td><b>{{ loop.index }} · {{ item.owner }}</b><p>Proposed: this week</p></td><td><b>{{ item.action }}</b>{{ asset_links(item) }}<ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol></td></tr>{% endfor %}</tbody></table>
+  <table class="action-register"><thead><tr><th>Priority / owner</th><th>Action and completion evidence</th></tr></thead><tbody>{% for section in page.sections %}{% for row in section.rows %}<tr><td><b>{{ loop.index }} · {{ row.owner }}</b><p>Proposed: {{ row.due }}</p></td><td><b>{{ row.action }}</b><div class="asset-links">{% for link in action_links(row) %}<a href="{{ link.url }}">{{ link.label }} ↗</a>{% endfor %}</div></td></tr>{% endfor %}{% endfor %}</tbody></table>
   <div class="coverage-note"><b>How to use this report</b><p>Alarm events and their raised-signal durations describe monitoring activity, not verified failures, downtime or completed repairs. Current alarm counts are a collection-time snapshot. Telemetry charts show measured power; savings require an approved operating baseline.</p><p>{{ management.coverage }}</p></div>
 {% else %}
   {% for item in page.headlines %}{{ finding(item) }}{% endfor %}

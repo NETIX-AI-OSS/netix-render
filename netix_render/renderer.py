@@ -133,6 +133,18 @@ def render_report(
                     seen.add(link["url"])
         return result
 
+    def action_links(row):
+        # Exact collected display names only; never infer an equipment ID from prose.
+        matched = []
+        seen = set()
+        for links in validated_links.values():
+            for link in links:
+                pattern = r"(?<![\w])" + re.escape(link["label"]) + r"(?![\w])"
+                if link["url"] not in seen and re.search(pattern, row.action, re.IGNORECASE):
+                    matched.append(link)
+                    seen.add(link["url"])
+        return matched or links_for(row.source or "")
+
     pages = compose_pages(document, compact_sources=layout == "community")
     if layout == "community" and not pages:
         # Apply the same bounded composition to older weekly documents without deep dives.
@@ -155,6 +167,7 @@ def render_report(
             cover_image=cover_image,
             analysis_charts=analysis_charts or [],
             links_for=links_for,
+            action_links=action_links,
             management=management,
         )
     )

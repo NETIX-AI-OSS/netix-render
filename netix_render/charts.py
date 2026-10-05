@@ -172,6 +172,12 @@ def analysis_svg(chart, wide: bool = False) -> str:
         )
     count = len(chart.labels)
     pitch = (right - left) / max(count, 1)
+    if chart.focus_index is not None:
+        if chart.focus_index >= count:
+            raise ValueError("Analysis focus must reference an existing label")
+        x = left + (chart.focus_index + 0.5) * pitch
+        parts.append(f'<rect x="{x - pitch / 2}" y="{top}" width="{pitch}" height="{bottom - top}" fill="#edf1f5" />')
+        parts.append(f'<line x1="{x}" x2="{x}" y1="{top}" y2="{bottom}" stroke="#5e7b8e" stroke-dasharray="3 3" />')
     for i, label in enumerate(chart.labels):
         if count <= 7 or i % max(1, count // 7) == 0:
             x = left + (i + 0.5) * pitch
