@@ -62,3 +62,30 @@ def test_legacy_report_keeps_continuous_layout():
     document = load_document("synthetic_daily")
     assert compose_pages(document) == []
     assert 'class="report-page"' not in render_report(document)
+
+
+def test_short_weekly_report_keeps_trends_and_action_plan_compact():
+    document = multipage_document()
+    document.sections = [s for s in document.sections if s.kind != "kpi_grid"]
+    for section in document.sections:
+        if section.kind in ("exceptions", "actions"):
+            section.rows = section.rows[:1]
+    before = document.model_dump()
+    pages = compose_pages(document)
+    assert "trend_pair" in {s.kind for s in pages[0].sections}
+    plan = next(p for p in pages if p.title == "Issues and coming-week priorities")
+    assert [s.kind for s in plan.sections if s.kind != "footer"] == ["exceptions", "actions"]
+    assert document.model_dump() == before
+    assert {s.kind for p in pages for s in p.sections} == {
+        s.kind for s in document.sections if s.kind != "headline_details"
+    }
+
+
+def test_dense_planning_register_keeps_separate_pages():
+    document = multipage_document()
+    issues = next(s for s in document.sections if s.kind == "exceptions")
+    actions = next(s for s in document.sections if s.kind == "actions")
+    issues.rows = [issues.rows[0].model_copy(update={"assessment": "Evidence qualification. " * 40})] * 3
+    actions.rows = [actions.rows[0]] * 3
+    pages = compose_pages(document)
+    assert not any(p.title == "Issues and coming-week priorities" for p in pages)
