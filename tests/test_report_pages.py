@@ -89,3 +89,40 @@ def test_dense_planning_register_keeps_separate_pages():
     actions.rows = [actions.rows[0]] * 3
     pages = compose_pages(document)
     assert not any(p.title == "Issues and coming-week priorities" for p in pages)
+
+
+def test_community_layout_preserves_evidence_uncertainty_and_actions():
+    document = multipage_document()
+    before = document.model_dump()
+    rendered = render_report(document, layout="community")
+    for detail in document.sections[-1].items:
+        for value in (detail.finding, detail.impact, detail.uncertainty, detail.action, detail.owner, *detail.checks):
+            assert value in rendered
+        for evidence in detail.evidence:
+            assert evidence.evidence_id in rendered and evidence.source in rendered
+    assert 'id="report-cover"' in rendered
+    assert 'href="#report-page-2"' in rendered
+    assert "Comment · operational impact" in rendered
+    assert document.model_dump() == before
+
+
+def test_community_cover_rejects_external_images_and_escapes_branding():
+    import pytest
+
+    document = multipage_document()
+    document.meta.logo_line = '<script>brand</script>'
+    html = render_report(document, layout="community", cover_image="data:image/jpeg;base64,YQ==")
+    assert '<script>brand</script>' not in html
+    assert '&lt;script&gt;brand&lt;/script&gt;' in html
+    with pytest.raises(ValueError, match="embedded"):
+        render_report(document, layout="community", cover_image="https://example.com/cover.jpg")
+
+
+def test_community_layout_paginates_legacy_weekly_document_without_mutation():
+    document = load_document("synthetic_weekly")
+    before = document.model_dump()
+    html = render_report(document, layout="community")
+    assert 'id="report-cover"' in html
+    assert 'id="report-page-1"' in html
+    assert 'id="report-page-2"' in html
+    assert document.model_dump() == before

@@ -366,6 +366,7 @@
         h2 { break-after: avoid; }
       }
 {% if pages %}{% include "reports/paged_styles.css.j2" %}{% endif %}
+{% if layout == "community" %}{% include "reports/community_styles.css.j2" %}{% endif %}
     </style>
   </head>
   <body>
@@ -385,7 +386,8 @@
         {%- endif %}
 
 {%- endmacro %}
-{% if pages %}{% include "reports/paged_body.j2" %}{% else %}
+{% if layout == "community" and pages %}{% include "reports/community_body.j2" %}
+{% elif pages %}{% include "reports/paged_body.j2" %}{% else %}
     <div class="wrap">
       {{ genbar_c.genbar(doc.meta) }}
       {{ mast_c.mast(doc.meta) }}

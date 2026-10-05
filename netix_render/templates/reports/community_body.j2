@@ -1,0 +1,48 @@
+<main class="report-pages community">
+  <article class="report-page cover" aria-label="Report cover" id="report-cover">
+    {% if cover_image %}<img class="cover-photo" src="{{ cover_image }}" alt="NETIX report cover" />{% endif %}
+    <div class="cover-heading">
+      <div class="cover-kicker">{{ doc.meta.tag_line }}</div>
+      <h1>{{ doc.meta.title | replace(doc.meta.asset.name ~ ' — ', '') }}</h1>
+      <p>{{ doc.meta.asset.name }}</p>
+    </div>
+    <div class="cover-panel">
+      <div class="cover-meta">
+        <div><span>Site</span><strong>{{ doc.meta.asset.name }}</strong></div>
+        <div><span>Reporting period</span><strong>{{ doc.meta.period.label }}</strong></div>
+        <div><span>Prepared for</span><strong>{{ doc.meta.logo_line or 'Facilities management team' }}</strong></div>
+        <div><span>Location</span><strong>{{ doc.meta.asset.location or doc.meta.asset.name }}</strong></div>
+        <div><span>Report reference</span><strong>{{ doc.meta.report_id }}</strong></div>
+        <div><span>Generated</span><strong>{{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</strong></div>
+      </div>
+      <div class="cover-contents"><span>Contents</span><ol>{% for page in pages %}<li><a href="#report-page-{{ loop.index }}">{{ page.title }}</a></li>{% endfor %}</ol></div>
+      <p class="cover-source">Weekly findings, supporting evidence and recommended actions. Data availability and uncertainty are stated alongside each finding.</p>
+    </div>
+  </article>
+  {% for page in pages %}
+  <article class="report-page" id="report-page-{{ loop.index }}" aria-label="{{ page.title }}">
+    <header class="community-header"><strong>{{ doc.meta.logo_line or 'Facilities management' }}</strong><span>{{ doc.meta.asset.name }} · {{ doc.meta.period.label }}</span></header>
+    <div class="page-body">
+      <h1 class="page-title">{{ loop.index }}. {{ page.title }}</h1>
+      {% if page.detail %}
+      {% set item = page.detail %}
+      <p class="detail-lead">{{ item.finding }}</p>
+      <div class="community-columns">
+        <section class="evidence-column"><h2>Supporting evidence</h2>
+          {% for record in item.evidence %}<div class="evidence-record"><b>{{ record.label }}</b><p>{{ record.observation }}</p><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></div>{% endfor %}
+        </section>
+        <aside class="comment-column">
+          <div class="comment"><h2>Comment · operational impact</h2><p>{{ item.impact }}</p><h3>What remains uncertain</h3><p>{{ item.uncertainty }}</p></div>
+          <div class="comment"><h2>Recommended action</h2><p>{{ item.action }}</p><p class="owner"><b>Owner:</b> {{ item.owner }}</p><h3>Investigation steps</h3><ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol></div>
+        </aside>
+      </div>
+      {% else %}
+        {% for section in page.sections if section.kind != 'footer' %}{{ render_section(section) }}{% endfor %}
+        {% if page.headlines %}<h2>Key findings</h2>{% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }}</a>{% endfor %}{% endif %}
+      {% endif %}
+      {% for section in page.sections if section.kind == 'footer' %}{{ render_section(section) }}{% endfor %}
+    </div>
+    <footer class="page-foot"><span>{{ doc.meta.logo_line or 'Facilities management report' }} · {{ doc.meta.report_id }}</span><span>Page {{ loop.index + 1 }} of {{ pages | length + 1 }}</span></footer>
+  </article>
+  {% endfor %}
+</main>

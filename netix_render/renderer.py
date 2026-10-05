@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from functools import cache
 from pathlib import Path
+from typing import Literal
 
 import css_inline
 from jinja2 import FileSystemLoader
@@ -12,7 +13,7 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
-from netix_render.schema import HBarChartSection, ReportDocument, RingItem, TrendChart
+from netix_render.schema import HBarChartSection, HeadlineDetailsSection, ReportDocument, RingItem, TrendChart
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
@@ -81,10 +82,23 @@ def local_document(document: ReportDocument) -> ReportDocument:
     return document.model_copy(update={"meta": meta})
 
 
-def render_report(document: ReportDocument) -> str:
+def render_report(
+    document: ReportDocument, *, layout: Literal["standard", "community"] = "standard", cover_image: str | None = None
+) -> str:
     """Render the canonical web report for a validated Report Document."""
     document = local_document(document)
-    return environment().get_template("reports/report_base.html.j2").render(doc=document, pages=compose_pages(document))
+    if cover_image and not cover_image.startswith(("data:image/jpeg;base64,", "data:image/png;base64,")):
+        raise ValueError("Cover images must be embedded JPEG or PNG data URLs.")
+    pages = compose_pages(document)
+    if layout == "community" and not pages:
+        # Apply the same bounded composition to older weekly documents without deep dives.
+        paged_document = document.model_copy(
+            update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
+        )
+        pages = compose_pages(paged_document)
+    return environment().get_template("reports/report_base.html.j2").render(
+        doc=document, pages=pages, layout=layout, cover_image=cover_image
+    )
 
 
 def render_email(document: ReportDocument) -> str:
