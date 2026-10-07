@@ -6,7 +6,7 @@
 {% import "components/exceptions_table.j2" as exceptions_c -%}
 {% import "components/trend_pair.j2" as trend_c -%}
 {% import "components/ai_box.j2" as ai_c -%}
-{% import "components/actions_table.j2" as actions_c -%}
+{% import "components/actions_table.j2" as actions_c with context -%}
 {% import "components/data_table.j2" as table_c -%}
 {% import "components/twocol.j2" as twocol_c -%}
 {% import "components/hbar_chart.j2" as hbar_c -%}
@@ -366,6 +366,7 @@
         h2 { break-after: avoid; }
       }
 {% if pages %}{% include "reports/paged_styles.css.j2" %}{% endif %}
+{% if layout == "community" %}{% include "reports/community_styles.css.j2" %}{% endif %}
     </style>
   </head>
   <body>
@@ -376,7 +377,7 @@
         {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section) }}
         {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section) }}
         {%- elif section.kind == "ai_insight" %}{{ ai_c.ai_box(section) }}
-        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section) }}
+        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section, layout == "community") }}
         {%- elif section.kind == "data_table" %}{{ table_c.data_table(section) }}
         {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section) }}
         {%- elif section.kind == "hbar_chart" %}{{ hbar_c.hbar_chart(section) }}
@@ -385,7 +386,8 @@
         {%- endif %}
 
 {%- endmacro %}
-{% if pages %}{% include "reports/paged_body.j2" %}{% else %}
+{% if layout == "community" and pages %}{% include "reports/community_body.j2" %}
+{% elif pages %}{% include "reports/paged_body.j2" %}{% else %}
     <div class="wrap">
       {{ genbar_c.genbar(doc.meta) }}
       {{ mast_c.mast(doc.meta) }}

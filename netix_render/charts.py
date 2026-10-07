@@ -136,3 +136,114 @@ def ring_svg(item: RingItem) -> str:
         f'<text x="100" y="60" font-size="10" fill="#7585a8">{escape(item.sublabel)}</text>'
         "</svg>"
     )
+
+
+def analysis_svg(chart, wide: bool = False) -> str:
+    """Axes, readable legends and gap-preserving lines for weekly diagnostics."""
+    if any(len(series.values) != len(chart.labels) for series in chart.series):
+        raise ValueError("Analysis chart labels and series must have equal lengths")
+    if chart.kind == "ranked":
+        return _ranked_analysis(chart)
+    width, height = (640, 175) if wide else (360, 210)
+    left, top, right, bottom = 38, 30, width - 10, height - 43
+    maximum = (
+        max(
+            (
+                sum((series.values[i] or 0) for series in chart.series)
+                if chart.kind == "stacked"
+                else max((series.values[i] or 0) for series in chart.series)
+                for i in range(len(chart.labels))
+            ),
+            default=0,
+        )
+        or 1
+    )
+    maximum *= 1.1
+    parts = [
+        f'<svg class="chart" role="img" aria-label="{escape(chart.title)}" viewBox="0 0 {width} {height}" {SVG_XMLNS}>'
+    ]
+    for i in range(5):
+        y = bottom - (bottom - top) * i / 4
+        value = maximum * i / 4
+        parts.append(f'<line x1="{left}" x2="{right}" y1="{y}" y2="{y}" stroke="#dce5ee" />')
+        parts.append(
+            f'<text x="{left - 8}" y="{y + 4}" text-anchor="end" font-size="12" fill="#668398">'
+            f"{value_caption(value, 0)}</text>"
+        )
+    count = len(chart.labels)
+    pitch = (right - left) / max(count, 1)
+    if chart.focus_index is not None:
+        if chart.focus_index >= count:
+            raise ValueError("Analysis focus must reference an existing label")
+        x = left + (chart.focus_index + 0.5) * pitch
+        parts.append(f'<rect x="{x - pitch / 2}" y="{top}" width="{pitch}" height="{bottom - top}" fill="#edf1f5" />')
+        parts.append(f'<line x1="{x}" x2="{x}" y1="{top}" y2="{bottom}" stroke="#5e7b8e" stroke-dasharray="3 3" />')
+    for i, label in enumerate(chart.labels):
+        if count <= 7 or i % max(1, count // 7) == 0:
+            x = left + (i + 0.5) * pitch
+            parts.append(
+                f'<text x="{x}" y="{bottom + 18}" text-anchor="middle" font-size="11" fill="#668398">'
+                f"{escape(label)}</text>"
+            )
+    if chart.kind == "stacked":
+        for i in range(count):
+            accumulated = 0
+            for series in chart.series:
+                value = series.values[i]
+                if value is None:
+                    continue
+                h = value / maximum * (bottom - top)
+                y = bottom - (accumulated + value) / maximum * (bottom - top)
+                parts.append(
+                    f'<rect x="{left + (i + 0.15) * pitch}" y="{y}" width="{pitch * 0.7}" height="{h}" '
+                    f'fill="{escape(series.color)}" />'
+                )
+                accumulated += value
+    else:
+        for series in chart.series:
+            paths: list[list[str]] = []
+            path: list[str] = []
+            for i, value in enumerate(series.values):
+                if value is None:
+                    if path:
+                        paths.append(path)
+                    path = []
+                    continue
+                x = left + (i + 0.5) * pitch
+                y = bottom - value / maximum * (bottom - top)
+                path.append(f"{'L' if path else 'M'}{x:.2f},{y:.2f}")
+            if path:
+                paths.append(path)
+            for segment in paths:
+                if len(segment) == 1:
+                    circle_x, circle_y = segment[0][1:].split(",")
+                    parts.append(f'<circle cx="{circle_x}" cy="{circle_y}" r="2.5" fill="{escape(series.color)}" />')
+                else:
+                    parts.append(
+                        f'<path d="{" ".join(segment)}" fill="none" stroke="{escape(series.color)}" '
+                        f'stroke-width="2.5" />'
+                    )
+    for i, series in enumerate(chart.series):
+        x = left + i * (150 if len(chart.series) <= 2 else 100)
+        parts.append(f'<rect x="{x}" y="9" width="14" height="8" fill="{escape(series.color)}" />')
+        parts.append(f'<text x="{x + 20}" y="17" font-size="12" fill="#303234">{escape(series.name)}</text>')
+    parts.append(f'<text x="{left}" y="{height - 8}" font-size="11" fill="#668398">{escape(chart.unit)}</text></svg>')
+    return "".join(parts)
+
+
+def _ranked_analysis(chart) -> str:
+    values = chart.series[0].values
+    maximum = max((value or 0 for value in values), default=0) or 1
+    height = len(values) * 44 + 28
+    parts = [
+        f'<svg class="chart" role="img" aria-label="{escape(chart.title)}" viewBox="0 0 360 {height}" {SVG_XMLNS}>'
+    ]
+    for i, (label, value) in enumerate(zip(chart.labels, values, strict=True)):
+        y = i * 44 + 8
+        parts.append(f'<text x="0" y="{y + 12}" font-size="12" fill="#303234">{escape(label)}</text>')
+        w = (value or 0) / maximum * 300
+        parts.append(f'<rect x="0" y="{y + 18}" width="{w}" height="13" fill="{escape(chart.series[0].color)}" />')
+        caption = "—" if value is None else value_caption(value, 0)
+        parts.append(f'<text x="{w + 8}" y="{y + 29}" font-size="12" fill="#196796">{escape(caption)}</text>')
+    parts.append("</svg>")
+    return "".join(parts)

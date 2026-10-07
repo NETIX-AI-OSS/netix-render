@@ -118,3 +118,39 @@ def test_ring_dash_matches_percentage():
     full = ring_svg(RingItem(pct=100, value_label="100%", label="Safety", sublabel="LPG", status="info"))
     assert 'stroke-dasharray="214 214"' in full
     assert 'stroke="#2e5bd7"' in full
+
+
+def test_analysis_line_keeps_missing_hours_as_gaps_and_escapes_labels():
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="line",
+        title="Hourly <power>",
+        unit="kW",
+        labels=["Mon", "Tue", "Wed"],
+        series=[{"name": "Pump <A>", "values": [12, None, 9], "color": "#196796"}],
+        note="",
+    )
+    svg = analysis_svg(chart)
+    assert "<path " not in svg
+    assert svg.count("<circle ") == 2
+    assert "Pump &lt;A&gt;" in svg and "&lt;power&gt;" in svg
+
+
+def test_analysis_chart_rejects_mismatched_axis_lengths():
+    import pytest
+
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="stacked",
+        title="Alarms",
+        unit="events",
+        labels=["Mon"],
+        series=[{"name": "Info", "values": [1, 2], "color": "#196796"}],
+        note="",
+    )
+    with pytest.raises(ValueError, match="equal lengths"):
+        analysis_svg(chart)

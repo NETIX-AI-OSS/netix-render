@@ -1,7 +1,7 @@
 {% import "components/section_h2.j2" as heading %}
-{% macro actions_table(section) -%}
+{% macro actions_table(section, compact=false) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
-{% set with_source = section.rows | selectattr("source") | list | length > 0 %}
+{% set with_source = not compact and section.rows | selectattr("source") | list | length > 0 %}
 {% if section.rows %}
 <table class="responsive-table">
   <tr>
@@ -12,7 +12,7 @@
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td data-label="Action" class="b">{{ row.action }}</td>
+    <td data-label="Action" class="b"{% if compact %} data-source="{{ row.source or '' }}"{% endif %}>{{ row.action }}{% if links_for is defined %}{% for link in links_for(row.source or "") %}<br /><a class="evidence-link" href="{{ link.url }}">{{ link.label }} · View in Viz ↗</a>{% endfor %}{% endif %}</td>
     <td data-label="Due">{{ row.due }}</td>
     <td data-label="Owner">{{ row.owner }}</td>
     {% if with_source %}<td data-label="Source">{{ row.source or "—" }}</td>{% endif %}

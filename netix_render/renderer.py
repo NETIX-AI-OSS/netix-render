@@ -4,6 +4,8 @@ import re
 from datetime import datetime
 from functools import cache
 from pathlib import Path
+from typing import Literal
+from urllib.parse import urlsplit
 
 import css_inline
 from jinja2 import FileSystemLoader
@@ -12,7 +14,14 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
-from netix_render.schema import HBarChartSection, ReportDocument, RingItem, TrendChart
+from netix_render.schema import (
+    AnalysisChart,
+    HBarChartSection,
+    HeadlineDetailsSection,
+    ReportDocument,
+    RingItem,
+    TrendChart,
+)
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
@@ -31,6 +40,19 @@ def bold_markup(value: str) -> Markup:
     """Escapes value, then applies the only markup AI-insight text may carry: **bold** markers become <b> elements."""
     escaped = str(escape(value))
     return Markup(BOLD_MARKER_PATTERN.sub(r"<b>\1</b>", escaped))
+
+
+def evidence_text(value: str) -> str:
+    """Readable analog precision; source records retain their original values and timestamps."""
+    if value.count("Hourly mean readings:") > 1:
+        value = re.sub(r"Hourly mean readings: minimum [^,]+, maximum [^,]+, mean ", "mean ", value)
+    value = re.sub(r"\bDegrees Celsius\b", "°C", value)
+    value = re.sub(r"\bKilowatt\b", "kW", value)
+    return re.sub(
+        r"(?<![\w.])([+−-]?\d+\.\d{3,})(?![\w.])",
+        lambda match: format(float(match.group(1).replace("−", "-")), ".2f"),
+        value.replace(" · quality ok", ""),
+    )
 
 
 def _sparkline(chart: TrendChart, wide: bool) -> Markup:
@@ -53,6 +75,10 @@ def _hbar(section: HBarChartSection) -> Markup:
     return Markup(charts.hbar_svg(section.rows, section.scale_max))
 
 
+def _analysis(chart: AnalysisChart, wide: bool = False) -> Markup:
+    return Markup(charts.analysis_svg(chart, wide=wide))
+
+
 def _ring(item: RingItem) -> Markup:
     return Markup(charts.ring_svg(item))
 
@@ -68,7 +94,9 @@ def environment() -> SandboxedEnvironment:
     )
     env.filters["display_datetime"] = display_datetime
     env.filters["bold_markup"] = bold_markup
-    env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring)
+    env.filters["evidence_text"] = evidence_text
+    env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")
+    env.globals.update(sparkline=_sparkline, hbar=_hbar, ring=_ring, analysis_chart=_analysis)
     return env
 
 
@@ -81,10 +109,82 @@ def local_document(document: ReportDocument) -> ReportDocument:
     return document.model_copy(update={"meta": meta})
 
 
-def render_report(document: ReportDocument) -> str:
+def render_report(
+    document: ReportDocument,
+    *,
+    layout: Literal["standard", "community"] = "standard",
+    cover_image: str | None = None,
+    analysis_charts: list[AnalysisChart] | None = None,
+    source_links: dict[str, list[dict[str, str]]] | None = None,
+    management: dict | None = None,
+) -> str:
     """Render the canonical web report for a validated Report Document."""
     document = local_document(document)
-    return environment().get_template("reports/report_base.html.j2").render(doc=document, pages=compose_pages(document))
+    if cover_image and not cover_image.startswith(("data:image/jpeg;base64,", "data:image/png;base64,")):
+        raise ValueError("Cover images must be embedded JPEG or PNG data URLs.")
+    validated_links: dict[str, list[dict[str, str]]] = {}
+    for source, links in (source_links or {}).items():
+        validated_links[source] = []
+        for link in links:
+            url = link["url"]
+            parsed = urlsplit(url)
+            if (
+                parsed.scheme not in {"http", "https"}
+                or not parsed.netloc
+                or parsed.username
+                or parsed.password
+                or any(ord(char) < 32 for char in url)
+            ):
+                raise ValueError("Report links must be HTTP(S) URLs without credentials or control characters.")
+            validated_links[source].append({"url": url, "label": link["label"]})
+
+    def links_for(sources):
+        result, seen = [], set()
+        for source in sources.split(";"):
+            for link in validated_links.get(source.strip(), []):
+                if link["url"] not in seen:
+                    result.append(link)
+                    seen.add(link["url"])
+        return result
+
+    def action_links(row):
+        # Exact collected display names only; never infer an equipment ID from prose.
+        matched = []
+        seen = set()
+        for links in validated_links.values():
+            for link in links:
+                pattern = r"(?<![\w])" + re.escape(link["label"]) + r"(?![\w])"
+                if link["url"] not in seen and re.search(pattern, row.action, re.IGNORECASE):
+                    matched.append(link)
+                    seen.add(link["url"])
+        return matched or links_for(row.source or "")
+
+    pages = compose_pages(document, compact_sources=layout == "community")
+    if layout == "community" and not pages:
+        # Apply the same bounded composition to older weekly documents without deep dives.
+        paged_document = document.model_copy(
+            update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
+        )
+        pages = compose_pages(paged_document, compact_sources=True)
+    if management and layout == "community":
+        from netix_render.management import management_pages, validate_context
+
+        management = validate_context(management)
+        pages = management_pages(document)
+    return (
+        environment()
+        .get_template("reports/report_base.html.j2")
+        .render(
+            doc=document,
+            pages=pages,
+            layout=layout,
+            cover_image=cover_image,
+            analysis_charts=analysis_charts or [],
+            links_for=links_for,
+            action_links=action_links,
+            management=management,
+        )
+    )
 
 
 def render_email(document: ReportDocument) -> str:

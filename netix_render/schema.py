@@ -266,3 +266,21 @@ ReportSection = Annotated[
 class ReportDocument(StrictModel):
     meta: ReportMeta
     sections: list[ReportSection]
+
+
+class AnalysisSeries(StrictModel):
+    name: str
+    values: list[float | None] = Field(max_length=200)
+    color: Annotated[str, Field(pattern=HEX_COLOR)]
+
+
+class AnalysisChart(StrictModel):
+    """Computed evidence supplied by the caller, independently of narrative generation."""
+
+    kind: Literal["line", "stacked", "ranked"]
+    title: str
+    unit: str
+    labels: list[str] = Field(max_length=200)
+    series: list[AnalysisSeries] = Field(min_length=1, max_length=4)
+    note: str
+    focus_index: int | None = Field(default=None, ge=0, le=199)
