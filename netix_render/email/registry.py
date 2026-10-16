@@ -123,6 +123,31 @@ TEMPLATES: dict[str, EmailTemplate] = {
             },
         ),
         EmailTemplate(
+            id="status_digest",
+            model=schema.StatusDigestEmail,
+            description="Periodic digest of status changes, counted per group and sub-group, detail file attached.",
+            default_subject=lambda payload, t: payload.heading,
+            sample={
+                "meta": _SAMPLE_META,
+                "heading": "IoT connectivity: 5 changes in 2 buildings",
+                "period_label": "15 Oct 2026, 19:15–19:30 GST",
+                "columns": ["Went offline", "Degraded", "Back online", "Offline now"],
+                "groups": [
+                    {
+                        "label": "Acme Facilities",
+                        "counts": [2, 1, 2, 9],
+                        "rows": [
+                            {"label": "Tower B", "counts": [2, 0, 1, 6]},
+                            {"label": "Plant 2", "counts": [0, 1, 1, 3]},
+                        ],
+                    }
+                ],
+                "totals": [2, 1, 2, 9],
+                "files": [{"name": "iot-status-2026-10-15-1915.xlsx", "size_label": "18 KB"}],
+                "cta": {"label": "Download Excel", "url": "https://example.invalid/static/iot-status.xlsx"},
+            },
+        ),
+        EmailTemplate(
             id="feedback_request",
             model=schema.FeedbackRequestEmail,
             description="Post-resolution feedback / survey request.",

@@ -94,3 +94,18 @@ def test_no_escaped_entities_inside_inlined_styles(template_id):
     for fragment in re.findall(r'style="[^"]*"', rendered.html):
         assert "&#39;" not in fragment and "&amp;" not in fragment, fragment
     assert "font-family: Inter" in rendered.html
+
+
+def test_status_digest_rejects_counts_that_do_not_match_columns():
+    sample = dict(TEMPLATES["status_digest"].sample)
+    sample["totals"] = [1, 2]
+    with pytest.raises(ValueError):
+        render_email_template("status_digest", sample)
+
+
+def test_status_digest_text_lists_every_group_row_and_total():
+    rendered = render_email_template("status_digest", TEMPLATES["status_digest"].sample)
+    assert "Acme Facilities: Went offline 2, Degraded 1, Back online 2, Offline now 9" in rendered.text
+    assert "  - Tower B: Went offline 2, Degraded 0, Back online 1, Offline now 6" in rendered.text
+    assert "Total: Went offline 2" in rendered.text
+    assert "iot-status-2026-10-15-1915.xlsx" in rendered.text

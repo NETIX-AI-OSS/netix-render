@@ -12,7 +12,7 @@ and exposed as `documents.*` MCP tools by ml-engine.
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
 - **Transactional email** (`netix_render.render_email_template`) — registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
-  `feedback_request`), each with a strict pydantic contract, en/ar/es chrome strings, RTL
+  `feedback_request`, `status_digest`), each with a strict pydantic contract, en/ar/es chrome strings, RTL
   support, and a plain-text alternative:
 
 ```python
