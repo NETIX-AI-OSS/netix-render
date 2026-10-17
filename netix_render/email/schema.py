@@ -1,8 +1,8 @@
 """Contracts for the transactional email templates; extra="forbid" rejects fabricated keys."""
 
-from typing import Literal
+from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
 Locale = Literal["en", "ar", "es"]
 Severity = Literal["ok", "warn", "crit"]
@@ -110,6 +110,39 @@ class AlarmNoticeEmail(TransactionalEmail):
     body_text: str
     fields: list[FieldItem] = []
     cta: Cta | None = None
+
+
+class DigestRow(StrictModel):
+    label: str
+    counts: list[int]
+
+
+class DigestGroup(StrictModel):
+    label: str
+    counts: list[int]
+    rows: list[DigestRow] = []
+
+
+class StatusDigestEmail(TransactionalEmail):
+    """Counts table grouped in two levels (e.g. org, then building) with the detail file attached."""
+
+    heading: str
+    severity: Severity = "warn"
+    period_label: str | None = None
+    intro: str | None = None
+    columns: list[str]
+    groups: list[DigestGroup] = []
+    totals: list[int] | None = None
+    files: list[PackFile] = []
+    cta: Cta | None = None
+    note: str | None = None
+
+    @model_validator(mode="after")
+    def _counts_match_columns(self) -> Self:
+        counts = [group.counts for group in self.groups] + [row.counts for group in self.groups for row in group.rows]
+        if any(len(entry) != len(self.columns) for entry in [*counts, *([self.totals] if self.totals else [])]):
+            raise ValueError("every counts list must have one entry per column")
+        return self
 
 
 class FeedbackRequestEmail(TransactionalEmail):

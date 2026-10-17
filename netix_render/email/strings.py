@@ -16,6 +16,8 @@ STRINGS: dict[str, dict[str, str]] = {
         "triggered_at": "Triggered at",
         "feedback_intro": "We would appreciate your feedback.",
         "reference": "Reference",
+        "total": "Total",
+        "digest_files": "Full details are in the attached spreadsheet.",
     },
     "ar": {
         "hello": "مرحباً",
@@ -32,6 +34,8 @@ STRINGS: dict[str, dict[str, str]] = {
         "triggered_at": "وقت التفعيل",
         "feedback_intro": "نقدّر ملاحظاتك.",
         "reference": "المرجع",
+        "total": "المجموع",
+        "digest_files": "التفاصيل الكاملة في جدول البيانات المرفق.",
     },
     "es": {
         "hello": "Hola",
@@ -48,6 +52,8 @@ STRINGS: dict[str, dict[str, str]] = {
         "triggered_at": "Activada a las",
         "feedback_intro": "Agradeceríamos sus comentarios.",
         "reference": "Referencia",
+        "total": "Total",
+        "digest_files": "Los detalles completos están en la hoja de cálculo adjunta.",
     },
 }
 

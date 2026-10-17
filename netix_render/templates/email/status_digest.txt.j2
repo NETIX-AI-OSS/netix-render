@@ -1,0 +1,17 @@
+{% macro count_line(label, counts) %}{{ label }}: {% for column in payload.columns %}{{ column }} {{ counts[loop.index0] }}{% if not loop.last %}, {% endif %}{% endfor %}{% endmacro -%}
+{{ payload.heading }}{% if payload.period_label %} — {{ payload.period_label }}{% endif %}
+{% if payload.intro %}
+{{ payload.intro }}
+{% endif %}{% for group in payload.groups %}
+{{ count_line(group.label, group.counts) }}{% for row in group.rows %}
+  - {{ count_line(row.label, row.counts) }}{% endfor %}
+{% endfor %}{% if payload.totals %}
+{{ count_line(t("total"), payload.totals) }}
+{% endif %}{% if payload.files %}
+{{ t("digest_files") }}{% for file in payload.files %}
+- {{ file.name }}{% if file.size_label %} ({{ file.size_label }}){% endif %}{% endfor %}
+{% endif %}{% if payload.cta %}
+{{ payload.cta.label }}: {{ payload.cta.url }}
+{% endif %}{% if payload.note %}
+{{ payload.note }}
+{% endif %}

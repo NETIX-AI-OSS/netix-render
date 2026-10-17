@@ -1,0 +1,49 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% set end = "left" if payload.meta.dir == "rtl" else "right" %}
+{% set start = "right" if payload.meta.dir == "rtl" else "left" %}
+{% macro count_cells(counts, bold=false) -%}
+{% for count in counts %}<td{% if bold %} class="v"{% endif %} style="text-align: {{ end }}">{{ count if count else "–" }}</td>{% endfor %}
+{%- endmacro %}
+{% block content %}
+<div class="band band-{{ payload.severity }}">{{ payload.heading }}</div>
+{% if payload.period_label %}<p class="p mut">{{ payload.period_label }}</p>{% endif %}
+{% if payload.intro %}<p class="p">{{ payload.intro }}</p>{% endif %}
+<table class="kv" cellpadding="0" cellspacing="0">
+  <tr>
+    <th></th>
+    {% for column in payload.columns %}<th style="text-align: {{ end }}">{{ column }}</th>{% endfor %}
+  </tr>
+  {% for group in payload.groups %}
+  <tr>
+    <td class="v">{{ group.label }}</td>
+    {{ count_cells(group.counts, bold=true) }}
+  </tr>
+  {% for row in group.rows %}
+  <tr>
+    <td style="padding-{{ start }}: 22px">{{ row.label }}</td>
+    {{ count_cells(row.counts) }}
+  </tr>
+  {% endfor %}
+  {% endfor %}
+  {% if payload.totals %}
+  <tr>
+    <td class="v" style="border-top: 2px solid {{ tokens.color.line }}">{{ t("total") }}</td>
+    {% for count in payload.totals %}<td class="v" style="text-align: {{ end }}; border-top: 2px solid {{ tokens.color.line }}">{{ count }}</td>{% endfor %}
+  </tr>
+  {% endif %}
+</table>
+{% if payload.files %}
+<p class="p">{{ t("digest_files") }}</p>
+<table class="kv" cellpadding="0" cellspacing="0">
+  {% for file in payload.files %}
+  <tr>
+    <td class="v">{{ file.name }}</td>
+    <td class="k" style="text-align: {{ end }}">{{ file.size_label or "" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{{ m.cta_button(payload.cta) }}
+{% if payload.note %}<p class="small">{{ payload.note }}</p>{% endif %}
+{% endblock %}
