@@ -1,13 +1,21 @@
 """Contracts for the transactional email templates; extra="forbid" rejects fabricated keys."""
 
 from typing import Literal, Self
+from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-Locale = Literal["en", "ar", "es"]
+Locale = Literal["en", "ar", "fr", "es", "nl", "de"]
 Severity = Literal["ok", "warn", "crit"]
 
 RTL_LOCALES = frozenset({"ar"})
+
+
+def _safe_link(value: str) -> str:
+    # HTML escaping protects the attribute boundary, but does not make an active URI safe.
+    if urlsplit(value).scheme.lower() in {"javascript", "vbscript", "data", "file"}:
+        raise ValueError("Unsupported link scheme")
+    return value
 
 
 class StrictModel(BaseModel):
@@ -42,6 +50,11 @@ class Cta(StrictModel):
     label: str
     url: str
 
+    @field_validator("url")
+    @classmethod
+    def safe_url(cls, value: str) -> str:
+        return _safe_link(value)
+
 
 class FieldItem(StrictModel):
     label: str
@@ -64,6 +77,11 @@ class ReportReadyEmail(TransactionalEmail):
     download_url: str
     report_label: str | None = None
     expiry_note: str | None = None
+
+    @field_validator("download_url")
+    @classmethod
+    def safe_download_url(cls, value: str) -> str:
+        return _safe_link(value)
 
 
 class EntityEventEmail(TransactionalEmail):
