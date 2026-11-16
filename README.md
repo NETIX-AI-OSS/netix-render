@@ -12,7 +12,7 @@ and exposed as `documents.*` MCP tools by ml-engine.
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
 - **Transactional email** (`netix_render.render_email_template`) — registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
-  `feedback_request`, `status_digest`), each with a strict pydantic contract, en/ar/es chrome strings, RTL
+  `feedback_request`, `status_digest`), each with a strict pydantic contract, en/ar/fr/es/nl/de chrome strings, RTL
   support, and a plain-text alternative:
 
 ```python
@@ -25,8 +25,18 @@ rendered = render_email_template(
 rendered.subject, rendered.html, rendered.text
 ```
 
+Select the recipient’s language with `meta.locale`; omitting it defaults to English.
+The renderer translates template chrome and default subjects. Callers supply localized
+body text, field labels, and action labels. Email action and download links reject active
+script, data, and local-file URL schemes.
+
 Every render is deterministic: validation happens against the template's contract
-(`extra="forbid"`), CSS is inlined via `css-inline`, and callers never hand-build HTML.
+(`extra="forbid"`), CSS is inlined via `css-inline`, and the template API produces complete HTML
+from caller-supplied data.
+
+The existing `v0.1.4` tag accepts `en`, `ar` and `es`. The additional locales and link-validation
+changes in this checkout require a new tagged release and a consumer pin update before they
+take effect in a service still pinned to that tag.
 
 ## Design tokens
 

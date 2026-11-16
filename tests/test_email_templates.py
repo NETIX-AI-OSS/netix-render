@@ -1,11 +1,14 @@
 """Every registered template: sample validates, renders in all locales, output is email-safe and snapshot-stable."""
 
 import re
+from string import Formatter
+from typing import get_args
 
 import pytest
 
 from netix_render.email.registry import TEMPLATES, render_email_template
-from netix_render.email.schema import RTL_LOCALES
+from netix_render.email.schema import RTL_LOCALES, Locale
+from netix_render.email.strings import STRINGS, translator
 from tests.support import assert_matches_snapshot, visible_text_chunks
 
 pytestmark = pytest.mark.unit
@@ -23,7 +26,7 @@ def test_sample_renders_and_matches_snapshot(template_id):
 
 
 @pytest.mark.parametrize("template_id", sorted(TEMPLATES))
-@pytest.mark.parametrize("locale", ["en", "ar", "es"])
+@pytest.mark.parametrize("locale", get_args(Locale))
 def test_renders_in_every_locale(template_id, locale):
     sample = dict(TEMPLATES[template_id].sample)
     sample["meta"] = {**sample.get("meta", {}), "locale": locale}
@@ -49,6 +52,32 @@ def test_html_is_escaped():
     rendered = render_email_template("entity_event", sample)
     assert "<script>" not in rendered.html
     assert "&lt;script&gt;" in rendered.html
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "javascript:alert(1)",
+        " \tjava\nscript:alert(1)",
+        "VBScript:msgbox(1)",
+        "data:text/html,unsafe",
+        "file:///private",
+    ],
+)
+def test_email_links_reject_active_and_local_file_schemes(url):
+    with pytest.raises(ValueError, match="Unsupported link scheme"):
+        render_email_template("report_ready", {"file_name": "example.pdf", "download_url": url})
+    sample = {**TEMPLATES["entity_event"].sample, "cta": {"label": "Open", "url": url}}
+    with pytest.raises(ValueError, match="Unsupported link scheme"):
+        render_email_template("entity_event", sample)
+
+
+@pytest.mark.parametrize(
+    "url", ["https://example.invalid/report", "/reports/one", "#report", "mailto:team@example.invalid"]
+)
+def test_email_links_preserve_supported_web_and_contact_targets(url):
+    sample = {**TEMPLATES["entity_event"].sample, "cta": {"label": "Open", "url": url}}
+    assert f'href="{url}"' in render_email_template("entity_event", sample).html
 
 
 def test_subject_override_wins():
@@ -109,3 +138,27 @@ def test_status_digest_text_lists_every_group_row_and_total():
     assert "  - Tower B: Went offline 2, Degraded 0, Back online 1, Offline now 6" in rendered.text
     assert "Total: Went offline 2" in rendered.text
     assert "iot-status-2026-10-15-1915.xlsx" in rendered.text
+
+
+def test_every_supported_locale_has_complete_chrome_and_matching_placeholders():
+    assert set(STRINGS) == set(get_args(Locale))
+    english = STRINGS["en"]
+    formatter = Formatter()
+    for locale, strings in STRINGS.items():
+        assert strings.keys() == english.keys(), locale
+        for key, value in strings.items():
+            assert value.strip(), (locale, key)
+            expected = sorted(field for _, field, _, _ in formatter.parse(english[key]) if field is not None)
+            actual = sorted(field for _, field, _, _ in formatter.parse(value) if field is not None)
+            assert actual == expected, (locale, key)
+
+
+@pytest.mark.parametrize("locale", ["fr", "nl", "de"])
+def test_new_locale_renders_translated_subject_expiry_and_footer(locale):
+    rendered = render_email_template("otp_code", {"meta": {"locale": locale}, "code": "482913", "expires_minutes": 10})
+    t = translator(locale)
+    assert rendered.subject == f"{t('verification_code')} — Netix.AI"
+    assert t("code_expires", minutes=10) in rendered.text
+    assert t("code_ignore") in rendered.text
+    assert t("automated_note") in rendered.html
+    assert STRINGS["en"]["verification_code"] not in rendered.text
