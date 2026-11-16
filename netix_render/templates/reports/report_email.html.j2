@@ -17,7 +17,7 @@
   {% for point in chart.series %}
   <tr>
     <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{{ point.label }}</td>
-    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{% if point.value is none %}—{% else %}{{ "%.*f" | format(chart.decimals, point.value) }}{% endif %}</td>
+    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{% if point.value is none %}N/A{% else %}{{ "%.*f" | format(chart.decimals, point.value) }}{% endif %}</td>
   </tr>
   {% endfor %}
 </table>
@@ -39,7 +39,7 @@
 <html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
   <head>
     <meta charset="UTF-8" />
-    <title>{{ doc.meta.title }} — {{ doc.meta.asset.name }}</title>
+    <title>{{ doc.meta.title }}, {{ doc.meta.asset.name }}</title>
     <style>
       body {
         margin: 0;

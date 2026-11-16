@@ -4,7 +4,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "en": {
         "hello": "Hello",
         "regards": "Regards",
-        "automated_note": "This is an automated message — please do not reply.",
+        "automated_note": "This is an automated message. Please do not reply.",
         "verification_code": "Your verification code",
         "code_expires": "This code expires in {minutes} minutes.",
         "code_ignore": "If you did not request this code, you can safely ignore this email.",
@@ -22,7 +22,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "ar": {
         "hello": "مرحباً",
         "regards": "مع التحية",
-        "automated_note": "هذه رسالة آلية — يرجى عدم الرد.",
+        "automated_note": "هذه رسالة آلية. يرجى عدم الرد.",
         "verification_code": "رمز التحقق الخاص بك",
         "code_expires": "تنتهي صلاحية هذا الرمز خلال {minutes} دقيقة.",
         "code_ignore": "إذا لم تطلب هذا الرمز، يمكنك تجاهل هذه الرسالة.",
@@ -40,7 +40,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "es": {
         "hello": "Hola",
         "regards": "Saludos",
-        "automated_note": "Este es un mensaje automático — por favor no responda.",
+        "automated_note": "Este es un mensaje automático. Por favor no responda.",
         "verification_code": "Su código de verificación",
         "code_expires": "Este código caduca en {minutes} minutos.",
         "code_ignore": "Si no solicitó este código, puede ignorar este correo.",
@@ -58,7 +58,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "fr": {
         "hello": "Bonjour",
         "regards": "Cordialement",
-        "automated_note": "Ceci est un message automatique — merci de ne pas y répondre.",
+        "automated_note": "Ceci est un message automatique. Merci de ne pas y répondre.",
         "verification_code": "Votre code de vérification",
         "code_expires": "Ce code expire dans {minutes} minutes.",
         "code_ignore": "Si vous n’avez pas demandé ce code, vous pouvez ignorer cet e-mail.",
@@ -76,7 +76,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "nl": {
         "hello": "Hallo",
         "regards": "Met vriendelijke groet",
-        "automated_note": "Dit is een automatisch bericht — beantwoord dit bericht niet.",
+        "automated_note": "Dit is een automatisch bericht. Beantwoord dit bericht niet.",
         "verification_code": "Uw verificatiecode",
         "code_expires": "Deze code verloopt over {minutes} minuten.",
         "code_ignore": "Als u deze code niet hebt aangevraagd, kunt u deze e-mail negeren.",
@@ -94,7 +94,7 @@ STRINGS: dict[str, dict[str, str]] = {
     "de": {
         "hello": "Hallo",
         "regards": "Mit freundlichen Grüßen",
-        "automated_note": "Dies ist eine automatische Nachricht — bitte antworten Sie nicht darauf.",
+        "automated_note": "Dies ist eine automatische Nachricht. Bitte antworten Sie nicht darauf.",
         "verification_code": "Ihr Bestätigungscode",
         "code_expires": "Dieser Code läuft in {minutes} Minuten ab.",
         "code_ignore": "Wenn Sie diesen Code nicht angefordert haben, können Sie diese E-Mail ignorieren.",

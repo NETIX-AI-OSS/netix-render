@@ -3,7 +3,7 @@
 {% set end = "left" if payload.meta.dir == "rtl" else "right" %}
 {% set start = "right" if payload.meta.dir == "rtl" else "left" %}
 {% macro count_cells(counts, bold=false) -%}
-{% for count in counts %}<td{% if bold %} class="v"{% endif %} style="text-align: {{ end }}">{{ count if count else "–" }}</td>{% endfor %}
+{% for count in counts %}<td{% if bold %} class="v"{% endif %} style="text-align: {{ end }}">{{ count if count else "-" }}</td>{% endfor %}
 {%- endmacro %}
 {% block content %}
 <div class="band band-{{ payload.severity }}">{{ payload.heading }}</div>

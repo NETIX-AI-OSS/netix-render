@@ -3,7 +3,7 @@
     {% if cover_image %}<img class="cover-photo" src="{{ cover_image }}" alt="NETIX report cover" />{% endif %}
     <div class="cover-heading">
       <div class="cover-kicker">{{ doc.meta.tag_line }}</div>
-      <h1>{{ doc.meta.title | replace(doc.meta.asset.name ~ ' — ', '') }}</h1>
+      <h1>{{ doc.meta.title | replace(doc.meta.asset.name ~ ', ', '') | replace(doc.meta.asset.name ~ ' \u2014 ', '') }}</h1>
       <p>{{ doc.meta.asset.name }}</p>
     </div>
     <div class="cover-panel">

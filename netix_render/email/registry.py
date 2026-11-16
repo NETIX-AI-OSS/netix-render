@@ -50,7 +50,7 @@ TEMPLATES: dict[str, EmailTemplate] = {
             id="otp_code",
             model=schema.OtpCodeEmail,
             description="One-time verification code (MFA / login).",
-            default_subject=lambda payload, t: f"{t('verification_code')} — {payload.product_name}",
+            default_subject=lambda payload, t: f"{t('verification_code')}, {payload.product_name}",
             sample={"meta": _SAMPLE_META, "code": "482913", "expires_minutes": 10},
         ),
         EmailTemplate(
@@ -130,7 +130,7 @@ TEMPLATES: dict[str, EmailTemplate] = {
             sample={
                 "meta": _SAMPLE_META,
                 "heading": "IoT connectivity: 5 changes in 2 buildings",
-                "period_label": "15 Oct 2026, 19:15–19:30 GST",
+                "period_label": "15 Oct 2026, 19:15-19:30 GST",
                 "columns": ["Went offline", "Degraded", "Back online", "Offline now"],
                 "groups": [
                     {

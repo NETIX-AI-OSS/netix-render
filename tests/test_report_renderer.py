@@ -22,7 +22,7 @@ def test_daily_render_preserves_component_classes_and_section_order():
     rendered = render_report(load_document("synthetic_daily"))
     for marker in (
         '<html lang="en" dir="ltr">',
-        "<title>Daily Brief — Example Research Hub</title>",
+        "<title>Daily Brief, Example Research Hub</title>",
         "linear-gradient(120deg, #0e1320, #173d33 70%, #1f7a5c)",
         'class="genbar"',
         'class="gb-badge"',

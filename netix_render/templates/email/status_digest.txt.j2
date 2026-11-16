@@ -1,5 +1,5 @@
 {% macro count_line(label, counts) %}{{ label }}: {% for column in payload.columns %}{{ column }} {{ counts[loop.index0] }}{% if not loop.last %}, {% endif %}{% endfor %}{% endmacro -%}
-{{ payload.heading }}{% if payload.period_label %} — {{ payload.period_label }}{% endif %}
+{{ payload.heading }}{% if payload.period_label %}, {{ payload.period_label }}{% endif %}
 {% if payload.intro %}
 {{ payload.intro }}
 {% endif %}{% for group in payload.groups %}
