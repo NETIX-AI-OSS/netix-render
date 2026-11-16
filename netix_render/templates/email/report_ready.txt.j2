@@ -1,4 +1,4 @@
-{{ t("report_ready") }}{% if payload.report_label %} — {{ payload.report_label }}{% endif %}
+{{ t("report_ready") }}{% if payload.report_label %}, {{ payload.report_label }}{% endif %}
 
 {{ payload.file_name }}
 {{ t("download") }}: {{ payload.download_url }}

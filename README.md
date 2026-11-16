@@ -6,11 +6,11 @@ and exposed as `documents.*` MCP tools by ml-engine.
 
 ## What it renders
 
-- **Report documents** (`netix_render.render_report` / `render_email`) — the `ReportDocument`
+- **Report documents** (`netix_render.render_report` / `render_email`): the `ReportDocument`
   contract extracted from ml-engine's report engine: discriminated-union sections (banner,
   kpi_grid, check_table, exceptions, trend_pair, ai_insight, actions, data_table, twocol,
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
-- **Transactional email** (`netix_render.render_email_template`) — registered templates
+- **Transactional email** (`netix_render.render_email_template`): registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
   `feedback_request`, `status_digest`), each with a strict pydantic contract, en/ar/fr/es/nl/de chrome strings, RTL
   support, and a plain-text alternative:
@@ -53,7 +53,7 @@ uv run pytest                      # golden-file snapshots; UPDATE_SNAPSHOTS=1 t
 uv run ruff check . && uv run mypy
 ```
 
-Snapshot updates must be reviewed by eye — open the changed file under `tests/snapshots/`
+Snapshot updates must be reviewed by eye, open the changed file under `tests/snapshots/`
 in a browser before committing.
 
 ## Adding an email template

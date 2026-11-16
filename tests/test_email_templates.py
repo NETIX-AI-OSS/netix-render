@@ -157,7 +157,7 @@ def test_every_supported_locale_has_complete_chrome_and_matching_placeholders():
 def test_new_locale_renders_translated_subject_expiry_and_footer(locale):
     rendered = render_email_template("otp_code", {"meta": {"locale": locale}, "code": "482913", "expires_minutes": 10})
     t = translator(locale)
-    assert rendered.subject == f"{t('verification_code')} — Netix.AI"
+    assert rendered.subject == f"{t('verification_code')}, Netix.AI"
     assert t("code_expires", minutes=10) in rendered.text
     assert t("code_ignore") in rendered.text
     assert t("automated_note") in rendered.html

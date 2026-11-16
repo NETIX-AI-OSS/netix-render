@@ -102,3 +102,11 @@ def test_composite_measurements_show_means_without_repeating_ranges():
     result = evidence_text(source)
     assert "mean 24.00 °C" in result and "mean 22.00 °C" in result
     assert "minimum" not in result
+
+
+@pytest.mark.parametrize("separator", [", ", " \u2014 "])
+def test_community_heading_strips_current_and_historical_asset_prefix(separator):
+    document = multipage_document()
+    document.meta.title = document.meta.asset.name + separator + "Daily Brief"
+    html = render_report(document, layout="community", management=context())
+    assert "<h1>Daily Brief</h1>" in html

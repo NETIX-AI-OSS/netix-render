@@ -63,7 +63,7 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
         bar_x = int(x_start + pitch * index)
         center = bar_x + bar_width // 2
         if point.value is None:
-            caption = "—"
+            caption = "N/A"
             caption_y = baseline - 5
         else:
             value_y = baseline - round(max_bar * (point.value - low) / span) if span else baseline
@@ -243,7 +243,7 @@ def _ranked_analysis(chart) -> str:
         parts.append(f'<text x="0" y="{y + 12}" font-size="12" fill="#303234">{escape(label)}</text>')
         w = (value or 0) / maximum * 300
         parts.append(f'<rect x="0" y="{y + 18}" width="{w}" height="13" fill="{escape(chart.series[0].color)}" />')
-        caption = "—" if value is None else value_caption(value, 0)
+        caption = "N/A" if value is None else value_caption(value, 0)
         parts.append(f'<text x="{w + 8}" y="{y + 29}" font-size="12" fill="#196796">{escape(caption)}</text>')
     parts.append("</svg>")
     return "".join(parts)

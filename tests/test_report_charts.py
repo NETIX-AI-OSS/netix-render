@@ -49,14 +49,14 @@ def test_sparkline_renders_null_values_as_gap_with_dash_caption():
     series = [TrendPoint(label="Mon", value=1.0), TrendPoint(label="Tue"), TrendPoint(label="Wed", value=2.0)]
     svg = sparkline_svg(series, "MWh")
     assert svg.count("<rect") == 2
-    assert ">—</text>" in svg
+    assert ">N/A</text>" in svg
     assert ">Tue</text>" in svg
 
 
 def test_sparkline_handles_all_null_and_single_point_series():
     svg = sparkline_svg([TrendPoint(label="Mon"), TrendPoint(label="Tue")], "MWh")
     assert svg.count("<rect") == 0
-    assert svg.count(">—</text>") == 2
+    assert svg.count(">N/A</text>") == 2
 
     svg = sparkline_svg([TrendPoint(label="Mon", value=3.0)], "MWh")
     assert svg.count("<rect") == 1
