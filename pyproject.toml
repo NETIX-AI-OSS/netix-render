@@ -24,7 +24,7 @@ dependencies = [
     "markupsafe>=2.1",
     "pydantic>=2.7",
 ]
-version = "0.1.4"
+version = "0.1.5"
 
 [dependency-groups]
 dev = [

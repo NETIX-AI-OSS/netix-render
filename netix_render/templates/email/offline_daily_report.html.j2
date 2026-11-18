@@ -1,0 +1,98 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% set end = "left" if payload.meta.dir == "rtl" else "right" %}
+{% set kinds = {"asset": t("kind_asset"), "gateway": t("kind_gateway")} %}
+{% macro kpi(value, label, level="", width=25) -%}
+<td width="{{ width }}%">
+  <div class="kpi-n{% if level %} kpi-{{ level }}{% endif %}">{{ value }}</div>
+  <div class="kpi-l">{{ label }}</div>
+</td>
+{%- endmacro %}
+{% macro count(value) %}{{ value if value else "-" }}{% endmacro %}
+{% block content %}
+<div class="band band-{{ payload.severity }}">{{ payload.report_name }}</div>
+<p class="p mut">{{ t("report_date_tz", date=payload.report_date, timezone=payload.timezone) }}</p>
+{% if payload.all_online %}<p class="p">{{ t("all_online") }}</p>{% endif %}
+<p class="kpi-cap">{{ t("kpi_now") }}</p>
+<table class="kpi" cellpadding="0" cellspacing="4">
+  <tr>
+    {{ kpi(payload.totals.monitored, t("monitored")) }}
+    {{ kpi(payload.totals.online, t("online")) }}
+    {{ kpi(payload.totals.degraded, t("degraded"), "warn" if payload.totals.degraded else "") }}
+    {{ kpi(payload.totals.offline, t("offline"), "crit" if payload.totals.offline else "") }}
+  </tr>
+</table>
+<p class="kpi-cap">{{ t("kpi_last_24h") }}</p>
+<table class="kpi" cellpadding="0" cellspacing="4">
+  <tr>
+    {% set availability = payload.availability_value %}
+    {{ kpi(t("percent", value=availability.replace(".", t("decimal_separator"))) if availability is not none else "-", t("availability"), width=33) }}
+    {{ kpi(payload.new_24h, t("went_offline"), "crit" if payload.new_24h else "", width=33) }}
+    {{ kpi(payload.recovered_24h, t("back_online"), width=34) }}
+  </tr>
+</table>
+{% if not payload.all_online %}
+<p class="h2">{{ t("offline_now") }}</p>
+{% if payload.offline_items %}
+<table class="kv" cellpadding="0" cellspacing="0">
+  <tr>
+    <th>{{ t("name") }}</th>
+    <th>{{ t("type") }}</th>
+    <th>{{ t("building") }}</th>
+    <th>{{ t("since") }}</th>
+    <th style="text-align: {{ end }}">{{ t("duration") }}</th>
+  </tr>
+  {% for item in payload.offline_items %}
+  <tr>
+    <td class="v">{{ item.display_name }}</td>
+    <td>{{ kinds.get(item.subject_kind, item.subject_kind) or "-" }}</td>
+    <td>{{ item.building or "-" }}</td>
+    <td>{{ item.since or "-" }}</td>
+    <td style="text-align: {{ end }}">{{ item.duration or "-" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% if payload.offline_more > 0 %}<p class="small">{{ t("more_offline", count=payload.offline_more) }}</p>{% endif %}
+{% else %}
+<p class="p mut">{{ t("nothing_offline") }}</p>
+{% endif %}
+{% endif %}
+{% if payload.by_building %}
+<p class="h2">{{ t("by_building") }}</p>
+<table class="kv" cellpadding="0" cellspacing="0">
+  <tr>
+    <th>{{ t("building") }}</th>
+    <th style="text-align: {{ end }}">{{ t("monitored") }}</th>
+    <th style="text-align: {{ end }}">{{ t("offline") }}</th>
+    <th style="text-align: {{ end }}">{{ t("degraded") }}</th>
+  </tr>
+  {% for row in payload.by_building %}
+  <tr>
+    <td class="v">{{ row.building }}</td>
+    <td style="text-align: {{ end }}">{{ row.monitored }}</td>
+    <td style="text-align: {{ end }}">{{ count(row.offline) }}</td>
+    <td style="text-align: {{ end }}">{{ count(row.degraded) }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% if payload.gateway_impact %}
+<p class="h2">{{ t("gateway_impact") }}</p>
+<table class="kv" cellpadding="0" cellspacing="0">
+  <tr>
+    <th>{{ t("gateway") }}</th>
+    <th>{{ t("since") }}</th>
+    <th style="text-align: {{ end }}">{{ t("assets_affected") }}</th>
+  </tr>
+  {% for gateway in payload.gateway_impact %}
+  <tr>
+    <td class="v">{{ gateway.display_name }}</td>
+    <td>{{ gateway.since or "-" }}</td>
+    <td style="text-align: {{ end }}">{{ gateway.affected_assets }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% if payload.attachment_note %}<p class="p">{{ payload.attachment_note }}</p>{% endif %}
+{{ m.cta_button({"label": t("open_dashboard"), "url": payload.dashboard_url}) }}
+{% endblock %}

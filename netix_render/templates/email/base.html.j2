@@ -139,6 +139,51 @@
         background: {{ tokens.color.status_soft.crit }};
         color: {{ tokens.color.status.crit }};
       }
+      .h2 {
+        font-size: 14px;
+        font-weight: 700;
+        margin: 22px 0 4px;
+        color: {{ tokens.color.ink }};
+      }
+      .kpi-cap {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: {{ tokens.color.ink_soft }};
+        margin: 14px 0 0;
+      }
+      .kpi {
+        width: 100%;
+        border-collapse: separate;
+        margin: 2px 0 4px;
+      }
+      .kpi td {
+        background: {{ tokens.color.surface_soft }};
+        border: 1px solid {{ tokens.color.line }};
+        border-radius: 8px;
+        padding: 10px 12px;
+        vertical-align: top;
+      }
+      .kpi-n {
+        font-size: 20px;
+        font-weight: 800;
+        line-height: 1.2;
+        color: {{ tokens.color.ink }};
+      }
+      .kpi-crit {
+        color: {{ tokens.color.status.crit }};
+      }
+      .kpi-warn {
+        color: {{ tokens.color.status.warn }};
+      }
+      .kpi-l {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: {{ tokens.color.ink_soft }};
+        padding-top: 2px;
+      }
       .btn-td {
         background: {{ tokens.color.primary }};
         border-radius: 8px;

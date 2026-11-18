@@ -162,3 +162,94 @@ def test_new_locale_renders_translated_subject_expiry_and_footer(locale):
     assert t("code_ignore") in rendered.text
     assert t("automated_note") in rendered.html
     assert STRINGS["en"]["verification_code"] not in rendered.text
+
+
+def _offline_report(**overrides):
+    return {**TEMPLATES["offline_daily_report"].sample, **overrides}
+
+
+def test_offline_daily_report_flat_context_sets_locale_and_org_name():
+    rendered = render_email_template("offline_daily_report", _offline_report(language="ar"))
+    assert 'dir="rtl"' in rendered.html and 'lang="ar"' in rendered.html
+    assert "Acme Facilities" in " ".join(visible_text_chunks(rendered.html))
+    assert translator("ar")("offline_now") in rendered.text
+    assert rendered.subject == "Daily offline report, 17 Nov 2026"
+
+
+def test_offline_daily_report_explicit_meta_wins_over_flat_keys():
+    sample = _offline_report(language="ar", meta={"locale": "fr", "org": {"name": "Override"}})
+    rendered = render_email_template("offline_daily_report", sample)
+    assert 'lang="fr"' in rendered.html
+    assert "Override" in rendered.html and "Acme Facilities" not in rendered.html
+
+
+def test_offline_daily_report_lists_offline_items_more_line_and_gateways():
+    rendered = render_email_template("offline_daily_report", TEMPLATES["offline_daily_report"].sample)
+    visible = " ".join(visible_text_chunks(rendered.html))
+    for fact in ("AHU-3", "Chiller CH-01", "2 d 0 h", "Plant 2", "Gateway impact", "+2 more offline", "96.8%"):
+        assert fact in visible, fact
+    assert 'href="https://example.invalid/connectivity"' in rendered.html
+    assert "band-crit" in rendered.html
+    assert "- AHU-3 (Asset), Building: Tower B, Since: 16 Nov 2026 22:41, Duration: 9 h 19 min" in rendered.text
+    assert "+2 more offline, not listed here." in rendered.text
+    assert "- GW-Tower-B-02, Since: 16 Nov 2026 22:40, Assets affected: 3" in rendered.text
+    assert "Open dashboard: https://example.invalid/connectivity" in rendered.text
+
+
+def test_offline_daily_report_hides_optional_sections():
+    sample = _offline_report(offline_more=0, gateway_impact=[], attachment_note=None)
+    rendered = render_email_template("offline_daily_report", sample)
+    assert "more offline" not in rendered.html and "more offline" not in rendered.text
+    assert "Gateway impact" not in rendered.html and "Gateway impact" not in rendered.text
+    assert "attached spreadsheet" not in rendered.text
+
+
+def test_offline_daily_report_all_online_state():
+    sample = _offline_report(
+        totals={"monitored": 12, "online": 12, "degraded": 0, "offline": 0},
+        offline_items=[],
+        offline_more=0,
+        gateway_impact=[],
+        availability_pct_24h=100.0,
+    )
+    rendered = render_email_template("offline_daily_report", sample)
+    assert "All assets and gateways are online." in rendered.html
+    assert "All assets and gateways are online." in rendered.text
+    assert "band-ok" in rendered.html
+    assert "Offline now" not in rendered.html and "Offline now" not in rendered.text
+    assert "100%" in rendered.text
+
+
+def test_offline_daily_report_degraded_only_says_nothing_offline():
+    sample = _offline_report(
+        totals={"monitored": 12, "online": 11, "degraded": 1, "offline": 0}, offline_items=[], offline_more=0
+    )
+    rendered = render_email_template("offline_daily_report", sample)
+    assert "band-warn" in rendered.html
+    assert "Nothing is offline right now." in rendered.html
+    assert "All assets and gateways are online." not in rendered.html
+
+
+@pytest.mark.parametrize(
+    ("locale", "pct", "expected"), [("en", 96.84, "96.8%"), ("de", 96.84, "96,8 %"), ("en", None, "Availability -")]
+)
+def test_offline_daily_report_availability_format(locale, pct, expected):
+    rendered = render_email_template("offline_daily_report", _offline_report(language=locale, availability_pct_24h=pct))
+    assert expected in rendered.text
+
+
+def test_offline_daily_report_unknown_subject_kind_is_shown_as_given():
+    items = [
+        {"display_name": "Meter M-7", "subject_kind": "Energy meter", "building": None, "since": "x", "duration": "y"}
+    ]
+    rendered = render_email_template("offline_daily_report", _offline_report(offline_items=items))
+    assert "- Meter M-7 (Energy meter), Building: -" in rendered.text
+
+
+def test_offline_daily_report_rejects_unsafe_dashboard_url_and_unknown_keys():
+    with pytest.raises(ValueError, match="Unsupported link scheme"):
+        render_email_template("offline_daily_report", _offline_report(dashboard_url="javascript:alert(1)"))
+    with pytest.raises(ValueError):
+        render_email_template("offline_daily_report", _offline_report(fabricated=True))
+    with pytest.raises(ValueError):
+        render_email_template("offline_daily_report", _offline_report(language="xx"))

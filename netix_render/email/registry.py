@@ -148,6 +148,56 @@ TEMPLATES: dict[str, EmailTemplate] = {
             },
         ),
         EmailTemplate(
+            id="offline_daily_report",
+            model=schema.OfflineDailyReportEmail,
+            description="Daily summary of offline IoT assets and gateways for one organization.",
+            default_subject=lambda payload, t: f"{payload.report_name}, {payload.report_date}",
+            sample={
+                "organization_name": "Acme Facilities",
+                "report_name": "Daily offline report",
+                "report_date": "17 Nov 2026",
+                "timezone": "Asia/Dubai",
+                "totals": {"monitored": 128, "online": 121, "degraded": 2, "offline": 5},
+                "availability_pct_24h": 96.84,
+                "new_24h": 3,
+                "recovered_24h": 4,
+                "offline_items": [
+                    {
+                        "display_name": "GW-Tower-B-02",
+                        "subject_kind": "gateway",
+                        "building": "Tower B",
+                        "since": "16 Nov 2026 22:40",
+                        "duration": "9 h 20 min",
+                    },
+                    {
+                        "display_name": "AHU-3",
+                        "subject_kind": "asset",
+                        "building": "Tower B",
+                        "since": "16 Nov 2026 22:41",
+                        "duration": "9 h 19 min",
+                    },
+                    {
+                        "display_name": "Chiller CH-01",
+                        "subject_kind": "asset",
+                        "building": "Plant 2",
+                        "since": "15 Nov 2026 08:05",
+                        "duration": "2 d 0 h",
+                    },
+                ],
+                "offline_more": 2,
+                "by_building": [
+                    {"building": "Tower B", "monitored": 74, "offline": 4, "degraded": 1},
+                    {"building": "Plant 2", "monitored": 54, "offline": 1, "degraded": 1},
+                ],
+                "gateway_impact": [
+                    {"display_name": "GW-Tower-B-02", "since": "16 Nov 2026 22:40", "affected_assets": 3}
+                ],
+                "dashboard_url": "https://example.invalid/connectivity",
+                "attachment_note": "The full list is in the attached spreadsheet.",
+                "language": "en",
+            },
+        ),
+        EmailTemplate(
             id="feedback_request",
             model=schema.FeedbackRequestEmail,
             description="Post-resolution feedback / survey request.",
