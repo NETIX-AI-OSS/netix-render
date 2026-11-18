@@ -1,0 +1,24 @@
+{% set kinds = {"asset": t("kind_asset"), "gateway": t("kind_gateway")} -%}
+{% set availability = payload.availability_value -%}
+{{ payload.report_name }}
+{{ t("report_date_tz", date=payload.report_date, timezone=payload.timezone) }}
+{% if payload.all_online %}
+{{ t("all_online") }}
+{% endif %}
+{{ t("kpi_now") }}: {{ t("monitored") }} {{ payload.totals.monitored }}, {{ t("online") }} {{ payload.totals.online }}, {{ t("degraded") }} {{ payload.totals.degraded }}, {{ t("offline") }} {{ payload.totals.offline }}
+{{ t("kpi_last_24h") }}: {{ t("availability") }} {{ t("percent", value=availability.replace(".", t("decimal_separator"))) if availability is not none else "-" }}, {{ t("went_offline") }} {{ payload.new_24h }}, {{ t("back_online") }} {{ payload.recovered_24h }}
+{% if not payload.all_online %}
+{{ t("offline_now") }}{% if payload.offline_items %}{% for item in payload.offline_items %}
+- {{ item.display_name }} ({{ kinds.get(item.subject_kind, item.subject_kind) or "-" }}), {{ t("building") }}: {{ item.building or "-" }}, {{ t("since") }}: {{ item.since or "-" }}, {{ t("duration") }}: {{ item.duration or "-" }}{% endfor %}{% if payload.offline_more > 0 %}
+{{ t("more_offline", count=payload.offline_more) }}{% endif %}{% else %}
+{{ t("nothing_offline") }}{% endif %}
+{% endif %}{% if payload.by_building %}
+{{ t("by_building") }}{% for row in payload.by_building %}
+- {{ row.building }}: {{ t("monitored") }} {{ row.monitored }}, {{ t("offline") }} {{ row.offline }}, {{ t("degraded") }} {{ row.degraded }}{% endfor %}
+{% endif %}{% if payload.gateway_impact %}
+{{ t("gateway_impact") }}{% for gateway in payload.gateway_impact %}
+- {{ gateway.display_name }}, {{ t("since") }}: {{ gateway.since or "-" }}, {{ t("assets_affected") }}: {{ gateway.affected_assets }}{% endfor %}
+{% endif %}{% if payload.attachment_note %}
+{{ payload.attachment_note }}
+{% endif %}
+{{ t("open_dashboard") }}: {{ payload.dashboard_url }}

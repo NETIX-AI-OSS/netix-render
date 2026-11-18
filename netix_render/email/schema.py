@@ -1,6 +1,6 @@
 """Contracts for the transactional email templates; extra="forbid" rejects fabricated keys."""
 
-from typing import Literal, Self
+from typing import Any, Literal, Self
 from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
@@ -161,6 +161,93 @@ class StatusDigestEmail(TransactionalEmail):
         if any(len(entry) != len(self.columns) for entry in [*counts, *([self.totals] if self.totals else [])]):
             raise ValueError("every counts list must have one entry per column")
         return self
+
+
+class OfflineTotals(StrictModel):
+    monitored: int = 0
+    online: int = 0
+    degraded: int = 0
+    offline: int = 0
+
+
+class OfflineItem(StrictModel):
+    display_name: str
+    # "asset" and "gateway" are shown with the localized label; any other value is shown as given.
+    subject_kind: str = ""
+    building: str | None = None
+    since: str | None = None
+    duration: str | None = None
+
+
+class OfflineBuilding(StrictModel):
+    building: str
+    monitored: int = 0
+    offline: int = 0
+    degraded: int = 0
+
+
+class OfflineGatewayImpact(StrictModel):
+    display_name: str
+    since: str | None = None
+    affected_assets: int = 0
+
+
+class OfflineDailyReportEmail(TransactionalEmail):
+    """Daily summary of offline assets and gateways for one organization.
+
+    Takes the flat context data-service sends: `language` and `organization_name` fill `meta.locale` and
+    `meta.org.name` unless `meta` sets them. Dates, times and durations arrive already formatted.
+    """
+
+    organization_name: str | None = None
+    language: Locale | None = None
+    report_name: str
+    report_date: str
+    timezone: str
+    totals: OfflineTotals
+    availability_pct_24h: float | None = None
+    new_24h: int = 0
+    recovered_24h: int = 0
+    offline_items: list[OfflineItem] = []
+    offline_more: int = 0
+    by_building: list[OfflineBuilding] = []
+    gateway_impact: list[OfflineGatewayImpact] = []
+    dashboard_url: str
+    attachment_note: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _flat_context_fills_meta(cls, data: Any) -> Any:
+        if not isinstance(data, dict) or not isinstance(data.get("meta") or {}, dict):
+            return data
+        meta = dict(data.get("meta") or {})
+        if data.get("language"):
+            meta.setdefault("locale", data["language"])
+        org = meta.get("org") or {}
+        if data.get("organization_name") and isinstance(org, dict) and not org.get("name"):
+            meta["org"] = {**org, "name": data["organization_name"]}
+        return {**data, "meta": meta}
+
+    @field_validator("dashboard_url")
+    @classmethod
+    def safe_dashboard_url(cls, value: str) -> str:
+        return _safe_link(value)
+
+    @property
+    def severity(self) -> Severity:
+        return "crit" if self.totals.offline else "warn" if self.totals.degraded else "ok"
+
+    @property
+    def all_online(self) -> bool:
+        return not self.totals.offline and not self.totals.degraded
+
+    @property
+    def availability_value(self) -> str | None:
+        """Percentage without the sign: one decimal, or a whole number when exact; None when unknown."""
+        if self.availability_pct_24h is None:
+            return None
+        rounded = round(self.availability_pct_24h, 1)
+        return str(int(rounded)) if rounded == int(rounded) else f"{rounded:.1f}"
 
 
 class FeedbackRequestEmail(TransactionalEmail):

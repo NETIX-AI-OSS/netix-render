@@ -12,8 +12,8 @@ and exposed as `documents.*` MCP tools by ml-engine.
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
 - **Transactional email** (`netix_render.render_email_template`): registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
-  `feedback_request`, `status_digest`), each with a strict pydantic contract, en/ar/fr/es/nl/de chrome strings, RTL
-  support, and a plain-text alternative:
+  `feedback_request`, `status_digest`, `offline_daily_report`), each with a strict pydantic
+  contract, en/ar/fr/es/nl/de chrome strings, RTL support, and a plain-text alternative:
 
 ```python
 from netix_render import render_email_template
@@ -26,6 +26,8 @@ rendered.subject, rendered.html, rendered.text
 ```
 
 Select the recipient’s language with `meta.locale`; omitting it defaults to English.
+`offline_daily_report` also takes data-service's flat `language` and `organization_name` keys,
+which fill `meta.locale` and `meta.org.name` when `meta` does not set them.
 The renderer translates template chrome and default subjects. Callers supply localized
 body text, field labels, and action labels. Email action and download links reject active
 script, data, and local-file URL schemes.
@@ -34,9 +36,9 @@ Every render is deterministic: validation happens against the template's contrac
 (`extra="forbid"`), CSS is inlined via `css-inline`, and the template API produces complete HTML
 from caller-supplied data.
 
-The existing `v0.1.4` tag accepts `en`, `ar` and `es`. The additional locales and link-validation
-changes in this checkout require a new tagged release and a consumer pin update before they
-take effect in a service still pinned to that tag.
+The `v0.1.4` tag accepts `en`, `ar` and `es`. The additional locales, link validation and the
+`offline_daily_report` template ship in `v0.1.5`; a service pinned to `v0.1.4` needs a pin update
+before it can use them.
 
 ## Design tokens
 
