@@ -12,6 +12,7 @@
 {% import "components/hbar_chart.j2" as hbar_c -%}
 {% import "components/rings.j2" as rings_c -%}
 {% import "components/foot.j2" as foot_c -%}
+{% set copy = doc.meta.language | report_labels -%}
 <!doctype html>
 <html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
   <head>

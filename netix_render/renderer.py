@@ -1,7 +1,6 @@
 """Report Document to HTML in a sandboxed Jinja2 env; render_email inlines styles via css-inline."""
 
 import re
-from datetime import datetime
 from functools import cache
 from pathlib import Path
 from typing import Literal
@@ -14,6 +13,7 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
+from netix_render.report_locale import display_datetime, report_labels
 from netix_render.schema import (
     AnalysisChart,
     HBarChartSection,
@@ -25,15 +25,7 @@ from netix_render.schema import (
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
-MONTH_ABBREVIATIONS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-
 BOLD_MARKER_PATTERN = re.compile(r"\*\*(.+?)\*\*", flags=re.DOTALL)
-
-
-def display_datetime(value: datetime) -> str:
-    """Locale-independent '11 Jun 2026 06:30' formatting used by the generation chrome."""
-    month = MONTH_ABBREVIATIONS[value.month - 1]
-    return f"{value.day:02d} {month} {value.year} {value.hour:02d}:{value.minute:02d}"  # noqa: E231
 
 
 def bold_markup(value: str) -> Markup:
@@ -93,6 +85,7 @@ def environment() -> SandboxedEnvironment:
         autoescape=True,
     )
     env.filters["display_datetime"] = display_datetime
+    env.filters["report_labels"] = report_labels
     env.filters["bold_markup"] = bold_markup
     env.filters["evidence_text"] = evidence_text
     env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")

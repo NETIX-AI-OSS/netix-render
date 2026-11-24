@@ -36,6 +36,7 @@
 </table>
 {%- endmacro %}
 <!doctype html>
+{% set copy = doc.meta.language | report_labels -%}
 <html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
   <head>
     <meta charset="UTF-8" />
@@ -282,9 +283,9 @@
           <table class="frame" cellpadding="0" cellspacing="0">
             <tr>
               <td class="genbar-td">
-                <span class="gb-badge">⬡ SYSTEM-GENERATED</span> · Report ID <b>{{ doc.meta.report_id }}</b>
-                · Generated <b>{{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}</b>
-                · Engine {{ doc.meta.engine_version }} · {{ doc.meta.manual_edits }} manual edits · {% if doc.meta.sha256 %}Artifact fingerprint recorded{% else %}Automatically generated{% endif %}
+                <span class="gb-badge">⬡ {{ copy.system_generated }}</span> · {{ copy.report_id }} <b>{{ doc.meta.report_id }}</b>
+                · {{ copy.generated }} <b>{{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}</b>
+                · {{ copy.engine }} {{ doc.meta.engine_version }} · {{ copy.manual_edits | format(count=doc.meta.manual_edits) }} · {% if doc.meta.sha256 %}{{ copy.fingerprint }}{% else %}{{ copy.automatic }}{% endif %}
               </td>
             </tr>
             <tr>
@@ -438,12 +439,12 @@
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 26px">
                   <tr>
                     <td class="foot-td">
-                      {{ section.note }}{% if section.distribution %} To: {{ section.distribution | join(" · ") }}{% endif %}{% if section.links %} | {% for link in section.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}
+                      {{ section.note }}{% if section.distribution %} {{ copy.recipients }} {{ section.distribution | join(" · ") }}{% endif %}{% if section.links %} | {% for link in section.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}
                     </td>
                   </tr>
                   <tr>
                     <td class="genfoot-td">
-                      Generated automatically{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · Report ID {{ doc.meta.report_id }} · Rendered {{ doc.meta.generated_at | display_datetime }} {{ doc.meta.timezone_label }}
+                      {{ copy.generated_automatically }}{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ doc.meta.report_id }} · {{ copy.rendered }} {{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}
                     </td>
                   </tr>
                 </table>

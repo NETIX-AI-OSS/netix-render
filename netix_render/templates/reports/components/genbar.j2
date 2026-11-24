@@ -1,7 +1,8 @@
 {% macro genbar(meta) -%}
+{% set copy = meta.language | report_labels -%}
 <div class="genbar">
-  <span class="gb-badge">⬡ SYSTEM-GENERATED</span><span>Report ID&nbsp;<b>{{ meta.report_id }}</b></span
-  ><span>Generated&nbsp;<b>{{ meta.generated_at | display_datetime }} {{ meta.timezone_label }}</b></span
-  ><span>Engine {{ meta.engine_version }} · {{ meta.manual_edits }} manual edits</span><span class="gb-right">{% if meta.sha256 %}Artifact fingerprint recorded{% else %}Automatically generated{% endif %}</span>
+  <span class="gb-badge">⬡ {{ copy.system_generated }}</span><span>{{ copy.report_id }}&nbsp;<b>{{ meta.report_id }}</b></span
+  ><span>{{ copy.generated }}&nbsp;<b>{{ meta.generated_at | display_datetime(meta.language) }} {{ meta.timezone_label }}</b></span
+  ><span>{{ copy.engine }} {{ meta.engine_version }} · {{ copy.manual_edits | format(count=meta.manual_edits) }}</span><span class="gb-right">{% if meta.sha256 %}{{ copy.fingerprint }}{% else %}{{ copy.automatic }}{% endif %}</span>
 </div>
 {%- endmacro %}

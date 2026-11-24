@@ -1,18 +1,19 @@
 {% macro buttons(section) -%}
 {% for button in section.buttons %}<a class="btn{% if button.ghost %} ghost{% endif %}" href="{{ button.url }}">{{ button.label }}</a>{% endfor %}
 {%- endmacro %}
-{% macro foot(section) -%}
+{% macro foot(section, copy) -%}
 <div class="foot">
-  {{ section.note }}{% if section.distribution %} To: {{ section.distribution | join(" · ") }}{% endif %}{% if section.links %} &nbsp;|&nbsp; {% for link in section.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}
+  {{ section.note }}{% if section.distribution %} {{ copy.recipients }} {{ section.distribution | join(" · ") }}{% endif %}{% if section.links %} &nbsp;|&nbsp; {% for link in section.links %}<a href="{{ link.url }}">{{ link.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}
 </div>
 {%- endmacro %}
-{% macro genfoot(meta) -%}
+{% macro genfoot(meta, copy) -%}
 <div class="genfoot">
-  Generated automatically{% if meta.logo_line %} · {{ meta.logo_line }}{% endif %} · Report ID {{ meta.report_id }} · Rendered {{ meta.generated_at | display_datetime }} {{ meta.timezone_label }}
+  {{ copy.generated_automatically }}{% if meta.logo_line %} · {{ meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ meta.report_id }} · {{ copy.rendered }} {{ meta.generated_at | display_datetime(meta.language) }} {{ meta.timezone_label }}
 </div>
 {%- endmacro %}
 {% macro footer(section, meta) -%}
+{% set copy = meta.language | report_labels -%}
 {{ buttons(section) }}
-{{ foot(section) }}
-{{ genfoot(meta) }}
+{{ foot(section, copy) }}
+{{ genfoot(meta, copy) }}
 {%- endmacro %}

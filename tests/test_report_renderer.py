@@ -1,6 +1,6 @@
 import pytest
 
-from netix_render.renderer import bold_markup, display_datetime, render_report
+from netix_render.renderer import bold_markup, display_datetime, render_email, render_report
 from netix_render.schema import ReportDocument
 from tests.support import (
     FIXTURE_NAMES,
@@ -80,6 +80,32 @@ def test_rtl_direction_reaches_the_html_tag():
     assert '<html lang="ar" dir="rtl">' in rendered
     assert "RTL overrides" in rendered
     assert "margin-right: auto;" in rendered
+
+
+@pytest.mark.parametrize(
+    "locale,direction,report_id,month,cover",
+    [
+        ("en", "ltr", "Report ID", "Jun", "Report cover"),
+        ("ar-AE", "rtl", "معرّف التقرير", "يونيو", "غلاف التقرير"),
+        ("fr", "ltr", "ID du rapport", "juin", "Couverture du rapport"),
+        ("es", "ltr", "ID del informe", "jun.", "Portada del informe"),
+        ("nl", "ltr", "Rapport-ID", "jun.", "Omslag van het rapport"),
+        ("de", "ltr", "Berichts-ID", "Juni", "Berichtsdeckblatt"),
+        ("ru", "ltr", "ID отчёта", "июня", "Обложка отчёта"),
+    ],
+)
+def test_fixed_report_copy_uses_the_report_locale(locale, direction, report_id, month, cover):
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"]["language"] = locale
+    payload["meta"]["dir"] = direction
+    payload["meta"]["generated_at"] = "2026-06-11T06:30:00+00:00"
+    document = ReportDocument.model_validate(payload)
+
+    for surface in (render_report(document), render_email(document)):
+        assert f'<html lang="{locale}" dir="{direction}">' in surface
+        assert report_id in surface
+        assert f"11 {month} 2026" in surface
+    assert f'aria-label="{cover}"' in render_report(document, layout="community")
 
 
 def test_accent_gradient_is_parameterized():
