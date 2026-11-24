@@ -5,7 +5,7 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
-Locale = Literal["en", "ar", "fr", "es", "nl", "de"]
+Locale = Literal["en", "ar", "fr", "es", "nl", "de", "ru"]
 Severity = Literal["ok", "warn", "crit"]
 
 RTL_LOCALES = frozenset({"ar"})
