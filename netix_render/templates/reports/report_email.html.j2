@@ -40,6 +40,7 @@
 <html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{ doc.meta.title }}, {{ doc.meta.asset.name }}</title>
     <style>
       body {
@@ -53,8 +54,10 @@
         background: #eef1f6;
       }
       .frame {
-        width: 640px;
-        max-width: 100%;
+        width: 100%;
+        max-width: 640px;
+        table-layout: fixed;
+        overflow-wrap: anywhere;
       }
       .genbar-td {
         background: #0e1320;
@@ -180,6 +183,7 @@
       }
       .etable {
         width: 100%;
+        table-layout: fixed;
         border-collapse: collapse;
         font-size: 12px;
         margin: 6px 0 2px;
@@ -190,7 +194,7 @@
         font-size: 9.5px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
-        text-align: left;
+        text-align: {{ "right" if doc.meta.dir == "rtl" else "left" }};
         padding: 8px 10px;
         border-bottom: 1px solid #dde3ee;
       }

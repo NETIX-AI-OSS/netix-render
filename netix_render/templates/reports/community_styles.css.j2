@@ -39,6 +39,8 @@
 .community .cover { position: relative; overflow: hidden; padding: 0; background: linear-gradient(145deg, #196796 0%, #13aec5 45%, #153d58 100%); color: white; }
 .cover-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .cover-heading { position: relative; padding: 50px 36px 0; max-width: 73%; }
+[dir="rtl"] .cover-photo + .cover-heading { padding-block-start: 108px; }
+[dir="rtl"] .cover-kicker { letter-spacing: normal; }
 .cover-kicker { font-size: 10px; font-weight: 700; letter-spacing: 2px; }
 .cover-heading h1 { font-size: 42px; text-transform: uppercase; line-height: 1.06; margin: 18px 0 12px; text-shadow: 0 2px 4px #163a5266; overflow-wrap: anywhere; }
 .cover-heading p { font-size: 17px; line-height: 1.4; }
@@ -76,6 +78,7 @@
   .community .comment h2 { font-size: 11px; }
   .community .page-foot { margin-top: 16px; }
   .cover-heading { padding: 16mm 12mm 0; }
+  [dir="rtl"] .cover-photo + .cover-heading { padding-block-start: 34mm; }
   .cover-panel { margin: auto 12mm 21mm; }
   .cover-meta strong { font-size: 11px; }
   .cover-heading h1 { font-size: 38px; }
