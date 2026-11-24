@@ -1,3 +1,4 @@
+{% import "components/genbar.j2" as genbar_c -%}
 {% macro heading(title, icon=none, subtitle=none) -%}
 {% if title %}
 <h2 class="eh2">{% if icon %}{{ icon }} {% endif %}{{ title }}</h2>
@@ -288,7 +289,7 @@
             <tr>
               <td class="genbar-td">
                 <span class="gb-badge">⬡ {{ copy.system_generated }}</span> · {{ copy.report_id }} <b>{{ doc.meta.report_id }}</b>
-                · {{ copy.generated }} <b>{{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}</b>
+                · {{ copy.generated }} <b>{{ genbar_c.timestamp(doc.meta) }}</b>
                 · {{ copy.engine }} {{ doc.meta.engine_version }} · {{ copy.manual_edits | format(count=doc.meta.manual_edits) }} · {% if doc.meta.sha256 %}{{ copy.fingerprint }}{% else %}{{ copy.automatic }}{% endif %}
               </td>
             </tr>
@@ -448,7 +449,7 @@
                   </tr>
                   <tr>
                     <td class="genfoot-td">
-                      {{ copy.generated_automatically }}{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ doc.meta.report_id }} · {{ copy.rendered }} {{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}
+                      {{ copy.generated_automatically }}{% if doc.meta.logo_line %} · {{ doc.meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ doc.meta.report_id }} · {{ copy.rendered }} {{ genbar_c.timestamp(doc.meta) }}
                     </td>
                   </tr>
                 </table>

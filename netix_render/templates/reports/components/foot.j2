@@ -1,3 +1,4 @@
+{% import "components/genbar.j2" as genbar_c -%}
 {% macro buttons(section) -%}
 {% for button in section.buttons %}<a class="btn{% if button.ghost %} ghost{% endif %}" href="{{ button.url }}">{{ button.label }}</a>{% endfor %}
 {%- endmacro %}
@@ -8,7 +9,7 @@
 {%- endmacro %}
 {% macro genfoot(meta, copy) -%}
 <div class="genfoot">
-  {{ copy.generated_automatically }}{% if meta.logo_line %} · {{ meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ meta.report_id }} · {{ copy.rendered }} {{ meta.generated_at | display_datetime(meta.language) }} {{ meta.timezone_label }}
+  {{ copy.generated_automatically }}{% if meta.logo_line %} · {{ meta.logo_line }}{% endif %} · {{ copy.report_id }} {{ meta.report_id }} · {{ copy.rendered }} {{ genbar_c.timestamp(meta) }}
 </div>
 {%- endmacro %}
 {% macro footer(section, meta) -%}

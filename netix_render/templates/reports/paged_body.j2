@@ -32,7 +32,7 @@
       {% for item in page.headlines %}<a class="headline-link" href="#report-page-{{ loop.index + 1 }}"><span>{{ loop.index }}</span>{{ item.title }} →</a>{% endfor %}
       {% endif %}
     </div>
-    <footer class="page-foot"><span>{{ doc.meta.report_id }} · {{ copy.generated }} {{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}</span><span>{{ loop.index }} / {{ pages | length }}</span></footer>
+    <footer class="page-foot"><span>{{ doc.meta.report_id }} · {{ copy.generated }} {{ genbar_c.timestamp(doc.meta) }}</span><span>{{ loop.index }} / {{ pages | length }}</span></footer>
   </article>
   {% endfor %}
 </main>

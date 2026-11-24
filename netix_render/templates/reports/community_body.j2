@@ -13,7 +13,7 @@
         <div><span>{{ copy.prepared_for }}</span><strong>{{ doc.meta.logo_line or copy.team }}</strong></div>
         <div><span>{{ copy.location }}</span><strong>{{ doc.meta.asset.location or doc.meta.asset.name }}</strong></div>
         <div><span>{{ copy.reference }}</span><strong>{{ doc.meta.report_id }}</strong></div>
-        <div><span>{{ copy.generated }}</span><strong>{{ doc.meta.generated_at | display_datetime(doc.meta.language) }} {{ doc.meta.timezone_label }}</strong></div>
+        <div><span>{{ copy.generated }}</span><strong>{{ genbar_c.timestamp(doc.meta) }}</strong></div>
       </div>
       <div class="cover-contents"><span>{{ copy.contents }}</span><ol>{% for page in pages %}<li><a href="#report-page-{{ loop.index }}">{{ page.title }}</a></li>{% endfor %}</ol></div>
       <p class="cover-source">{{ copy.cover_source }}</p>
