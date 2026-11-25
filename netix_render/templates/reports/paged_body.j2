@@ -7,7 +7,7 @@
     <div class="page-body">
       <div class="page-kicker">{% if doc.meta.logo_line %}{{ doc.meta.logo_line }} · {% endif %}{{ doc.meta.asset.name }}</div>
       <h1 class="page-title">{{ page.title }}</h1>
-      <div class="page-period">{{ doc.meta.period.label | isolate_value(doc.meta.dir) }} · {{ doc.meta.title | isolate_value(doc.meta.dir) }}</div>
+      <div class="page-period">{{ doc.meta.period.label | isolate_value(doc.meta.dir) }} · {% if doc.meta.dir == "rtl" %}<bdi class="page-period-title">{{ doc.meta.title }}</bdi>{% else %}{{ doc.meta.title }}{% endif %}</div>
       {% if page.detail %}
         {% set item = page.detail %}
         <p class="detail-lead">{{ item.finding }}</p>

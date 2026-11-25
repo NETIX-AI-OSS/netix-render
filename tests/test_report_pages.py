@@ -90,7 +90,7 @@ def test_rtl_preserves_authored_period_titles_and_banner_punctuation():
     for html in (render_report(continuous), paged_html, community_html, render_email(continuous)):
         assert "\u20681-day test period\u2069" in html
         assert f"\u2068{banner}\u2069" in html
-    assert f"· \u2068{paged.meta.title}\u2069" in paged_html
+    assert f'<bdi class="page-period-title">{paged.meta.title}</bdi>' in paged_html
     assert f"\u2068{paged.meta.asset.name}\u2069 ·" in community_html
     assert continuous.meta.period.label == paged.meta.period.label == "1-day test period"
 
