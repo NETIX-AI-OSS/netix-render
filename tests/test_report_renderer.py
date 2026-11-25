@@ -83,6 +83,25 @@ def test_rtl_direction_reaches_the_html_tag():
 
 
 @pytest.mark.parametrize(
+    "locale,explicit_direction,direction",
+    [("ar", None, "rtl"), ("ar-AE", None, "rtl"), ("ar-AE", "ltr", "ltr"), ("fr", None, "ltr")],
+)
+def test_report_direction_uses_the_language_when_omitted(locale, explicit_direction, direction):
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"]["language"] = locale
+    payload["meta"].pop("dir", None)
+    if explicit_direction is not None:
+        payload["meta"]["dir"] = explicit_direction
+
+    document = ReportDocument.model_validate(payload)
+
+    assert payload["meta"].get("dir") == explicit_direction
+    assert document.meta.dir == direction
+    for html in (render_report(document), render_email(document)):
+        assert f'<html lang="{locale}" dir="{direction}">' in html
+
+
+@pytest.mark.parametrize(
     "locale,direction,report_id,month,cover",
     [
         ("en", "ltr", "Report ID", "Jun", "Report cover"),

@@ -13,7 +13,7 @@ and exposed as `documents.*` MCP tools by ml-engine.
 - **Transactional email** (`netix_render.render_email_template`): registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
   `feedback_request`, `status_digest`, `offline_daily_report`), each with a strict pydantic
-  contract, en/ar/fr/es/nl/de chrome strings, RTL support, and a plain-text alternative:
+  contract, en/ar/fr/es/nl/de/ru chrome strings, RTL support, and a plain-text alternative:
 
 ```python
 from netix_render import render_email_template
@@ -36,9 +36,9 @@ Every render is deterministic: validation happens against the template's contrac
 (`extra="forbid"`), CSS is inlined via `css-inline`, and the template API produces complete HTML
 from caller-supplied data.
 
-The `v0.1.4` tag accepts `en`, `ar` and `es`. The additional locales, link validation and the
-`offline_daily_report` template ship in `v0.1.5`; a service pinned to `v0.1.4` needs a pin update
-before it can use them.
+The `v0.1.4` tag accepts `en`, `ar` and `es`. The `v0.1.5` tag adds `fr`, `nl` and `de`, link
+validation and the `offline_daily_report` template. Russian email templates require a renderer
+revision newer than `v0.1.5`.
 
 ## Design tokens
 
@@ -77,3 +77,6 @@ Web reports include in-document navigation. A4 print styles insert page breaks a
 Report fixtures and snapshots must be authored from scratch with fictional assets, readings, incidents and `example.invalid` links. Renaming a customer or site is insufficient. Keep production reports, screenshots, raw payloads and validation artifacts outside this public repository, including PR descriptions and attachments. The `synthetic_*` fixtures are deliberately fictional and exercise daily, weekly and monthly report components.
 
 Report branding is supplied through `meta.logo_line`. It is escaped and used consistently in HTML, email and every multipage header. Omitting it renders reports without an organization label. Report metadata supplies asset names and timestamps; the renderer does not invent copyright ownership or verification destinations.
+
+Report documents use `meta.language` for built-in labels and dates. Arabic documents default to
+right-to-left, including regional codes such as `ar-AE`. Supply `meta.dir` to set an explicit direction.

@@ -1,9 +1,12 @@
 """The JSON contract between report generation and rendering; extra="forbid" rejects fabricated keys."""
 
+from collections.abc import Mapping
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from netix_render.report_locale import _language
 
 HEX_COLOR = r"^#[0-9a-fA-F]{6}$"
 
@@ -49,6 +52,15 @@ class ReportMeta(StrictModel):
     timezone_label: str = "GST"
     manual_edits: int = 0
     sha256: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def infer_direction(cls, data: object) -> object:
+        if isinstance(data, Mapping) and "dir" not in data:
+            language = data.get("language")
+            if isinstance(language, str) and _language(language) == "ar":
+                return {**data, "dir": "rtl"}
+        return data
 
 
 class BannerSection(StrictModel):
