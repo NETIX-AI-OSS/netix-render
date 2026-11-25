@@ -5,6 +5,8 @@ from urllib.parse import urlsplit
 
 from pydantic import BaseModel, ConfigDict, field_validator, model_validator
 
+from netix_render.report_locale import _language
+
 Locale = Literal["en", "ar", "fr", "es", "nl", "de", "ru"]
 Severity = Literal["ok", "warn", "crit"]
 
@@ -34,6 +36,11 @@ class EmailMeta(StrictModel):
     org: OrgBrand = OrgBrand()
     # Overrides the template's default subject when set.
     subject: str | None = None
+
+    @field_validator("locale", mode="before")
+    @classmethod
+    def normalize_locale(cls, value: object) -> object:
+        return _language(value) if isinstance(value, str) else value
 
     @property
     def dir(self) -> Literal["ltr", "rtl"]:

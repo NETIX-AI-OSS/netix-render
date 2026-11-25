@@ -36,6 +36,34 @@ def test_renders_in_every_locale(template_id, locale):
     assert f'lang="{locale}"' in rendered.html
 
 
+@pytest.mark.parametrize(
+    ("requested", "locale"),
+    [
+        ("en-GB", "en"),
+        ("ar-AE", "ar"),
+        ("fr-CA", "fr"),
+        ("es-MX", "es"),
+        ("nl-BE", "nl"),
+        ("de-AT", "de"),
+        (" RU_ru ", "ru"),
+    ],
+)
+def test_email_language_aliases_render_the_canonical_template(requested, locale):
+    sample = dict(TEMPLATES["otp_code"].sample)
+    sample["meta"] = {**sample["meta"], "locale": requested}
+    regional = render_email_template("otp_code", sample)
+    sample["meta"]["locale"] = locale
+    assert regional == render_email_template("otp_code", sample)
+
+
+@pytest.mark.parametrize("locale", ["it-IT", 12])
+def test_email_language_still_rejects_unsupported_values(locale):
+    sample = dict(TEMPLATES["otp_code"].sample)
+    sample["meta"] = {**sample["meta"], "locale": locale}
+    with pytest.raises(ValueError, match=r"meta.locale"):
+        render_email_template("otp_code", sample)
+
+
 @pytest.mark.parametrize("template_id", sorted(TEMPLATES))
 def test_email_safety_constraints(template_id):
     rendered = render_email_template(template_id, TEMPLATES[template_id].sample)
