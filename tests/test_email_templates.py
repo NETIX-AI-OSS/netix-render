@@ -112,6 +112,13 @@ def test_text_alternative_contains_payload_facts():
     assert "https://example.invalid/download/abc" in rendered.text
 
 
+def test_arabic_wordmark_preserves_latin_order_in_the_masthead():
+    sample = {**TEMPLATES["report_pack"].sample, "meta": {"locale": "ar"}}
+    html = render_email_template("report_pack", sample).html
+
+    assert re.search(r'<div class="wordmark"[^>]*dir="ltr"[^>]*>NETIX<span[^>]*>\.AI</span>', html)
+
+
 def test_arabic_report_pack_protects_file_name_and_size_direction():
     sample = {
         **TEMPLATES["report_pack"].sample,

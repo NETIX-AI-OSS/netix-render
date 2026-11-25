@@ -221,7 +221,7 @@
                 {% if payload.meta.org.logo_url -%}
                 <img src="{{ payload.meta.org.logo_url }}" alt="{{ payload.meta.org.name or 'logo' }}" height="28" style="display: block; max-height: 28px" />
                 {%- else -%}
-                <div class="wordmark">{{ tokens.email.wordmark }}<span>{{ tokens.email.wordmark_suffix }}</span></div>
+                <div class="wordmark"{% if payload.meta.dir == "rtl" %} dir="ltr" style="text-align: right"{% endif %}>{{ tokens.email.wordmark }}<span>{{ tokens.email.wordmark_suffix }}</span></div>
                 {%- endif %}
                 {% if payload.meta.org.name %}<div class="org-name">{{ payload.meta.org.name }}</div>{% endif %}
               </td>
