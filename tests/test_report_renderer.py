@@ -104,7 +104,8 @@ def test_fixed_report_copy_uses_the_report_locale(locale, direction, report_id, 
     for surface in (render_report(document), render_email(document)):
         assert f'<html lang="{locale}" dir="{direction}">' in surface
         assert report_id in surface
-        assert f"11 {month} 2026" in surface
+        text = surface.translate(str.maketrans("", "", "\u2066\u2068\u2069"))
+        assert f"11 {month} 2026" in text
     assert f'aria-label="{cover}"' in render_report(document, layout="community")
 
 
@@ -218,3 +219,11 @@ def test_display_datetime_is_locale_independent():
 
     assert display_datetime(datetime(2026, 6, 1, 7, 0)) == "01 Jun 2026 07:00"
     assert display_datetime(datetime(2026, 12, 31, 23, 59)) == "31 Dec 2026 23:59"
+
+
+def test_arabic_timestamp_preserves_date_order_and_its_time_zone():
+    from datetime import datetime
+
+    stamp = display_datetime(datetime(2026, 6, 1, 6, 30), "ar-AE", "rtl", "GST")
+
+    assert stamp == "\u206601 \u2068يونيو\u2069 2026 06:30 GST\u2069"

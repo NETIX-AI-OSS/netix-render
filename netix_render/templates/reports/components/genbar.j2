@@ -1,5 +1,5 @@
 {% macro timestamp(meta) -%}
-{% if meta.dir == "rtl" %}<bdi dir="ltr">{% endif %}{{ meta.generated_at | display_datetime(meta.language) }} {{ meta.timezone_label }}{% if meta.dir == "rtl" %}</bdi>{% endif %}
+{% if meta.dir == "rtl" %}<bdi dir="ltr">{% endif %}{{ meta.generated_at | display_datetime(meta.language, meta.dir, meta.timezone_label) }}{% if meta.dir == "rtl" %}</bdi>{% endif %}
 {%- endmacro %}
 {% macro genbar(meta) -%}
 {% set copy = meta.language | report_labels -%}

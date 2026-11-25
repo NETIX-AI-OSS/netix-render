@@ -472,7 +472,13 @@ def report_labels(locale: str) -> dict[str, str]:
     return {**_LABELS.get(language, _LABELS["en"]), **_COMPONENT_LABELS.get(language, _COMPONENT_LABELS["en"])}
 
 
-def display_datetime(value: datetime, locale: str = "en") -> str:
-    """Format report chrome in the report language and its existing timezone."""
+def display_datetime(
+    value: datetime, locale: str = "en", direction: str = "ltr", timezone_label: str | None = None
+) -> str:
+    """Format a timestamp in chronological order for browsers, email and PDF."""
     month = _MONTHS.get(_language(locale), _MONTHS["en"])[value.month - 1]
-    return f"{value.day:02d} {month} {value.year} {value.hour:02d}:{value.minute:02d}"  # noqa: E231
+    month = isolate_value(month, direction)
+    stamp = f"{value.day:02d} {month} {value.year} {value.hour:02d}:{value.minute:02d}"  # noqa: E231
+    if timezone_label is not None:
+        stamp += f" {timezone_label}"
+    return f"\u2066{stamp}\u2069" if direction == "rtl" else stamp
