@@ -143,6 +143,26 @@ def test_daily_cycle_chart_highlights_validated_focus_index():
         analysis_svg(chart)
 
 
+def test_management_chart_wraps_legends_and_preserves_standalone_svg_labels():
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="stacked",
+        title="События за неделю",
+        unit="Аварии",
+        labels=["Пн", "Вт"],
+        series=[{"name": "Критические < A-12", "values": [10, 20], "color": "#196796"}],
+        note="Показания",
+    )
+    html = render_report(multipage_document(), layout="community", management=context(), analysis_charts=[chart])
+    assert 'class="analysis-legend"' in html
+    assert "<bdi>Критические &lt; A-12</bdi>" in html
+    assert 'style="background-color:#196796"' in html
+    assert "Критические &lt; A-12" in analysis_svg(chart)
+    assert "Критические &lt; A-12" not in analysis_svg(chart, show_legend=False)
+
+
 def test_evidence_precision_keeps_timestamps_and_original_document_intact():
     from netix_render.renderer import evidence_text
 

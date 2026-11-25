@@ -68,7 +68,15 @@ def _hbar(section: HBarChartSection) -> Markup:
 
 
 def _analysis(chart: AnalysisChart, wide: bool = False) -> Markup:
-    return Markup(charts.analysis_svg(chart, wide=wide))
+    svg = charts.analysis_svg(chart, wide=wide, show_legend=False)
+    if chart.kind == "ranked":
+        return Markup(svg)
+    legend = "".join(
+        f'<span><span class="analysis-swatch" aria-hidden="true" style="background-color:{escape(series.color)}">'
+        f"</span><bdi>{escape(series.name)}</bdi></span>"
+        for series in chart.series
+    )
+    return Markup(f'<div class="analysis-legend">{legend}</div>{svg}')
 
 
 def _ring(item: RingItem) -> Markup:
