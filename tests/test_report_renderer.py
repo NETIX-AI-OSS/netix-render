@@ -108,6 +108,62 @@ def test_fixed_report_copy_uses_the_report_locale(locale, direction, report_id, 
     assert f'aria-label="{cover}"' in render_report(document, layout="community")
 
 
+@pytest.mark.parametrize(
+    ("language", "direction", "state", "due"),
+    [
+        ("en", "ltr", "State", "Due"),
+        ("ar-AE", "rtl", "الحالة", "الموعد"),
+        ("fr-FR", "ltr", "État", "Échéance"),
+        ("es", "ltr", "Estado", "Plazo"),
+        ("nl", "ltr", "Status", "Uiterlijk"),
+        ("de", "ltr", "Status", "Frist"),
+        ("ru-RU", "ltr", "Состояние", "Срок"),
+    ],
+)
+def test_fixed_table_labels_render_on_desktop_mobile_and_email(language, direction, state, due):
+    document = load_document("synthetic_daily")
+    document.meta.language = language
+    document.meta.dir = direction
+    web, email = render_report(document), render_email(document)
+
+    assert f">{state}</th>" in web and f'data-label="{state}"' in web
+    assert f">{due}</th>" in web and f'data-label="{due}"' in web
+    assert f">{state}</th>" in email and f">{due}</th>" in email
+
+
+def test_rtl_isolates_numeric_values_in_kpis_and_authored_data_cells():
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"].update(language="ar-AE", dir="rtl")
+    kpi = next(s for s in payload["sections"] if s["kind"] == "kpi_grid")
+    kpi["items"][0]["value"] = "53 500 kWh"
+    payload["sections"].append(
+        {
+            "kind": "data_table",
+            "columns": ["مؤشر"],
+            "rows": [[{"text": "18.2 °C"}], [{"text": "AHU-17"}]],
+        }
+    )
+    document = ReportDocument.model_validate(payload)
+
+    for html in (render_report(document), render_email(document)):
+        for value in ("53 500 kWh", "18.2 °C", "AHU-17"):
+            assert f"\u2068{value}\u2069" in html
+    assert kpi["items"][0]["value"] == "53 500 kWh"
+
+
+def test_chart_gaps_and_decimals_use_the_report_locale():
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"].update(language="fr", dir="ltr")
+    chart = next(s for s in payload["sections"] if s["kind"] == "trend_pair")["charts"][0]
+    chart["series"][0]["value"] = 12.5
+    chart["series"][1]["value"] = None
+    document = ReportDocument.model_validate(payload)
+
+    for html in (render_report(document), render_email(document)):
+        assert "12,50" in html
+        assert ">N/D<" in html
+
+
 def test_accent_gradient_is_parameterized():
     payload = load_fixture_json("synthetic_daily")
     payload["meta"]["accent"] = {"gradient": ["#0e1320", "#1d2b52", "#2e4a8c"]}

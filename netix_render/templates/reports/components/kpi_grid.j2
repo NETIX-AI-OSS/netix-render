@@ -1,9 +1,9 @@
-{% macro kpi_grid(section) -%}
+{% macro kpi_grid(section, direction) -%}
 <div class="kpis">
   {% for item in section.items %}
   <div class="kpi">
-    <div class="v {{ item.status }}">{{ item.value }}</div>
-    <div class="l">{{ item.label }}</div>
+    <div class="v {{ item.status }}">{{ item.value | isolate_value(direction) }}</div>
+    <div class="l">{{ item.label | isolate_value(direction) }}</div>
     {% if item.note %}<div class="s {{ item.note_status or item.status }}">{{ item.note }}</div>{% endif %}
   </div>
   {% endfor %}

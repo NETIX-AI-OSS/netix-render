@@ -1,24 +1,24 @@
 {% import "components/section_h2.j2" as heading %}
-{% macro exceptions_table(section) -%}
+{% macro exceptions_table(section, copy, direction) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
 {% if section.rows %}
 <table class="responsive-table">
   <tr>
     <th style="width: 5%">#</th>
-    <th style="width: 26%">Event</th>
-    <th style="width: 18%">Asset</th>
-    <th style="width: 35%">AI assessment</th>
-    <th style="width: 16%">Owner</th>
+    <th style="width: 26%">{{ copy.event }}</th>
+    <th style="width: 18%">{{ copy.asset }}</th>
+    <th style="width: 35%">{{ copy.ai_assessment }}</th>
+    <th style="width: 16%">{{ copy.column_owner }}</th>
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td data-label="Rank">{{ row.rank }}</td>
-    <td data-label="Event" class="b">{{ row.event }}</td>
-    <td data-label="Asset">{{ row.asset }}</td>
-    <td data-label="Assessment">{{ row.assessment }}</td>
-    <td data-label="Owner">{{ row.owner }}</td>
+    <td data-label="{{ copy.rank }}">{{ row.rank }}</td>
+    <td data-label="{{ copy.event }}" class="b">{{ row.event }}</td>
+    <td data-label="{{ copy.asset }}">{{ row.asset | isolate_value(direction) }}</td>
+    <td data-label="{{ copy.assessment }}">{{ row.assessment }}</td>
+    <td data-label="{{ copy.column_owner }}">{{ row.owner }}</td>
   </tr>
   {% endfor %}
 </table>
-{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
+{% elif not section.subtitle %}<p class="empty">{{ copy.empty_section }}</p>{% endif %}
 {%- endmacro %}

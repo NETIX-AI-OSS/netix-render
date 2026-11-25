@@ -2,7 +2,7 @@
 
 {{ t("report_pack_intro") }}
 {% for file in payload.files %}
-- {{ file.name }}{% if file.size_label %} ({{ file.size_label }}){% endif %}{% endfor %}
+- {{ file.name | isolate_value(payload.meta.dir) }}{% if file.size_label %} ({{ file.size_label | isolate_value(payload.meta.dir) }}){% endif %}{% endfor %}
 {% if payload.portal %}
 {{ payload.portal.label }}: {{ payload.portal.url }}
 {% endif %}{% if payload.note %}

@@ -13,7 +13,7 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
-from netix_render.report_locale import display_datetime, report_labels
+from netix_render.report_locale import chart_value, display_datetime, isolate_value, report_labels
 from netix_render.schema import (
     AnalysisChart,
     HBarChartSection,
@@ -47,7 +47,7 @@ def evidence_text(value: str) -> str:
     )
 
 
-def _sparkline(chart: TrendChart, wide: bool) -> Markup:
+def _sparkline(chart: TrendChart, wide: bool, language: str, direction: str) -> Markup:
     width, height = (640, 136) if wide else (330, 126)
     return Markup(
         charts.sparkline_svg(
@@ -59,6 +59,8 @@ def _sparkline(chart: TrendChart, wide: bool) -> Markup:
             color=chart.color,
             highlight_color=chart.highlight_color,
             decimals=chart.decimals,
+            language=language,
+            direction=direction,
         )
     )
 
@@ -94,6 +96,8 @@ def environment() -> SandboxedEnvironment:
     )
     env.filters["display_datetime"] = display_datetime
     env.filters["report_labels"] = report_labels
+    env.filters["isolate_value"] = isolate_value
+    env.filters["chart_value"] = chart_value
     env.filters["bold_markup"] = bold_markup
     env.filters["evidence_text"] = evidence_text
     env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")

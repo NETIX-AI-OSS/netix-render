@@ -1,23 +1,23 @@
 {% import "components/section_h2.j2" as heading %}
-{% macro actions_table(section, compact=false) -%}
+{% macro actions_table(section, copy, direction, compact=false) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
 {% set with_source = not compact and section.rows | selectattr("source") | list | length > 0 %}
 {% if section.rows %}
 <table class="responsive-table">
   <tr>
-    <th style="width: {{ '45%' if with_source else '65%' }}">Action</th>
-    <th style="width: 12%">Due</th>
-    <th style="width: {{ '18%' if with_source else '23%' }}">Owner</th>
-    {% if with_source %}<th style="width: 25%">Source</th>{% endif %}
+    <th style="width: {{ '45%' if with_source else '65%' }}">{{ copy.column_action }}</th>
+    <th style="width: 12%">{{ copy.due }}</th>
+    <th style="width: {{ '18%' if with_source else '23%' }}">{{ copy.column_owner }}</th>
+    {% if with_source %}<th style="width: 25%">{{ copy.source }}</th>{% endif %}
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td data-label="Action" class="b"{% if compact %} data-source="{{ row.source or '' }}"{% endif %}>{{ row.action }}{% if links_for is defined %}{% for link in links_for(row.source or "") %}<br /><a class="evidence-link" href="{{ link.url }}">{{ link.label }} · View in Viz ↗</a>{% endfor %}{% endif %}</td>
-    <td data-label="Due">{{ row.due }}</td>
-    <td data-label="Owner">{{ row.owner }}</td>
-    {% if with_source %}<td data-label="Source">{{ row.source or "N/A" }}</td>{% endif %}
+    <td data-label="{{ copy.column_action }}" class="b"{% if compact %} data-source="{{ row.source or '' }}"{% endif %}>{{ row.action }}{% if links_for is defined %}{% for link in links_for(row.source or "") %}<br /><a class="evidence-link" href="{{ link.url }}">{{ link.label }} · {{ copy.view_viz }} ↗</a>{% endfor %}{% endif %}</td>
+    <td data-label="{{ copy.due }}">{{ row.due }}</td>
+    <td data-label="{{ copy.column_owner }}">{{ row.owner }}</td>
+    {% if with_source %}<td data-label="{{ copy.source }}">{{ row.source | isolate_value(direction) if row.source else copy.unavailable }}</td>{% endif %}
   </tr>
   {% endfor %}
 </table>
-{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
+{% elif not section.subtitle %}<p class="empty">{{ copy.empty_section }}</p>{% endif %}
 {%- endmacro %}

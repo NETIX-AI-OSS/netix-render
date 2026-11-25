@@ -4,6 +4,7 @@ from math import ceil
 
 from markupsafe import escape
 
+from netix_render.report_locale import chart_value, isolate_value, report_labels
 from netix_render.schema import HBarRow, RingItem, TrendPoint
 
 SVG_XMLNS = 'xmlns="http://www.w3.org/2000/svg"'
@@ -45,6 +46,9 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
     color: str = "#2e5bd7",
     highlight_color: str = "#dd4257",
     decimals: int = 2,
+    *,
+    language: str = "en",
+    direction: str = "ltr",
 ) -> str:
     """Bar sparkline scaled to series max, value captions, day labels, highlighted last bar; None renders as a gap."""
     baseline = height - 26
@@ -65,7 +69,7 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
         bar_x = int(x_start + pitch * index)
         center = bar_x + bar_width // 2
         if point.value is None:
-            caption = "N/A"
+            caption = report_labels(language)["unavailable"]
             caption_y = baseline - 5
         else:
             value_y = baseline - round(max_bar * (point.value - low) / span) if span else baseline
@@ -78,7 +82,7 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
                 f'<rect x="{bar_x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" rx="3" '
                 f'fill="{escape(fill)}" opacity="{opacity}" />'
             )
-            caption = value_caption(point.value, decimals)  # noqa: E231
+            caption = isolate_value(chart_value(value_caption(point.value, decimals), language), direction)
             caption_y = value_y - 5 if point.value >= 0 else value_y + 10
         parts.append(
             f'<text x="{center}" y="{caption_y}" font-size="9" fill="{BAR_CAPTION_COLOR}" '

@@ -1,9 +1,9 @@
 {% import "components/section_h2.j2" as heading %}
-{% macro data_cell(cell) -%}
+{% macro data_cell(cell, direction) -%}
 {% set classes = ((cell.status or "") ~ (" b" if cell.bold else "")).strip() %}
-<td{% if classes %} class="{{ classes }}"{% endif %}>{% if cell.text %}{{ cell.text }}{% if cell.pill %} {% endif %}{% endif %}{% if cell.pill %}<span class="pill p-{{ cell.pill.level }}">{{ cell.pill.label }}</span>{% endif %}</td>
+<td{% if classes %} class="{{ classes }}"{% endif %}>{% if cell.text %}{{ cell.text | isolate_value(direction) }}{% if cell.pill %} {% endif %}{% endif %}{% if cell.pill %}<span class="pill p-{{ cell.pill.level }}">{{ cell.pill.label }}</span>{% endif %}</td>
 {%- endmacro %}
-{% macro data_table(panel) -%}
+{% macro data_table(panel, direction) -%}
 {% if panel.title %}{{ heading.section_h2(panel.title, panel.icon, panel.subtitle) }}{% endif %}
 <table>
   <tr>
@@ -11,7 +11,7 @@
   </tr>
   {% for row in panel.rows %}
   <tr>
-    {% for cell in row %}{{ data_cell(cell) }}{% endfor %}
+    {% for cell in row %}{{ data_cell(cell, direction) }}{% endfor %}
   </tr>
   {% endfor %}
 </table>

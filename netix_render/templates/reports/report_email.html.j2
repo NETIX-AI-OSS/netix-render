@@ -8,22 +8,22 @@
 {% macro pill(state) -%}
 <span class="pill p-{{ state.level }}">{{ state.label }}</span>
 {%- endmacro %}
-{% macro chart_table(chart) -%}
+{% macro chart_table(chart, copy, language, direction) -%}
 {{ heading(chart.title, chart.icon, chart.subtitle) }}
 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
   <tr>
-    <th>Period</th>
-    <th>Value ({{ chart.unit }})</th>
+    <th>{{ copy.chart_period }}</th>
+    <th>{{ copy.value }} ({{ chart.unit }})</th>
   </tr>
   {% for point in chart.series %}
   <tr>
     <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{{ point.label }}</td>
-    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{% if point.value is none %}N/A{% else %}{{ "%.*f" | format(chart.decimals, point.value) }}{% endif %}</td>
+    <td{% if chart.highlight_last and loop.last %} class="crit b"{% endif %}>{% if point.value is none %}{{ copy.unavailable }}{% else %}{{ "%.*f" | format(chart.decimals, point.value) | chart_value(language) | isolate_value(direction) }}{% endif %}</td>
   </tr>
   {% endfor %}
 </table>
 {%- endmacro %}
-{% macro data_table(panel) -%}
+{% macro data_table(panel, direction) -%}
 {{ heading(panel.title, panel.icon, panel.subtitle) }}
 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
   <tr>
@@ -31,7 +31,7 @@
   </tr>
   {% for row in panel.rows %}
   <tr>
-    {% for cell in row %}{% set classes = ((cell.status or "") ~ (" b" if cell.bold else "")).strip() %}<td{% if classes %} class="{{ classes }}"{% endif %}>{% if cell.text %}{{ cell.text }}{% if cell.pill %} {% endif %}{% endif %}{% if cell.pill %}{{ pill(cell.pill) }}{% endif %}</td>{% endfor %}
+    {% for cell in row %}{% set classes = ((cell.status or "") ~ (" b" if cell.bold else "")).strip() %}<td{% if classes %} class="{{ classes }}"{% endif %}>{% if cell.text %}{{ cell.text | isolate_value(direction) }}{% if cell.pill %} {% endif %}{% endif %}{% if cell.pill %}{{ pill(cell.pill) }}{% endif %}</td>{% endfor %}
   </tr>
   {% endfor %}
 </table>
@@ -319,8 +319,8 @@
                   <tr>
                     {% for item in row %}
                     <td class="kpi-td" width="33%">
-                      <div class="kpi-v {{ item.status }}">{{ item.value }}</div>
-                      <div class="kpi-l">{{ item.label }}</div>
+                      <div class="kpi-v {{ item.status }}">{{ item.value | isolate_value(doc.meta.dir) }}</div>
+                      <div class="kpi-l">{{ item.label | isolate_value(doc.meta.dir) }}</div>
                       {% if item.note %}<div class="kpi-s {{ item.note_status or item.status }}">{{ item.note }}</div>{% endif %}
                     </td>
                     {% endfor %}
@@ -331,13 +331,13 @@
                 {{ heading(section.title, section.icon, section.subtitle) }}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <th>System</th>
-                    <th>State</th>
-                    <th>Detail</th>
+                    <th>{{ copy.system }}</th>
+                    <th>{{ copy.state }}</th>
+                    <th>{{ copy.detail }}</th>
                   </tr>
                   {% for row in section.rows %}
                   <tr>
-                    <td class="b">{{ row.system }}</td>
+                    <td class="b">{{ row.system | isolate_value(doc.meta.dir) }}</td>
                     <td>{{ pill(row.state) }}</td>
                     <td>{{ row.detail }}</td>
                   </tr>
@@ -348,23 +348,23 @@
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <th>#</th>
-                    <th>Event</th>
-                    <th>Asset</th>
-                    <th>AI assessment</th>
-                    <th>Owner</th>
+                    <th>{{ copy.event }}</th>
+                    <th>{{ copy.asset }}</th>
+                    <th>{{ copy.ai_assessment }}</th>
+                    <th>{{ copy.column_owner }}</th>
                   </tr>
                   {% for row in section.rows %}
                   <tr>
                     <td>{{ row.rank }}</td>
                     <td class="b">{{ row.event }}</td>
-                    <td>{{ row.asset }}</td>
+                    <td>{{ row.asset | isolate_value(doc.meta.dir) }}</td>
                     <td>{{ row.assessment }}</td>
                     <td>{{ row.owner }}</td>
                   </tr>
                   {% endfor %}
                 </table>
                 {%- elif section.kind == "trend_pair" %}
-                {% for chart in section.charts %}{{ chart_table(chart) }}{% endfor %}
+                {% for chart in section.charts %}{{ chart_table(chart, copy, doc.meta.language, doc.meta.dir) }}{% endfor %}
                 {%- elif section.kind == "ai_insight" %}
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin: 10px 0">
                   <tr>
@@ -373,23 +373,23 @@
                 </table>
                 {%- elif section.kind == "headline_details" %}
                 {% for item in section.items %}
-                {{ heading(item.title, "", "Headline deep dive") }}
-                <p><b>Finding.</b> {{ item.finding }}</p>
-                <p><b>Why it matters.</b> {{ item.impact }}</p>
-                <p><b>Uncertainty.</b> {{ item.uncertainty }}</p>
-                <p><b>Supporting evidence</b></p>
-                {% for record in item.evidence %}<p>{{ record.label }} · {{ record.observation }}<br><small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small></p>{% endfor %}
-                <p><b>Investigation steps</b></p>
+                {{ heading(item.title, "", copy.detail_subtitle) }}
+                <p><b>{{ copy.detail_finding }}</b> {{ item.finding }}</p>
+                <p><b>{{ copy.detail_impact }}</b> {{ item.impact }}</p>
+                <p><b>{{ copy.detail_uncertainty }}</b> {{ item.uncertainty }}</p>
+                <p><b>{{ copy.evidence }}</b></p>
+                {% for record in item.evidence %}<p>{{ record.label }} · {{ record.observation }}<br><small>{{ record.context }} · {{ record.source | isolate_value(doc.meta.dir) }} · {{ record.evidence_id | isolate_value(doc.meta.dir) }}</small></p>{% endfor %}
+                <p><b>{{ copy.steps }}</b></p>
                 <ol>{% for check in item.checks %}<li>{{ check }}</li>{% endfor %}</ol>
-                <p><b>Action · {{ item.owner }}.</b> {{ item.action }}</p>
+                <p><b>{{ copy.column_action }} · {{ item.owner }}.</b> {{ item.action }}</p>
                 {% endfor %}
                 {%- elif section.kind == "actions" %}
                 {{ heading(section.title, section.icon, section.subtitle) }}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <th>Action</th>
-                    <th>Due</th>
-                    <th>Owner</th>
+                    <th>{{ copy.column_action }}</th>
+                    <th>{{ copy.due }}</th>
+                    <th>{{ copy.column_owner }}</th>
                   </tr>
                   {% for row in section.rows %}
                   <tr>
@@ -400,34 +400,34 @@
                   {% endfor %}
                 </table>
                 {%- elif section.kind == "data_table" %}
-                {{ data_table(section) }}
+                {{ data_table(section, doc.meta.dir) }}
                 {%- elif section.kind == "twocol" %}
-                {% for panel in section.panels %}{{ data_table(panel) }}{% endfor %}
+                {% for panel in section.panels %}{{ data_table(panel, doc.meta.dir) }}{% endfor %}
                 {%- elif section.kind == "hbar_chart" %}
                 {{ heading(section.title, section.icon, section.subtitle) }}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <th>Item</th>
-                    <th>Value</th>
+                    <th>{{ copy.item }}</th>
+                    <th>{{ copy.value }}</th>
                   </tr>
                   {% for row in section.rows %}
                   <tr>
                     <td>{{ row.label }}</td>
-                    <td class="b{% if row.status != "neutral" %} {{ row.status }}{% endif %}">{{ row.display }}</td>
+                    <td class="b{% if row.status != "neutral" %} {{ row.status }}{% endif %}">{{ row.display | isolate_value(doc.meta.dir) }}</td>
                   </tr>
                   {% endfor %}
                 </table>
                 {%- elif section.kind == "rings" %}
                 <table class="etable" width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <th>Score</th>
-                    <th>Value</th>
-                    <th>Detail</th>
+                    <th>{{ copy.score }}</th>
+                    <th>{{ copy.value }}</th>
+                    <th>{{ copy.detail }}</th>
                   </tr>
                   {% for item in section.items %}
                   <tr>
-                    <td class="b">{{ item.label }}</td>
-                    <td class="b{% if item.status in ("warn", "crit") %} {{ item.status }}{% endif %}">{{ item.value_label }}</td>
+                    <td class="b">{{ item.label | isolate_value(doc.meta.dir) }}</td>
+                    <td class="b{% if item.status in ("warn", "crit") %} {{ item.status }}{% endif %}">{{ item.value_label | isolate_value(doc.meta.dir) }}</td>
                     <td>{{ item.sublabel }}</td>
                   </tr>
                   {% endfor %}

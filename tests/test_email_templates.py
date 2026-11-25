@@ -112,6 +112,18 @@ def test_text_alternative_contains_payload_facts():
     assert "https://example.invalid/download/abc" in rendered.text
 
 
+def test_arabic_report_pack_protects_file_name_and_size_direction():
+    sample = {
+        **TEMPLATES["report_pack"].sample,
+        "meta": {"locale": "ar"},
+        "files": [{"name": "AHU-17.pdf", "size_label": "41,3 KB"}],
+    }
+    rendered = render_email_template("report_pack", sample)
+    for surface in (rendered.html, rendered.text):
+        assert "\u2068AHU-17.pdf\u2069" in surface
+        assert "\u206841,3 KB\u2069" in surface
+
+
 def test_visible_text_contains_code():
     rendered = render_email_template("otp_code", TEMPLATES["otp_code"].sample)
     assert "482913" in " ".join(visible_text_chunks(rendered.html))

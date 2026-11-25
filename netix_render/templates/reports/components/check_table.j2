@@ -1,20 +1,20 @@
 {% import "components/section_h2.j2" as heading %}
-{% macro check_table(section) -%}
+{% macro check_table(section, copy, direction) -%}
 {{ heading.section_h2(section.title, section.icon, section.subtitle) }}
 {% if section.rows %}
 <table class="responsive-table">
   <tr>
-    <th style="width: 43%">System</th>
-    <th style="width: 16%">State</th>
-    <th style="width: 41%">Detail</th>
+    <th style="width: 43%">{{ copy.system }}</th>
+    <th style="width: 16%">{{ copy.state }}</th>
+    <th style="width: 41%">{{ copy.detail }}</th>
   </tr>
   {% for row in section.rows %}
   <tr>
-    <td data-label="System" class="b">{{ row.system }}</td>
-    <td data-label="State"><span class="pill p-{{ row.state.level }}">{{ row.state.label }}</span></td>
-    <td data-label="Detail">{{ row.detail }}</td>
+    <td data-label="{{ copy.system }}" class="b">{{ row.system | isolate_value(direction) }}</td>
+    <td data-label="{{ copy.state }}"><span class="pill p-{{ row.state.level }}">{{ row.state.label }}</span></td>
+    <td data-label="{{ copy.detail }}">{{ row.detail }}</td>
   </tr>
   {% endfor %}
 </table>
-{% elif not section.subtitle %}<p class="empty">No items supplied for this section.</p>{% endif %}
+{% elif not section.subtitle %}<p class="empty">{{ copy.empty_section }}</p>{% endif %}
 {%- endmacro %}
