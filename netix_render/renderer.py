@@ -159,10 +159,16 @@ def render_report(
             update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
         )
         pages = compose_pages(paged_document, compact_sources=True)
+    management_copy = None
     if management and layout == "community":
-        from netix_render.management import management_pages, validate_context
+        from netix_render.management import comparison_rows, comparison_summary, management_pages, validate_context
+        from netix_render.management_locale import management_labels
 
         management = validate_context(management)
+        locale = document.meta.language
+        management_copy = management_labels(locale)
+        management["comparison_summary"] = comparison_summary(management["comparison"], locale)
+        management["comparison_rows"] = comparison_rows(management["comparison"], locale)
         pages = management_pages(document)
     return (
         environment()
@@ -176,6 +182,7 @@ def render_report(
             links_for=links_for,
             action_links=action_links,
             management=management,
+            management_copy=management_copy,
         )
     )
 

@@ -11,6 +11,7 @@ class ReportPage:
     sections: list[ReportSection] = field(default_factory=list)
     detail: HeadlineDetail | None = None
     headlines: list[HeadlineDetail] = field(default_factory=list)
+    role: str | None = None
 
 
 def compose_pages(document: ReportDocument, *, compact_sources: bool = False) -> list[ReportPage]:
