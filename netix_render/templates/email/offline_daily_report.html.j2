@@ -8,13 +8,58 @@
   <div class="kpi-l">{{ label }}</div>
 </td>
 {%- endmacro %}
+{% macro compact_cell(label, value, is_name=false, align_end=false) -%}
+<td{% if is_name %} class="v"{% endif %}{% if align_end %} style="text-align: {{ end }}"{% endif %}>
+  <span class="compact-label">{{ t(label) }}</span><span>{{ value | string | isolate_value(payload.meta.dir) }}</span>
+</td>
+{%- endmacro %}
 {% macro count(value) %}{{ value if value else "-" }}{% endmacro %}
+{% block responsive_styles %}
+      .compact-label {
+        display: none;
+      }
+      @media screen and (max-width: 480px) {
+        .compact-kpi tr {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .compact-kpi td {
+          box-sizing: border-box;
+          flex: 1 1 40%;
+          min-width: 0;
+        }
+        .compact-table, .compact-table tbody, .compact-table tr {
+          display: block;
+        }
+        .compact-table .compact-header {
+          display: none;
+        }
+        .compact-table tr {
+          padding: 6px 0;
+          border-top: 1px solid {{ tokens.color.line }};
+        }
+        .compact-table td {
+          border: 0 !important;
+          display: grid;
+          gap: 8px;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+          padding: 3px 0 !important;
+        }
+        .compact-label {
+          display: block !important;
+          color: {{ tokens.color.ink_soft }};
+          font-weight: 400;
+          text-align: start;
+        }
+      }
+{% endblock %}
 {% block content %}
 <div class="band band-{{ payload.severity }}">{{ payload.report_name }}</div>
-<p class="p mut">{{ t("report_date_tz", date=payload.report_date, timezone=payload.timezone) }}</p>
+<p class="p mut">{{ t("report_date_tz", date=payload.report_date | isolate_value(payload.meta.dir), timezone=payload.timezone | isolate_value(payload.meta.dir)) }}</p>
 {% if payload.all_online %}<p class="p">{{ t("all_online") }}</p>{% endif %}
 <p class="kpi-cap">{{ t("kpi_now") }}</p>
-<table class="kpi" cellpadding="0" cellspacing="4">
+<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
   <tr>
     {{ kpi(payload.totals.monitored, t("monitored")) }}
     {{ kpi(payload.totals.online, t("online")) }}
@@ -23,7 +68,7 @@
   </tr>
 </table>
 <p class="kpi-cap">{{ t("kpi_last_24h") }}</p>
-<table class="kpi" cellpadding="0" cellspacing="4">
+<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
   <tr>
     {% set availability = payload.availability_value %}
     {{ kpi(t("percent", value=availability.replace(".", t("decimal_separator"))) if availability is not none else "-", t("availability"), width=33) }}
@@ -34,8 +79,8 @@
 {% if not payload.all_online %}
 <p class="h2">{{ t("offline_now") }}</p>
 {% if payload.offline_items %}
-<table class="kv" cellpadding="0" cellspacing="0">
-  <tr>
+<table class="kv compact-table" cellpadding="0" cellspacing="0">
+  <tr class="compact-header">
     <th>{{ t("name") }}</th>
     <th>{{ t("type") }}</th>
     <th>{{ t("building") }}</th>
@@ -44,11 +89,11 @@
   </tr>
   {% for item in payload.offline_items %}
   <tr>
-    <td class="v">{{ item.display_name }}</td>
-    <td>{{ kinds.get(item.subject_kind, item.subject_kind) or "-" }}</td>
-    <td>{{ item.building or "-" }}</td>
-    <td>{{ item.since or "-" }}</td>
-    <td style="text-align: {{ end }}">{{ item.duration or "-" }}</td>
+    {{ compact_cell("name", item.display_name, is_name=true) }}
+    {{ compact_cell("type", kinds.get(item.subject_kind, item.subject_kind) or "-") }}
+    {{ compact_cell("building", item.building or "-") }}
+    {{ compact_cell("since", item.since or "-") }}
+    {{ compact_cell("duration", item.duration or "-", align_end=true) }}
   </tr>
   {% endfor %}
 </table>
@@ -59,8 +104,8 @@
 {% endif %}
 {% if payload.by_building %}
 <p class="h2">{{ t("by_building") }}</p>
-<table class="kv" cellpadding="0" cellspacing="0">
-  <tr>
+<table class="kv compact-table" cellpadding="0" cellspacing="0">
+  <tr class="compact-header">
     <th>{{ t("building") }}</th>
     <th style="text-align: {{ end }}">{{ t("monitored") }}</th>
     <th style="text-align: {{ end }}">{{ t("offline") }}</th>
@@ -68,27 +113,27 @@
   </tr>
   {% for row in payload.by_building %}
   <tr>
-    <td class="v">{{ row.building }}</td>
-    <td style="text-align: {{ end }}">{{ row.monitored }}</td>
-    <td style="text-align: {{ end }}">{{ count(row.offline) }}</td>
-    <td style="text-align: {{ end }}">{{ count(row.degraded) }}</td>
+    {{ compact_cell("building", row.building, is_name=true) }}
+    {{ compact_cell("monitored", row.monitored, align_end=true) }}
+    {{ compact_cell("offline", count(row.offline), align_end=true) }}
+    {{ compact_cell("degraded", count(row.degraded), align_end=true) }}
   </tr>
   {% endfor %}
 </table>
 {% endif %}
 {% if payload.gateway_impact %}
 <p class="h2">{{ t("gateway_impact") }}</p>
-<table class="kv" cellpadding="0" cellspacing="0">
-  <tr>
+<table class="kv compact-table" cellpadding="0" cellspacing="0">
+  <tr class="compact-header">
     <th>{{ t("gateway") }}</th>
     <th>{{ t("since") }}</th>
     <th style="text-align: {{ end }}">{{ t("assets_affected") }}</th>
   </tr>
   {% for gateway in payload.gateway_impact %}
   <tr>
-    <td class="v">{{ gateway.display_name }}</td>
-    <td>{{ gateway.since or "-" }}</td>
-    <td style="text-align: {{ end }}">{{ gateway.affected_assets }}</td>
+    {{ compact_cell("gateway", gateway.display_name, is_name=true) }}
+    {{ compact_cell("since", gateway.since or "-") }}
+    {{ compact_cell("assets_affected", gateway.affected_assets, align_end=true) }}
   </tr>
   {% endfor %}
 </table>

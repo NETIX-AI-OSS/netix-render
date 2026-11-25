@@ -1,8 +1,9 @@
-{#- Email-safe chrome: 600px table frame, all styles inlined downstream by css-inline. -#}
+{#- Email-safe chrome: fluid table frame, all styles inlined downstream by css-inline. -#}
 <!doctype html>
 <html lang="{{ payload.meta.locale }}" dir="{{ payload.meta.dir }}">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light" />
     <meta name="supported-color-schemes" content="light" />
     <title>{{ subject }}</title>
@@ -18,8 +19,8 @@
         background: {{ tokens.color.surface_soft }};
       }
       .frame {
-        width: {{ tokens.email.frame_width }}px;
-        max-width: 100%;
+        width: 100%;
+        max-width: {{ tokens.email.frame_width }}px;
       }
       .mast-td {
         background: {{ tokens.color.primary }};
@@ -75,6 +76,7 @@
         margin: 12px 0;
       }
       .kv th {
+        overflow-wrap: anywhere;
         text-align: {{ "right" if payload.meta.dir == "rtl" else "left" }};
         color: {{ tokens.color.ink_soft }};
         font-size: 10px;
@@ -85,6 +87,7 @@
         background: {{ tokens.color.surface_soft }};
       }
       .kv td {
+        overflow-wrap: anywhere;
         padding: 7px 10px;
         border-bottom: 1px solid {{ tokens.color.line }};
         vertical-align: top;
@@ -155,6 +158,7 @@
       }
       .kpi {
         width: 100%;
+        table-layout: fixed;
         border-collapse: separate;
         margin: 2px 0 4px;
       }
@@ -178,6 +182,7 @@
         color: {{ tokens.color.status.warn }};
       }
       .kpi-l {
+        overflow-wrap: anywhere;
         font-size: 10px;
         text-transform: uppercase;
         letter-spacing: 0.6px;
@@ -209,13 +214,15 @@
         line-height: 1.6;
         text-align: center;
       }
+      {% block responsive_styles %}{% endblock %}
     </style>
   </head>
   <body>
     <table class="canvas" width="100%" cellpadding="0" cellspacing="0">
       <tr>
         <td align="center" style="padding: 20px 12px 36px">
-          <table class="frame" cellpadding="0" cellspacing="0">
+          <!--[if mso]><table role="presentation" width="{{ tokens.email.frame_width }}" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+          <table class="frame" width="100%" cellpadding="0" cellspacing="0">
             <tr>
               <td class="mast-td">
                 {% if payload.meta.org.logo_url -%}
@@ -238,6 +245,7 @@
               </td>
             </tr>
           </table>
+          <!--[if mso]></td></tr></table><![endif]-->
         </td>
       </tr>
     </table>

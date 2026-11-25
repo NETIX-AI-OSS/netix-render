@@ -147,6 +147,15 @@ def test_arabic_wordmark_preserves_latin_order_in_the_masthead():
     assert re.search(r'<div class="wordmark"[^>]*dir="ltr"[^>]*>NETIX<span[^>]*>\.AI</span>', html)
 
 
+def test_arabic_offline_report_isolates_timestamps_and_timezone():
+    sample = {**TEMPLATES["offline_daily_report"].sample, "language": "ar"}
+    html = render_email_template("offline_daily_report", sample).html
+
+    assert f"\u2068{sample['report_date']}\u2069" in html
+    assert f"\u2068{sample['timezone']}\u2069" in html
+    assert f"\u2068{sample['offline_items'][0]['since']}\u2069" in html
+
+
 def test_arabic_report_pack_protects_file_name_and_size_direction():
     sample = {
         **TEMPLATES["report_pack"].sample,
