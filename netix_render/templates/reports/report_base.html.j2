@@ -372,7 +372,7 @@
   </head>
   <body>
 {% macro render_section(section) -%}
-        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section, doc.meta.dir) }}
         {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section, doc.meta.dir) }}
         {%- elif section.kind == "check_table" %}{{ check_c.check_table(section, copy, doc.meta.dir) }}
         {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section, copy, doc.meta.dir) }}
@@ -394,7 +394,7 @@
       {{ mast_c.mast(doc.meta) }}
       <div class="sheet">
         {% for section in doc.sections %}
-        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section, doc.meta.dir) }}
         {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section, doc.meta.dir) }}
         {%- elif section.kind == "check_table" %}{{ check_c.check_table(section, copy, doc.meta.dir) }}
         {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section, copy, doc.meta.dir) }}

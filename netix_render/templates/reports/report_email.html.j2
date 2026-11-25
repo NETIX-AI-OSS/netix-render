@@ -310,7 +310,7 @@
                 {%- if section.kind == "banner" %}
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
-                    <td class="banner-td bn-{{ section.level }}">{{ section.text }}</td>
+                    <td class="banner-td bn-{{ section.level }}">{{ section.text | isolate_value(doc.meta.dir) }}</td>
                   </tr>
                 </table>
                 {%- elif section.kind == "kpi_grid" %}

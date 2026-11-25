@@ -76,21 +76,22 @@ def test_paged_navigation_and_labels_use_report_language(language, navigation, s
     assert document.model_dump() == before
 
 
-def test_rtl_preserves_the_authored_period_label_on_each_surface():
+def test_rtl_preserves_authored_period_titles_and_banner_punctuation():
     continuous = load_document("synthetic_daily")
     continuous.meta.language = "ar-AE"
     continuous.meta.dir = "rtl"
     continuous.meta.period.label = "1-day test period"
     paged = multipage_document()
     paged.meta = continuous.meta.model_copy(deep=True)
+    banner = next(section.text for section in continuous.sections if section.kind == "banner")
+    paged_html = render_report(paged)
+    community_html = render_report(paged, layout="community")
 
-    for html in (
-        render_report(continuous),
-        render_report(paged),
-        render_report(paged, layout="community"),
-        render_email(continuous),
-    ):
+    for html in (render_report(continuous), paged_html, community_html, render_email(continuous)):
         assert "\u20681-day test period\u2069" in html
+        assert f"\u2068{banner}\u2069" in html
+    assert f"· \u2068{paged.meta.title}\u2069" in paged_html
+    assert f"\u2068{paged.meta.asset.name}\u2069 ·" in community_html
     assert continuous.meta.period.label == paged.meta.period.label == "1-day test period"
 
 
