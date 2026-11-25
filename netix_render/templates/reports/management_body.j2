@@ -49,7 +49,7 @@
   </table>
   <div class="management-chart-row">
     <section>
-      {% for chart in analysis_charts if chart.kind == 'stacked' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart) }}{% endfor %}
+      {% for chart in analysis_charts if chart.kind == 'stacked' %}<h2>{{ chart.title }}</h2>{{ analysis_chart(chart, count_axis=true) }}{% endfor %}
       <p class="analysis-note">{{ management_copy.daily_counts }}</p>
     </section>
     <aside class="comment">

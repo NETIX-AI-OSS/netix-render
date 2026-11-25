@@ -138,7 +138,7 @@ _LABELS = {
         "alarm_family": "Familia de alarmas",
         "events": "Eventos",
         "equipment": "Equipos",
-        "share": "Proporción",
+        "share": "%",
         "daily_counts": (
             "Recuento diario de activaciones. Las alarmas abiertas actualmente se muestran por separado arriba."
         ),
@@ -267,7 +267,7 @@ _LABELS = {
         "workload": "Распределение нагрузки по сигналам",
         "alarm_family": "Группа сигналов",
         "events": "События",
-        "equipment": "Оборудование",
+        "equipment": "Оборуд.",
         "share": "Доля",
         "daily_counts": "Число срабатываний по дням. Открытые на момент сбора сигналы показаны отдельно выше.",
         "what_changed": "Что изменилось с прошлой недели",

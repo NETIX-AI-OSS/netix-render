@@ -1,5 +1,7 @@
 """Deterministic SVG chart generators for reports -- trusted markup via |safe, so data strings are escaped here."""
 
+from math import ceil
+
 from markupsafe import escape
 
 from netix_render.schema import HBarRow, RingItem, TrendPoint
@@ -138,7 +140,7 @@ def ring_svg(item: RingItem) -> str:
     )
 
 
-def analysis_svg(chart, wide: bool = False, *, show_legend: bool = True) -> str:
+def analysis_svg(chart, wide: bool = False, *, show_legend: bool = True, count_axis: bool = False) -> str:
     """Axes, readable legends and gap-preserving lines for weekly diagnostics."""
     if any(len(series.values) != len(chart.labels) for series in chart.series):
         raise ValueError("Analysis chart labels and series must have equal lengths")
@@ -158,13 +160,23 @@ def analysis_svg(chart, wide: bool = False, *, show_legend: bool = True) -> str:
         )
         or 1
     )
-    maximum *= 1.1
+    ticks: tuple[float, ...]
+    if count_axis:
+        target_step = max(1, ceil(maximum / 4))
+        magnitude = 10 ** (len(str(target_step)) - 1)
+        step = next(magnitude * factor for factor in (1, 2, 5, 10) if magnitude * factor >= target_step)
+        top_tick = ceil(maximum / step) * step
+        ticks = tuple(range(0, top_tick + 1, step))
+        maximum = top_tick * 1.1
+    else:
+        maximum *= 1.1
+        ticks = tuple(maximum * index / 4 for index in range(5))
     parts = [
         f'<svg class="chart" role="img" aria-label="{escape(chart.title)}" viewBox="0 0 {width} {height}" {SVG_XMLNS}>'
     ]
-    for i in range(5):
-        y = bottom - (bottom - top) * i / 4
-        value = maximum * i / 4
+    for index, value in enumerate(ticks):
+        fraction = value / maximum if count_axis else index / 4
+        y = bottom - (bottom - top) * fraction
         parts.append(f'<line x1="{left}" x2="{right}" y1="{y}" y2="{y}" stroke="#dce5ee" />')
         parts.append(
             f'<text x="{left - 8}" y="{y + 4}" text-anchor="end" font-size="12" fill="#668398">'

@@ -106,6 +106,23 @@ def test_complete_comparison_keeps_legacy_evidence_and_handles_zero_baseline():
     assert "The previous baseline is zero." in html
 
 
+def test_rtl_comparison_keeps_signed_changes_in_reading_order():
+    document = multipage_document()
+    document.meta.language = "ar-AE"
+    document.meta.dir = "rtl"
+    ctx = context()
+    ctx["comparison"] = {
+        "complete": True,
+        "previous_count": 1,
+        "change": 3,
+        "change_pct": 300,
+        "rows": [{"label": "AHU-3", "previous": 1, "current": 4, "change": 3}],
+    }
+    html = render_report(document, layout="community", management=ctx)
+    assert "\u2066+3 (+300.0%)\u2069" in html
+    assert "\u2066+3\u2069" in html
+
+
 def test_action_without_model_source_resolves_exact_collected_asset():
     document = multipage_document()
     actions = next(s for s in document.sections if s.kind == "actions")
@@ -159,6 +176,9 @@ def test_management_chart_wraps_legends_and_preserves_standalone_svg_labels():
     assert 'class="analysis-legend"' in html
     assert "<bdi>Критические &lt; A-12</bdi>" in html
     assert 'style="background-color:#196796"' in html
+    svg = re.search(r'<svg class="chart" role="img" aria-label="События за неделю".*?</svg>', html)
+    assert svg is not None
+    assert re.findall(r'text-anchor="end"[^>]*>([^<]+)</text>', svg[0]) == ["0", "5", "10", "15", "20"]
     assert "Критические &lt; A-12" in analysis_svg(chart)
     assert "Критические &lt; A-12" not in analysis_svg(chart, show_legend=False)
 

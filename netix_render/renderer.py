@@ -67,8 +67,8 @@ def _hbar(section: HBarChartSection) -> Markup:
     return Markup(charts.hbar_svg(section.rows, section.scale_max))
 
 
-def _analysis(chart: AnalysisChart, wide: bool = False) -> Markup:
-    svg = charts.analysis_svg(chart, wide=wide, show_legend=False)
+def _analysis(chart: AnalysisChart, wide: bool = False, *, count_axis: bool = False) -> Markup:
+    svg = charts.analysis_svg(chart, wide=wide, show_legend=False, count_axis=count_axis)
     if chart.kind == "ranked":
         return Markup(svg)
     legend = "".join(
