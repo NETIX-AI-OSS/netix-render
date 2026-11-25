@@ -9,7 +9,7 @@
     <div class="cover-panel">
       <div class="cover-meta">
         <div><span>{{ copy.site }}</span><strong>{{ doc.meta.asset.name }}</strong></div>
-        <div><span>{{ copy.period }}</span><strong>{{ doc.meta.period.label }}</strong></div>
+        <div><span>{{ copy.period }}</span><strong>{{ doc.meta.period.label | isolate_value(doc.meta.dir) }}</strong></div>
         <div><span>{{ copy.prepared_for }}</span><strong>{{ doc.meta.logo_line or copy.team }}</strong></div>
         <div><span>{{ copy.location }}</span><strong>{{ doc.meta.asset.location or doc.meta.asset.name }}</strong></div>
         <div><span>{{ copy.reference }}</span><strong>{{ doc.meta.report_id }}</strong></div>
@@ -21,7 +21,7 @@
   </article>
   {% for page in pages %}
   <article class="report-page" id="report-page-{{ loop.index }}" aria-label="{{ page.title }}">
-    <header class="community-header"><strong>{{ doc.meta.logo_line or copy.facilities }}</strong><span>{{ doc.meta.asset.name }} · {{ doc.meta.period.label }}</span></header>
+    <header class="community-header"><strong>{{ doc.meta.logo_line or copy.facilities }}</strong><span>{{ doc.meta.asset.name }} · {{ doc.meta.period.label | isolate_value(doc.meta.dir) }}</span></header>
     <div class="page-body">
       <h1 class="page-title">{{ loop.index }}. {{ page.title }}</h1>
       {% if management %}

@@ -301,7 +301,7 @@
                 {% if doc.meta.logo_line %}<div class="logo">{{ doc.meta.logo_line }}</div>{% endif %}
                 <div style="margin-top: 10px"><span class="tag">{{ doc.meta.tag_line }}</span></div>
                 <div class="mast-h1">{{ doc.meta.title }}</div>
-                <div class="mast-meta">{{ doc.meta.period.label }}</div>
+                <div class="mast-meta">{{ doc.meta.period.label | isolate_value(doc.meta.dir) }}</div>
               </td>
             </tr>
             <tr>
