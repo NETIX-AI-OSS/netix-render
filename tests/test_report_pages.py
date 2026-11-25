@@ -95,6 +95,19 @@ def test_rtl_preserves_authored_period_titles_and_banner_punctuation():
     assert continuous.meta.period.label == paged.meta.period.label == "1-day test period"
 
 
+@pytest.mark.parametrize(("direction", "expected"), [("rtl", "\u206853 500 kWh\u2069"), ("ltr", "53 500 kWh")])
+def test_paged_evidence_observation_follows_the_document_direction(direction, expected):
+    document = multipage_document()
+    document.meta.language = "ar-AE"
+    document.meta.dir = direction
+    details = next(section for section in document.sections if section.kind == "headline_details")
+    details.items[0].evidence[0].observation = "53 500 kWh"
+    before = document.model_dump()
+
+    assert f"<b>Meter</b> · {expected}\n" in render_report(document)
+    assert document.model_dump() == before
+
+
 def test_details_escape_source_text_and_long_tables_continue_on_new_pages():
     document = multipage_document()
     detail = document.sections[-1].items[0]

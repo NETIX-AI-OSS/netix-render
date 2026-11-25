@@ -17,7 +17,7 @@
         </div>
         <h2 class="evidence-heading">{{ copy.headline_evidence }}</h2>
         {% for record in item.evidence %}
-        <div class="evidence-record"><b>{{ record.label }}</b> · {{ record.observation }}
+        <div class="evidence-record"><b>{{ record.label }}</b> · {{ record.observation | isolate_value(doc.meta.dir) }}
           <small>{{ record.context }} · {{ record.source }} · {{ record.evidence_id }}</small>
         </div>
         {% endfor %}
