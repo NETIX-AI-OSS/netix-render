@@ -1,5 +1,49 @@
-<!DOCTYPE html><html lang="en" dir="ltr"><head>
+<!DOCTYPE html><html lang="en" dir="ltr"><head><style>@media screen and (max-width: 480px) {
+        .compact-kpi tr {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .compact-kpi td {
+          box-sizing: border-box;
+          flex: 1 1 40%;
+          min-width: 0;
+        }
+        .cx-t {
+          table-layout: fixed;
+        }
+        .cx-t th, .cx-t > tbody > tr > td {
+          overflow-wrap: anywhere;
+          padding: 4px !important;
+          white-space: normal;
+        }
+      } @media screen and (max-width: 480px) {
+        .compact-table, .compact-table tbody, .compact-table tr {
+          display: block;
+        }
+        .compact-table .compact-header {
+          display: none;
+        }
+        .compact-table tr {
+          padding: 6px 0;
+          border-top: 1px solid #e5eaf0;
+        }
+        .compact-table td {
+          border: 0 !important;
+          display: grid;
+          gap: 8px;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+          padding: 3px 0 !important;
+        }
+        .compact-label {
+          display: block !important;
+          color: #5d7482;
+          font-weight: 400;
+          text-align: start;
+        }
+      } </style>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
     <title>3 new offline, 4 back online, 96.8% available, Tue 17 Nov</title>
@@ -9,7 +53,8 @@
     <table class="canvas" cellspacing="0" width="100%" cellpadding="0" style="background: #f4f6f8;">
       <tbody><tr>
         <td align="center" style="padding: 20px 12px 36px">
-          <table class="frame" cellspacing="0" cellpadding="0" style="width: 600px;max-width: 100%;">
+          <!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0"><tr><td><![endif]-->
+          <table class="frame" cellspacing="0" width="100%" cellpadding="0" style="width: 100%;max-width: 600px;">
             <tbody><tr>
               <td class="mast-td" style="background: #196796;border-radius: 10px 10px 0 0;padding: 18px 24px;">
                 <div class="wordmark" style="font-size: 15px;font-weight: 800;letter-spacing: 1.2px;color: #ffffff;">NETIX<span style="color: #30bce4;">.AI</span></div>
@@ -22,6 +67,7 @@
 
 
 
+
 <div class="band cx-band-crit" style="border-radius: 8px;padding: 10px 14px;font-size: 13px;font-weight: 700;margin: 0 0 12px;background: #fdecec;color: #b91c1c;"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> Daily offline report</div>
 <p class="p mut" style="font-size: 13.5px;line-height: 1.6;margin: 8px 0;color: #5d7482;">17 Nov 2026. Time zone: Asia/Dubai</p>
 
@@ -29,51 +75,51 @@
 
 
 <p class="kpi-cap" style="font-size: 10px;font-weight: 700;text-transform: uppercase;letter-spacing: 0.8px;color: #5d7482;margin: 14px 0 0;">What changed since yesterday</p>
-<table class="kpi" cellspacing="4" cellpadding="0" style="width: 100%;border-collapse: separate;margin: 2px 0 4px;">
+<table class="kpi compact-kpi" cellspacing="4" cellpadding="0" style="width: 100%;table-layout: fixed;border-collapse: separate;margin: 2px 0 4px;">
   <tbody><tr>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n cx-offline" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #b91c1c;"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> 3</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Went offline</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Went offline</div>
   <div class="cx-sub" style="font-size: 11px;color: #5d7482;padding-top: 2px;">2 more than yesterday</div>
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #2d2e2f;">4</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Back online</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Back online</div>
   
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n cx-offline" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #b91c1c;"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> 2</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Still down</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Still down</div>
   
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #2d2e2f;">96.8%</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Availability, 24 h</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Availability, 24 h</div>
   <div class="cx-sub" style="font-size: 11px;color: #5d7482;padding-top: 2px;">-0.4 points</div>
 </td>
   </tr>
 </tbody></table>
 <p class="kpi-cap" style="font-size: 10px;font-weight: 700;text-transform: uppercase;letter-spacing: 0.8px;color: #5d7482;margin: 14px 0 0;">Right now</p>
-<table class="kpi" cellspacing="4" cellpadding="0" style="width: 100%;border-collapse: separate;margin: 2px 0 4px;">
+<table class="kpi compact-kpi" cellspacing="4" cellpadding="0" style="width: 100%;table-layout: fixed;border-collapse: separate;margin: 2px 0 4px;">
   <tbody><tr>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #2d2e2f;">128</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Monitored</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Monitored</div>
   
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n cx-online" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #2d2e2f;"><span class="cx-ico cx-ico-online" aria-hidden="true" style="font-size: 13px;font-weight: 400;color: #64748b;">○</span> 121</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Online</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Online</div>
   
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n cx-degraded" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #92400e;"><span class="cx-ico cx-ico-degraded" aria-hidden="true" style="font-size: 13px;font-weight: 400;color: #d97706;">▲</span> 2</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Degraded</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Degraded</div>
   
 </td>
     <td width="25%" style="background: #f4f6f8;border: 1px solid #e5eaf0;border-radius: 8px;padding: 10px 12px;vertical-align: top;">
   <div class="kpi-n cx-offline" style="font-size: 20px;font-weight: 800;line-height: 1.2;color: #b91c1c;"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> 5</div>
-  <div class="kpi-l" style="font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Offline</div>
+  <div class="kpi-l" style="overflow-wrap: anywhere;font-size: 10px;text-transform: uppercase;letter-spacing: 0.6px;color: #5d7482;padding-top: 2px;">Offline</div>
   
 </td>
   </tr>
@@ -86,36 +132,36 @@
   
   
   <tbody><tr>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
       <span class="cx-chip" style="display: inline-block;font-size: 10px;font-weight: 700;text-transform: uppercase;letter-spacing: 0.6px;padding: 1px 6px;border-radius: 4px;background: #e7ecf1;color: #5d7482;">Gateway</span>
       <b><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=5012" style="color: #196796;font-weight: 600;text-decoration: none;">GW-Tower-B-02 offline</a></b>
       <div class="cx-meta" style="font-size: 11.5px;color: #5d7482;padding-top: 2px;">Since 16 Nov 2026 22:40 · 9 h 20 min</div>
     </td>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right;white-space: nowrap">
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
       14 assets unreachable
     </td>
   </tr>
   
   
   <tr>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
       <span class="cx-chip" style="display: inline-block;font-size: 10px;font-weight: 700;text-transform: uppercase;letter-spacing: 0.6px;padding: 1px 6px;border-radius: 4px;background: #e7ecf1;color: #5d7482;">Building</span>
       <b><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=4981" style="color: #196796;font-weight: 600;text-decoration: none;">Plant 2</a></b>
       <div class="cx-meta" style="font-size: 11.5px;color: #5d7482;padding-top: 2px;">Since 15 Nov 2026 08:05 · 2 d 0 h</div>
     </td>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right;white-space: nowrap">
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
       2 devices affected
     </td>
   </tr>
   
   
   <tr>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
       <span class="cx-chip" style="display: inline-block;font-size: 10px;font-weight: 700;text-transform: uppercase;letter-spacing: 0.6px;padding: 1px 6px;border-radius: 4px;background: #e7ecf1;color: #5d7482;">Device</span>
       <b><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=5020" style="color: #196796;font-weight: 600;text-decoration: none;">Meter M-7</a></b>
       <div class="cx-meta" style="font-size: 11.5px;color: #5d7482;padding-top: 2px;">Since 17 Nov 2026 06:12 · 1 h 48 min</div>
     </td>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right;white-space: nowrap">
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
       
     </td>
   </tr>
@@ -125,37 +171,67 @@
 
 <p class="h2" style="font-size: 14px;font-weight: 700;margin: 22px 0 4px;color: #2d2e2f;"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> Offline now</p>
 
-<table class="kv" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
-  <tbody><tr>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Name</th>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Type</th>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Since</th>
-    <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Duration</th>
+<table class="kv compact-table" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
+  <tbody><tr class="compact-header">
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Name</th>
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Type</th>
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Since</th>
+    <th style="overflow-wrap: anywhere;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Duration</th>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;"><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=5012" style="color: #196796;font-weight: 600;text-decoration: none;">GW-Tower-B-02</a></td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Gateway</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Tower B</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">16 Nov 2026 22:40</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">9 h 20 min</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Name</span><span><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=5012" style="color: #196796;font-weight: 600;text-decoration: none;">GW-Tower-B-02</a></span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Type</span><span>Gateway</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Building</span><span>Tower B</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Since</span><span>16 Nov 2026 22:40</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Duration</span><span>9 h 20 min</span>
+</td>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;"><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=4981" style="color: #196796;font-weight: 600;text-decoration: none;">Chiller CH-01</a></td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Asset</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Plant 2</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">15 Nov 2026 08:05</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">2 d 0 h</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Name</span><span><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=4981" style="color: #196796;font-weight: 600;text-decoration: none;">Chiller CH-01</a></span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Type</span><span>Asset</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Building</span><span>Plant 2</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Since</span><span>15 Nov 2026 08:05</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Duration</span><span>2 d 0 h</span>
+</td>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;"><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=4999" style="color: #196796;font-weight: 600;text-decoration: none;">Pump P-4</a></td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Asset</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">Plant 2</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">16 Nov 2026 13:10</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">18 h 50 min</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Name</span><span><a class="cx-link" href="https://example.invalid/connectivity/offline?outage=4999" style="color: #196796;font-weight: 600;text-decoration: none;">Pump P-4</a></span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Type</span><span>Asset</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Building</span><span>Plant 2</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Since</span><span>16 Nov 2026 13:10</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Duration</span><span>18 h 50 min</span>
+</td>
   </tr>
   
 </tbody></table>
@@ -164,43 +240,65 @@
 
 
 <p class="h2" style="font-size: 14px;font-weight: 700;margin: 22px 0 4px;color: #2d2e2f;">By building</p>
-<table class="kv" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
-  <tbody><tr>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
-    <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Monitored</th>
-    <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> Offline</th>
-    <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right"><span class="cx-ico cx-ico-degraded" aria-hidden="true" style="font-size: 13px;font-weight: 400;color: #d97706;">▲</span> Degraded</th>
+<table class="kv compact-table" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
+  <tbody><tr class="compact-header">
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
+    <th style="overflow-wrap: anywhere;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Monitored</th>
+    <th style="overflow-wrap: anywhere;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right"><span class="cx-ico" aria-hidden="true" style="font-size: 13px;font-weight: 400;">🛑</span> Offline</th>
+    <th style="overflow-wrap: anywhere;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right"><span class="cx-ico cx-ico-degraded" aria-hidden="true" style="font-size: 13px;font-weight: 400;color: #d97706;">▲</span> Degraded</th>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">Tower B</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">74</td>
-    <td class="v cx-offline" style="color: #b91c1c;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">3</td>
-    <td class="v cx-degraded" style="color: #92400e;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">1</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Building</span><span>Tower B</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Monitored</span><span>74</span>
+</td>
+    <td class="v cx-offline" style="color: #b91c1c;overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
+  <span class="compact-label" style="display: none;">Offline</span><span>3</span>
+</td>
+    <td class="v cx-degraded" style="color: #92400e;overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
+  <span class="compact-label" style="display: none;">Degraded</span><span>1</span>
+</td>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">Plant 2</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">54</td>
-    <td class="v cx-offline" style="color: #b91c1c;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">2</td>
-    <td class="v cx-degraded" style="color: #92400e;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">1</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Building</span><span>Plant 2</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Monitored</span><span>54</span>
+</td>
+    <td class="v cx-offline" style="color: #b91c1c;overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
+  <span class="compact-label" style="display: none;">Offline</span><span>2</span>
+</td>
+    <td class="v cx-degraded" style="color: #92400e;overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;text-align: right">
+  <span class="compact-label" style="display: none;">Degraded</span><span>1</span>
+</td>
   </tr>
   
 </tbody></table>
 
 
 <p class="h2" style="font-size: 14px;font-weight: 700;margin: 22px 0 4px;color: #2d2e2f;">Gateway impact</p>
-<table class="kv" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
-  <tbody><tr>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Gateway</th>
-    <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Since</th>
-    <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Assets affected</th>
+<table class="kv compact-table" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
+  <tbody><tr class="compact-header">
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Gateway</th>
+    <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Since</th>
+    <th style="overflow-wrap: anywhere;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Assets affected</th>
   </tr>
   
   <tr>
-    <td class="v" style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">GW-Tower-B-02</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">16 Nov 2026 22:40</td>
-    <td style="padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">14</td>
+    <td class="v" style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;font-weight: 600;">
+  <span class="compact-label" style="display: none;">Gateway</span><span>GW-Tower-B-02</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;">
+  <span class="compact-label" style="display: none;">Since</span><span>16 Nov 2026 22:40</span>
+</td>
+    <td style="overflow-wrap: anywhere;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;vertical-align: top;text-align: right">
+  <span class="compact-label" style="display: none;">Assets affected</span><span>14</span>
+</td>
   </tr>
   
 </tbody></table>
@@ -224,6 +322,7 @@
               </td>
             </tr>
           </tbody></table>
+          <!--[if mso]></td></tr></table><![endif]-->
         </td>
       </tr>
     </tbody></table>

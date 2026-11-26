@@ -1,9 +1,9 @@
 {% import "components/data_table.j2" as tables %}
-{% macro twocol(section) -%}
+{% macro twocol(section, direction) -%}
 <div class="twocol">
   {% for panel in section.panels %}
   <div>
-    {{ tables.data_table(panel) }}
+    {{ tables.data_table(panel, direction) }}
   </div>
   {% endfor %}
 </div>

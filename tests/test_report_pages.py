@@ -1,3 +1,5 @@
+import pytest
+
 from netix_render.pages import compose_pages
 from netix_render.renderer import render_email, render_report
 from netix_render.schema import HeadlineDetailsSection
@@ -42,6 +44,67 @@ def test_pages_link_summary_to_details_and_preserve_supporting_sections():
     assert 'href="#report-page-2"' in html and 'id="report-page-2"' in html
     assert "break-before: page" in html and "Why it matters" in html and "tag:3" in html
     assert "Headline deep dive" in render_email(document)
+    assert document.model_dump() == before
+
+
+@pytest.mark.parametrize(
+    ("language", "navigation", "summary", "impact", "continued"),
+    [
+        ("en", "Report pages", "Executive summary", "Why it matters", "continued"),
+        ("ar-AE", "صفحات التقرير", "الملخص التنفيذي", "أهمية النتيجة", "تابع"),
+        ("fr", "Pages du rapport", "Synthèse de direction", "Enjeu opérationnel", "suite"),
+        ("es", "Páginas del informe", "Resumen ejecutivo", "Relevancia operativa", "continuación"),
+        ("nl", "Rapportpagina’s", "Managementsamenvatting", "Belang voor de bedrijfsvoering", "vervolg"),
+        ("de", "Berichtsseiten", "Management-Zusammenfassung", "Betriebliche Relevanz", "Fortsetzung"),
+        ("ru-RU", "Страницы отчёта", "Сводка для руководства", "Значение для эксплуатации", "продолжение"),
+    ],
+)
+def test_paged_navigation_and_labels_use_report_language(language, navigation, summary, impact, continued):
+    document = multipage_document()
+    document.meta.language = language
+    table = next(section for section in document.sections if section.kind == "check_table")
+    table.rows = [table.rows[0]] * 11
+    before = document.model_dump()
+
+    rendered = render_report(document)
+
+    assert f'aria-label="{navigation}"' in rendered
+    assert f'<h1 class="page-title">{summary}</h1>' in rendered
+    assert f"<h2>{impact}</h2>" in rendered
+    assert f"{table.title} ({continued})" in rendered
+    assert '<h1 class="page-title">Meter evidence needs verification</h1>' in rendered
+    assert document.model_dump() == before
+
+
+def test_rtl_preserves_authored_period_titles_and_banner_punctuation():
+    continuous = load_document("synthetic_daily")
+    continuous.meta.language = "ar-AE"
+    continuous.meta.dir = "rtl"
+    continuous.meta.period.label = "1-day test period"
+    paged = multipage_document()
+    paged.meta = continuous.meta.model_copy(deep=True)
+    banner = next(section.text for section in continuous.sections if section.kind == "banner")
+    paged_html = render_report(paged)
+    community_html = render_report(paged, layout="community")
+
+    for html in (render_report(continuous), paged_html, community_html, render_email(continuous)):
+        assert "\u20681-day test period\u2069" in html
+        assert f"\u2068{banner}\u2069" in html
+    assert f'<bdi class="page-period-title">{paged.meta.title}</bdi>' in paged_html
+    assert f"\u2068{paged.meta.asset.name}\u2069 ·" in community_html
+    assert continuous.meta.period.label == paged.meta.period.label == "1-day test period"
+
+
+@pytest.mark.parametrize(("direction", "expected"), [("rtl", "\u206853 500 kWh\u2069"), ("ltr", "53 500 kWh")])
+def test_paged_evidence_observation_follows_the_document_direction(direction, expected):
+    document = multipage_document()
+    document.meta.language = "ar-AE"
+    document.meta.dir = direction
+    details = next(section for section in document.sections if section.kind == "headline_details")
+    details.items[0].evidence[0].observation = "53 500 kWh"
+    before = document.model_dump()
+
+    assert f"<b>Meter</b> · {expected}\n" in render_report(document)
     assert document.model_dump() == before
 
 
@@ -107,8 +170,6 @@ def test_community_layout_preserves_evidence_uncertainty_and_actions():
 
 
 def test_community_cover_rejects_external_images_and_escapes_branding():
-    import pytest
-
     document = multipage_document()
     document.meta.logo_line = "<script>brand</script>"
     html = render_report(document, layout="community", cover_image="data:image/jpeg;base64,YQ==")
@@ -177,8 +238,6 @@ def test_community_asset_links_are_clickable_escaped_and_do_not_mutate_document(
 
 
 def test_report_links_reject_executable_urls():
-    import pytest
-
     with pytest.raises(ValueError, match="HTTP"):
         render_report(multipage_document(), source_links={"tag:3": [{"url": "javascript:alert(1)", "label": "Unsafe"}]})
 

@@ -8,8 +8,8 @@
 <table class="kv" cellpadding="0" cellspacing="0">
   {% for file in payload.files %}
   <tr>
-    <td class="v">{{ file.name }}</td>
-    <td class="k" style="text-align: {{ 'left' if payload.meta.dir == 'rtl' else 'right' }}">{{ file.size_label or "" }}</td>
+    <td class="v">{{ file.name | isolate_value(payload.meta.dir) }}</td>
+    <td class="k" style="text-align: {{ 'left' if payload.meta.dir == 'rtl' else 'right' }}">{{ (file.size_label or "") | isolate_value(payload.meta.dir) }}</td>
   </tr>
   {% endfor %}
 </table>

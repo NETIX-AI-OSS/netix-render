@@ -12,6 +12,7 @@
 {% import "components/hbar_chart.j2" as hbar_c -%}
 {% import "components/rings.j2" as rings_c -%}
 {% import "components/foot.j2" as foot_c -%}
+{% set copy = doc.meta.language | report_labels -%}
 <!doctype html>
 <html lang="{{ doc.meta.language }}" dir="{{ doc.meta.dir }}">
   <head>
@@ -371,15 +372,15 @@
   </head>
   <body>
 {% macro render_section(section) -%}
-        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
-        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section) }}
-        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section) }}
-        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section) }}
-        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section) }}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section, doc.meta.dir) }}
+        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section, doc.meta.dir) }}
+        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section, copy, doc.meta.dir) }}
+        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section, copy, doc.meta.dir) }}
+        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section, doc.meta.language, doc.meta.dir) }}
         {%- elif section.kind == "ai_insight" %}{{ ai_c.ai_box(section) }}
-        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section, layout == "community") }}
-        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section) }}
-        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section) }}
+        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section, copy, doc.meta.dir, layout == "community") }}
+        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section, doc.meta.dir) }}
+        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section, doc.meta.dir) }}
         {%- elif section.kind == "hbar_chart" %}{{ hbar_c.hbar_chart(section) }}
         {%- elif section.kind == "rings" %}{{ rings_c.rings(section) }}
         {%- elif section.kind == "footer" %}{{ foot_c.footer(section, doc.meta) }}
@@ -393,15 +394,15 @@
       {{ mast_c.mast(doc.meta) }}
       <div class="sheet">
         {% for section in doc.sections %}
-        {%- if section.kind == "banner" %}{{ banner_c.banner(section) }}
-        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section) }}
-        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section) }}
-        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section) }}
-        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section) }}
+        {%- if section.kind == "banner" %}{{ banner_c.banner(section, doc.meta.dir) }}
+        {%- elif section.kind == "kpi_grid" %}{{ kpi_c.kpi_grid(section, doc.meta.dir) }}
+        {%- elif section.kind == "check_table" %}{{ check_c.check_table(section, copy, doc.meta.dir) }}
+        {%- elif section.kind == "exceptions" %}{{ exceptions_c.exceptions_table(section, copy, doc.meta.dir) }}
+        {%- elif section.kind == "trend_pair" %}{{ trend_c.trend_pair(section, doc.meta.language, doc.meta.dir) }}
         {%- elif section.kind == "ai_insight" %}{{ ai_c.ai_box(section) }}
-        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section) }}
-        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section) }}
-        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section) }}
+        {%- elif section.kind == "actions" %}{{ actions_c.actions_table(section, copy, doc.meta.dir) }}
+        {%- elif section.kind == "data_table" %}{{ table_c.data_table(section, doc.meta.dir) }}
+        {%- elif section.kind == "twocol" %}{{ twocol_c.twocol(section, doc.meta.dir) }}
         {%- elif section.kind == "hbar_chart" %}{{ hbar_c.hbar_chart(section) }}
         {%- elif section.kind == "rings" %}{{ rings_c.rings(section) }}
         {%- elif section.kind == "footer" %}{{ foot_c.footer(section, doc.meta) }}

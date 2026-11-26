@@ -1,3 +1,5 @@
+import re
+
 import pytest
 
 from netix_render.charts import hbar_svg, ring_svg, sparkline_svg
@@ -154,3 +156,36 @@ def test_analysis_chart_rejects_mismatched_axis_lengths():
     )
     with pytest.raises(ValueError, match="equal lengths"):
         analysis_svg(chart)
+
+
+@pytest.mark.parametrize(
+    ("values", "labels"), [([0, 0], ["0", "1"]), ([0, 1], ["0", "1"]), ([42, 2], ["0", "20", "40", "60"])]
+)
+def test_count_axis_uses_unique_whole_number_ticks(values, labels):
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="stacked",
+        title="Alarms",
+        unit="Events",
+        labels=["Mon", "Tue"],
+        series=[{"name": "Info", "values": values, "color": "#196796"}],
+        note="",
+    )
+    assert re.findall(r'text-anchor="end"[^>]*>([^<]+)</text>', analysis_svg(chart, count_axis=True)) == labels
+
+
+def test_analysis_measurement_axis_keeps_its_existing_scale():
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="line",
+        title="Power",
+        unit="kW",
+        labels=["Mon", "Tue"],
+        series=[{"name": "Pump A", "values": [47, 5], "color": "#196796"}],
+        note="",
+    )
+    assert re.findall(r'text-anchor="end"[^>]*>([^<]+)</text>', analysis_svg(chart)) == ["0", "13", "26", "39", "52"]

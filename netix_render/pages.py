@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass, field
 
+from netix_render.report_locale import report_labels
 from netix_render.schema import HeadlineDetail, ReportDocument, ReportSection
 
 
@@ -11,12 +12,14 @@ class ReportPage:
     sections: list[ReportSection] = field(default_factory=list)
     detail: HeadlineDetail | None = None
     headlines: list[HeadlineDetail] = field(default_factory=list)
+    role: str | None = None
 
 
 def compose_pages(document: ReportDocument, *, compact_sources: bool = False) -> list[ReportPage]:
     details = next((s for s in document.sections if s.kind == "headline_details"), None)
     if details is None:
         return []
+    copy = report_labels(document.meta.language)
     summary_kinds = {"banner", "kpi_grid", "ai_insight"}
     # Weekly briefs without live KPI cards have room for their trend evidence.
     if not any(s.kind == "kpi_grid" for s in document.sections):
@@ -27,7 +30,7 @@ def compose_pages(document: ReportDocument, *, compact_sources: bool = False) ->
         item.model_copy(update={"title": _display_title(item.title, document.meta.asset.name)})
         for item in details.items
     ]
-    pages = [ReportPage("Executive summary", summary, headlines=headlines)]
+    pages = [ReportPage(copy["summary_page"], summary, headlines=headlines)]
     pages.extend(ReportPage(item.title, detail=item) for item in headlines)
     for section in document.sections:
         if section.kind in summary_kinds | {"headline_details", "footer"}:
@@ -38,10 +41,10 @@ def compose_pages(document: ReportDocument, *, compact_sources: bool = False) ->
             limit = 10 if section.kind == "check_table" else 5
             for start in range(0, len(section.rows), limit):
                 chunk = section.model_copy(update={"rows": section.rows[start : start + limit]})
-                title = section.title + (" (continued)" if start else "")
+                title = f"{section.title} ({copy['continued']})" if start else section.title
                 pages.append(ReportPage(title, [chunk]))
         else:
-            pages.append(ReportPage("Supporting evidence", [section]))
+            pages.append(ReportPage(copy["evidence"], [section]))
     # Keep a short issue register and its actions together; long tables retain
     # their existing pagination bounds. Text budget includes every cell.
     for index in range(len(pages) - 1, 0, -1):
@@ -59,7 +62,7 @@ def compose_pages(document: ReportDocument, *, compact_sources: bool = False) ->
             if not (compact_sources and key == "source")
         )
         if len(issues.rows) <= 3 and len(actions.rows) <= 3 and text_size <= (1600 if compact_sources else 1300):
-            previous.title = "Issues and coming-week priorities"
+            previous.title = copy["planning_page"]
             previous.sections.append(actions)
             pages.pop(index)
     footers = [s for s in document.sections if s.kind == "footer"]

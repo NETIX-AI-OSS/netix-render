@@ -2,19 +2,62 @@
 {% import "email/macros.j2" as m %}
 {% import "email/connectivity.j2" as cx with context %}
 {% set end = "left" if payload.meta.dir == "rtl" else "right" %}
-{% block styles %}{% include "email/connectivity.css.j2" %}{% endblock %}
+{% block styles %}
+      {% include "email/connectivity.css.j2" %}
+      @media screen and (max-width: 480px) {
+        /* Let names take a full row, and keep the three measures aligned below them. */
+        .cx-monthly, .cx-monthly > tbody {
+          display: block;
+        }
+        .cx-monthly > tbody > tr {
+          display: block;
+          border-bottom: 1px solid {{ tokens.color.line }};
+          font-size: 0;
+          padding: 5px 0;
+        }
+        .cx-monthly > tbody > tr:first-child {
+          padding: 0;
+        }
+        .cx-monthly > tbody > tr > th:first-child {
+          display: none;
+        }
+        .cx-monthly > tbody > tr > th {
+          background: none !important;
+          font-size: 11px !important;
+          letter-spacing: normal !important;
+          text-transform: none !important;
+        }
+        .cx-monthly > tbody > tr > td {
+          font-size: 12.5px;
+        }
+        .cx-monthly > tbody > tr > th, .cx-monthly > tbody > tr > td {
+          display: inline-block;
+          box-sizing: border-box;
+          border: 0 !important;
+          overflow-wrap: anywhere;
+          padding: 3px 2px !important;
+          vertical-align: top;
+          white-space: normal !important;
+          width: 33.33%;
+        }
+        .cx-monthly > tbody > tr > td:first-child {
+          display: block;
+          width: 100%;
+        }
+      }
+{% endblock %}
 {% block content %}
 {% set totals = payload.totals %}
 {% set target = cx.pct(payload.target_value) if payload.target_value is not none else "" %}
 {% set missed = payload.below_target(totals.availability_pct) %}
 <div class="band cx-band-info">{{ payload.report_name }}</div>
-<p class="p mut">{{ t("report_date_tz", date=payload.period_label, timezone=payload.timezone) }}</p>
-<table class="kpi" cellpadding="0" cellspacing="4">
+<p class="p mut">{{ t("report_date_tz", date=payload.period_label | isolate_value(payload.meta.dir), timezone=payload.timezone | isolate_value(payload.meta.dir)) }}</p>
+<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
   <tr>
     {{ cx.kpi(totals.monitored, t("monitored")) }}
     {{ cx.kpi(cx.pct(totals.availability_value), t("availability"), "degraded" if missed else "", sub=t("target", value=target) if target else "") }}
     {{ cx.kpi(totals.outages, t("outages")) }}
-    {{ cx.kpi(totals.total_offline or "-", t("total_offline")) }}
+    {{ cx.kpi((totals.total_offline or "-") | isolate_value(payload.meta.dir), t("total_offline")) }}
   </tr>
 </table>
 {% if target and totals.availability_pct is not none %}
@@ -28,10 +71,10 @@
 {% if payload.buildings %}
 <p class="small">{% if payload.any_building_below_target %}<span class="cx-flag">{{ cx.icon("degraded") }} {{ t("below_target") }}</span> · {% endif %}{{ t("bars_start", value=t("percent", value=payload.bar_floor)) }}{% if payload.availability_target is not none and payload.bar_floor < payload.availability_target < 100 %} {{ t("target_marker") }}{% endif %}</p>
 {#- Compact markup with styles written inline: up to 100 rows must stay under Gmail's 102 KB clip. #}
-{% set cell = ('valign="top" style="border-bottom:1px solid ' ~ tokens.color.line ~ '"') | safe %}
+{% set cell = ('style="border-bottom:1px solid ' ~ tokens.color.line ~ '"') | safe %}
 {% set meta = ('style="font-size:11.5px;color:' ~ tokens.color.ink_soft ~ '"') | safe %}
 {% set warn = ('style="color:' ~ tokens.color.connectivity.degraded_text ~ '"') | safe %}
-<table class="cx-t" width="100%" cellpadding="7" cellspacing="0">
+<table class="cx-t cx-monthly" width="100%" cellpadding="7" cellspacing="0">
   <tr>
     <th>{{ t("building") }}</th>
     <th width="34%">{{ t("availability") }}</th>
@@ -40,7 +83,7 @@
   </tr>
   {%- for row in payload.buildings %}
   {%- set below = payload.below_target(row.availability) %}
-  <tr><td {{ cell }}><b>{{ row.building }}</b>{% if row.worst_device %}<br><span {{ meta }}>{{ t("worst_device", name=row.worst_device) }}</span>{% endif %}</td><td {{ cell }}><b{% if below %} {{ warn }}{% endif %}>{% if below %}&#x25B2; {% endif %}{{ cx.pct(row.availability_value) }}</b>{% if row.availability is not none %}{{ cx.bar(payload.bar_cells(row.availability), "degraded" if below else "online") }}{% endif %}</td><td {{ cell }} align="{{ end }}">{{ row.outages }}</td><td {{ cell }} align="{{ end }}" nowrap>{{ row.total_offline or "-" }}</td></tr>
+  <tr valign="top"><td {{ cell }}><b>{{ row.building }}</b>{% if row.worst_device %}<br><span {{ meta }}>{{ t("worst_device", name=row.worst_device) }}</span>{% endif %}</td><td {{ cell }}><b{% if below %} {{ warn }}{% endif %}>{% if below %}&#x25B2; {% endif %}{{ cx.pct(row.availability_value) }}</b>{% if row.availability is not none %}{{ cx.bar(payload.bar_cells(row.availability), "degraded" if below else "online") }}{% endif %}</td><td {{ cell }} align="{{ end }}">{{ row.outages }}</td><td {{ cell }} align="{{ end }}" nowrap>{{ (row.total_offline or "-") | isolate_value(payload.meta.dir) }}</td></tr>
   {%- endfor %}
 </table>
 {% else %}
@@ -48,7 +91,7 @@
 {% endif %}
 {% if payload.worst_devices %}
 <p class="h2">{{ t("worst_devices") }}</p>
-<table class="kv" cellpadding="0" cellspacing="0">
+<table class="kv cx-monthly" cellpadding="0" cellspacing="0">
   <tr>
     <th>{{ t("kind_device") }}</th>
     <th>{{ t("building") }}</th>
@@ -60,7 +103,7 @@
     <td class="v">{{ device.display_name }}</td>
     <td>{{ device.building or "-" }}</td>
     <td style="text-align: {{ end }}">{{ device.outages }}</td>
-    <td style="text-align: {{ end }}; white-space: nowrap">{{ device.total_offline or "-" }}</td>
+    <td style="text-align: {{ end }}; white-space: nowrap">{{ (device.total_offline or "-") | isolate_value(payload.meta.dir) }}</td>
   </tr>
   {% endfor %}
 </table>

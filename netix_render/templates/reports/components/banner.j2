@@ -1,6 +1,6 @@
-{% macro banner(section) -%}
+{% macro banner(section, direction) -%}
 <div class="banner bn-{{ section.level }}">
   <div class="dot d-{{ section.level }}"></div>
-  {{ section.text }}
+  {{ section.text | isolate_value(direction) }}
 </div>
 {%- endmacro %}

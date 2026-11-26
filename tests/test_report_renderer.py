@@ -1,6 +1,6 @@
 import pytest
 
-from netix_render.renderer import bold_markup, display_datetime, render_report
+from netix_render.renderer import bold_markup, display_datetime, render_email, render_report
 from netix_render.schema import ReportDocument
 from tests.support import (
     FIXTURE_NAMES,
@@ -82,6 +82,115 @@ def test_rtl_direction_reaches_the_html_tag():
     assert "margin-right: auto;" in rendered
 
 
+@pytest.mark.parametrize(
+    "locale,explicit_direction,direction",
+    [("ar", None, "rtl"), ("ar-AE", None, "rtl"), ("ar-AE", "ltr", "ltr"), ("fr", None, "ltr")],
+)
+def test_report_direction_uses_the_language_when_omitted(locale, explicit_direction, direction):
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"]["language"] = locale
+    payload["meta"].pop("dir", None)
+    if explicit_direction is not None:
+        payload["meta"]["dir"] = explicit_direction
+
+    document = ReportDocument.model_validate(payload)
+
+    assert payload["meta"].get("dir") == explicit_direction
+    assert document.meta.dir == direction
+    for html in (render_report(document), render_email(document)):
+        assert f'<html lang="{locale}" dir="{direction}">' in html
+
+
+@pytest.mark.parametrize(
+    "locale,direction,report_id,month,cover",
+    [
+        ("en", "ltr", "Report ID", "Jun", "Report cover"),
+        ("ar-AE", "rtl", "معرّف التقرير", "يونيو", "غلاف التقرير"),
+        ("fr", "ltr", "ID du rapport", "juin", "Couverture du rapport"),
+        ("es", "ltr", "ID del informe", "jun.", "Portada del informe"),
+        ("nl", "ltr", "Rapport-ID", "jun.", "Omslag van het rapport"),
+        ("de", "ltr", "Berichts-ID", "Juni", "Berichtsdeckblatt"),
+        ("ru", "ltr", "ID отчёта", "июня", "Обложка отчёта"),
+    ],
+)
+def test_fixed_report_copy_uses_the_report_locale(locale, direction, report_id, month, cover):
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"]["language"] = locale
+    payload["meta"]["dir"] = direction
+    payload["meta"]["generated_at"] = "2026-06-11T06:30:00+00:00"
+    document = ReportDocument.model_validate(payload)
+
+    for surface in (render_report(document), render_email(document)):
+        assert f'<html lang="{locale}" dir="{direction}">' in surface
+        assert report_id in surface
+        text = surface.translate(str.maketrans("", "", "\u2066\u2068\u2069"))
+        assert f"11 {month} 2026" in text
+    assert f'aria-label="{cover}"' in render_report(document, layout="community")
+
+
+@pytest.mark.parametrize(
+    ("language", "direction", "state", "due"),
+    [
+        ("en", "ltr", "State", "Due"),
+        ("ar-AE", "rtl", "الحالة", "الموعد"),
+        ("fr-FR", "ltr", "État", "Échéance"),
+        ("es", "ltr", "Estado", "Plazo"),
+        ("nl", "ltr", "Status", "Uiterlijk"),
+        ("de", "ltr", "Status", "Frist"),
+        ("ru-RU", "ltr", "Состояние", "Срок"),
+    ],
+)
+def test_fixed_table_labels_render_on_desktop_mobile_and_email(language, direction, state, due):
+    document = load_document("synthetic_daily")
+    document.meta.language = language
+    document.meta.dir = direction
+    web, email = render_report(document), render_email(document)
+
+    assert f">{state}</th>" in web and f'data-label="{state}"' in web
+    assert f">{due}</th>" in web and f'data-label="{due}"' in web
+    assert f">{state}</th>" in email and f">{due}</th>" in email
+
+
+def test_rtl_isolates_numeric_values_in_kpis_and_authored_data_cells():
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"].update(language="ar-AE", dir="rtl")
+    kpi = next(s for s in payload["sections"] if s["kind"] == "kpi_grid")
+    kpi["items"][0]["value"] = "53 500 kWh"
+    payload["sections"].append(
+        {
+            "kind": "data_table",
+            "columns": ["مؤشر"],
+            "rows": [[{"text": "18.2 °C"}], [{"text": "AHU-17"}]],
+        }
+    )
+    document = ReportDocument.model_validate(payload)
+
+    for html in (render_report(document), render_email(document)):
+        for value in ("53 500 kWh", "18.2 °C", "AHU-17"):
+            assert f"\u2068{value}\u2069" in html
+    assert kpi["items"][0]["value"] == "53 500 kWh"
+
+
+@pytest.mark.parametrize(
+    ("language", "direction", "value_label", "unavailable"),
+    [
+        ("fr", "ltr", "12,50", "N/D"),
+        ("ar-AE", "rtl", "\u206812.50\u2069", "غير متاح"),
+    ],
+)
+def test_chart_gaps_and_decimals_use_the_report_locale(language, direction, value_label, unavailable):
+    payload = load_fixture_json("synthetic_daily")
+    payload["meta"].update(language=language, dir=direction)
+    chart = next(s for s in payload["sections"] if s["kind"] == "trend_pair")["charts"][0]
+    chart["series"][0]["value"] = 12.5
+    chart["series"][1]["value"] = None
+    document = ReportDocument.model_validate(payload)
+
+    for html in (render_report(document), render_email(document)):
+        assert f">{value_label}<" in html
+        assert f">{unavailable}<" in html
+
+
 def test_accent_gradient_is_parameterized():
     payload = load_fixture_json("synthetic_daily")
     payload["meta"]["accent"] = {"gradient": ["#0e1320", "#1d2b52", "#2e4a8c"]}
@@ -136,3 +245,11 @@ def test_display_datetime_is_locale_independent():
 
     assert display_datetime(datetime(2026, 6, 1, 7, 0)) == "01 Jun 2026 07:00"
     assert display_datetime(datetime(2026, 12, 31, 23, 59)) == "31 Dec 2026 23:59"
+
+
+def test_arabic_timestamp_preserves_date_order_and_its_time_zone():
+    from datetime import datetime
+
+    stamp = display_datetime(datetime(2026, 6, 1, 6, 30), "ar-AE", "rtl", "GST")
+
+    assert stamp == "\u206601 \u2068يونيو\u2069 2026 06:30 GST\u2069"

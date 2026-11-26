@@ -1,7 +1,10 @@
 """Deterministic SVG chart generators for reports -- trusted markup via |safe, so data strings are escaped here."""
 
+from math import ceil
+
 from markupsafe import escape
 
+from netix_render.report_locale import chart_value, isolate_value, report_labels
 from netix_render.schema import HBarRow, RingItem, TrendPoint
 
 SVG_XMLNS = 'xmlns="http://www.w3.org/2000/svg"'
@@ -43,6 +46,9 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
     color: str = "#2e5bd7",
     highlight_color: str = "#dd4257",
     decimals: int = 2,
+    *,
+    language: str = "en",
+    direction: str = "ltr",
 ) -> str:
     """Bar sparkline scaled to series max, value captions, day labels, highlighted last bar; None renders as a gap."""
     baseline = height - 26
@@ -63,7 +69,7 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
         bar_x = int(x_start + pitch * index)
         center = bar_x + bar_width // 2
         if point.value is None:
-            caption = "N/A"
+            caption = report_labels(language)["unavailable"]
             caption_y = baseline - 5
         else:
             value_y = baseline - round(max_bar * (point.value - low) / span) if span else baseline
@@ -76,7 +82,7 @@ def sparkline_svg(  # pylint: disable=too-many-arguments,too-many-positional-arg
                 f'<rect x="{bar_x}" y="{bar_y}" width="{bar_width}" height="{bar_height}" rx="3" '
                 f'fill="{escape(fill)}" opacity="{opacity}" />'
             )
-            caption = value_caption(point.value, decimals)  # noqa: E231
+            caption = isolate_value(chart_value(value_caption(point.value, decimals), language), direction)
             caption_y = value_y - 5 if point.value >= 0 else value_y + 10
         parts.append(
             f'<text x="{center}" y="{caption_y}" font-size="9" fill="{BAR_CAPTION_COLOR}" '
@@ -138,14 +144,14 @@ def ring_svg(item: RingItem) -> str:
     )
 
 
-def analysis_svg(chart, wide: bool = False) -> str:
+def analysis_svg(chart, wide: bool = False, *, show_legend: bool = True, count_axis: bool = False) -> str:
     """Axes, readable legends and gap-preserving lines for weekly diagnostics."""
     if any(len(series.values) != len(chart.labels) for series in chart.series):
         raise ValueError("Analysis chart labels and series must have equal lengths")
     if chart.kind == "ranked":
         return _ranked_analysis(chart)
     width, height = (640, 175) if wide else (360, 210)
-    left, top, right, bottom = 38, 30, width - 10, height - 43
+    left, top, right, bottom = 38, 30 if show_legend else 10, width - 10, height - 43
     maximum = (
         max(
             (
@@ -158,13 +164,23 @@ def analysis_svg(chart, wide: bool = False) -> str:
         )
         or 1
     )
-    maximum *= 1.1
+    ticks: tuple[float, ...]
+    if count_axis:
+        target_step = max(1, ceil(maximum / 4))
+        magnitude = 10 ** (len(str(target_step)) - 1)
+        step = next(magnitude * factor for factor in (1, 2, 5, 10) if magnitude * factor >= target_step)
+        top_tick = ceil(maximum / step) * step
+        ticks = tuple(range(0, top_tick + 1, step))
+        maximum = top_tick * 1.1
+    else:
+        maximum *= 1.1
+        ticks = tuple(maximum * index / 4 for index in range(5))
     parts = [
         f'<svg class="chart" role="img" aria-label="{escape(chart.title)}" viewBox="0 0 {width} {height}" {SVG_XMLNS}>'
     ]
-    for i in range(5):
-        y = bottom - (bottom - top) * i / 4
-        value = maximum * i / 4
+    for index, value in enumerate(ticks):
+        fraction = value / maximum if count_axis else index / 4
+        y = bottom - (bottom - top) * fraction
         parts.append(f'<line x1="{left}" x2="{right}" y1="{y}" y2="{y}" stroke="#dce5ee" />')
         parts.append(
             f'<text x="{left - 8}" y="{y + 4}" text-anchor="end" font-size="12" fill="#668398">'
@@ -223,11 +239,15 @@ def analysis_svg(chart, wide: bool = False) -> str:
                         f'<path d="{" ".join(segment)}" fill="none" stroke="{escape(series.color)}" '
                         f'stroke-width="2.5" />'
                     )
-    for i, series in enumerate(chart.series):
-        x = left + i * (150 if len(chart.series) <= 2 else 100)
-        parts.append(f'<rect x="{x}" y="9" width="14" height="8" fill="{escape(series.color)}" />')
-        parts.append(f'<text x="{x + 20}" y="17" font-size="12" fill="#303234">{escape(series.name)}</text>')
-    parts.append(f'<text x="{left}" y="{height - 8}" font-size="11" fill="#668398">{escape(chart.unit)}</text></svg>')
+    if show_legend:
+        for i, series in enumerate(chart.series):
+            x = left + i * (150 if len(chart.series) <= 2 else 100)
+            parts.append(f'<rect x="{x}" y="9" width="14" height="8" fill="{escape(series.color)}" />')
+            parts.append(f'<text x="{x + 20}" y="17" font-size="12" fill="#303234">{escape(series.name)}</text>')
+    parts.append(
+        f'<text x="{left}" y="{height - 8}" direction="ltr" font-size="11" fill="#668398">'
+        f"{escape(chart.unit)}</text></svg>"
+    )
     return "".join(parts)
 
 

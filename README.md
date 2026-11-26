@@ -12,8 +12,8 @@ and exposed as `documents.*` MCP tools by ml-engine.
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
 - **Transactional email** (`netix_render.render_email_template`): registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
-  `feedback_request`, `status_digest`, `offline_daily_report`, `offline_monthly_report`), each with a strict pydantic
-  contract, en/ar/fr/es/nl/de chrome strings, RTL support, and a plain-text alternative:
+  `feedback_request`, `status_digest`, `offline_daily_report`, `offline_monthly_report`), each with a strict
+  pydantic contract, en/ar/fr/es/nl/de/ru chrome strings, RTL support, and a plain-text alternative:
 
 ```python
 from netix_render import render_email_template
@@ -36,9 +36,8 @@ Every render is deterministic: validation happens against the template's contrac
 (`extra="forbid"`), CSS is inlined via `css-inline`, and the template API produces complete HTML
 from caller-supplied data.
 
-The `v0.1.4` tag accepts `en`, `ar` and `es`. The additional locales, link validation and the
-`offline_daily_report` template ship in `v0.1.5`; a service pinned to `v0.1.4` needs a pin update
-before it can use them.
+The `v0.1.4` tag accepts `en`, `ar` and `es`. The `v0.1.5` tag adds `fr`, `nl` and `de`, link
+validation and the `offline_daily_report` template. This revision adds Russian email chrome.
 
 `v0.1.6` adds Connectivity v2 to the offline emails:
 

@@ -1,7 +1,10 @@
+import re
+
 import pytest
 from pydantic import ValidationError
 
 from netix_render.management import management_pages
+from netix_render.management_locale import management_labels
 from netix_render.renderer import render_report
 from tests.test_report_pages import multipage_document
 
@@ -50,6 +53,76 @@ def test_management_context_bounds_metric_count():
         render_report(multipage_document(), layout="community", management=ctx)
 
 
+@pytest.mark.parametrize(
+    ("language", "summary", "comparison", "priorities"),
+    [
+        ("en", "Executive summary", "What changed since last week", "Priorities for the coming week"),
+        ("ar-AE", "الملخص التنفيذي", "ما الذي تغيّر منذ الأسبوع الماضي", "أولويات الأسبوع المقبل"),
+        ("fr", "Synthèse de direction", "Évolution depuis la semaine dernière", "Priorités de la semaine à venir"),
+        ("es", "Resumen ejecutivo", "Cambios desde la semana pasada", "Prioridades de la próxima semana"),
+        ("nl", "Managementsamenvatting", "Verandering ten opzichte van vorige week", "Prioriteiten voor komende week"),
+        ("de", "Management-Zusammenfassung", "Änderung zur Vorwoche", "Prioritäten für die kommende Woche"),
+        ("ru-RU", "Сводка для руководства", "Что изменилось с прошлой недели", "Приоритеты на предстоящую неделю"),
+    ],
+)
+def test_weekly_management_localizes_roles_and_renders_structured_comparison(language, summary, comparison, priorities):
+    document = multipage_document()
+    document.meta.language = language
+    doc_before = document.model_dump()
+    ctx = context()
+    ctx["comparison"] = {
+        "complete": True,
+        "previous_count": 80,
+        "change": -10,
+        "change_pct": -12.5,
+        "evidence": [{"observation": "Old summary from the provider"}],
+        "rows": [{"label": "Tenant alarm A-12", "previous": 40, "current": 30, "change": -10}],
+    }
+    html = render_report(document, layout="community", management=ctx)
+    assert f'aria-label="{summary}"' in html
+    assert f"<h3>{comparison}</h3>" in html
+    assert f'aria-label="{priorities}"' in html
+    assert "Tenant alarm A-12" in html and "Old summary from the provider" not in html
+    assert all(value in html for value in ("80", "70", "-10"))
+    assert ("-12.5" if language in {"en", "ar-AE"} else "-12,5") in html
+    assert ctx["comparison"]["evidence"][0]["observation"] == "Old summary from the provider"
+    assert document.model_dump() == doc_before
+    source = management_labels("en")
+    labels = management_labels(language)
+    assert labels.keys() == source.keys()
+    for key, text in labels.items():
+        assert sorted(re.findall(r"%\((\w+)\)s", text)) == sorted(re.findall(r"%\((\w+)\)s", source[key]))
+
+
+def test_complete_comparison_keeps_legacy_evidence_and_handles_zero_baseline():
+    document = multipage_document()
+    ctx = context()
+    ctx["comparison"] = {"complete": True, "evidence": [{"observation": "Custom <baseline>"}]}
+    assert "Custom &lt;baseline&gt;" in render_report(document, layout="community", management=ctx)
+
+    ctx["comparison"] = {"complete": True, "previous_count": 0, "change": 6, "change_pct": None}
+    html = render_report(document, layout="community", management=ctx)
+    assert "6 this week, 0 last week, change +6." in html
+    assert "The previous baseline is zero." in html
+
+
+def test_rtl_comparison_keeps_signed_changes_in_reading_order():
+    document = multipage_document()
+    document.meta.language = "ar-AE"
+    document.meta.dir = "rtl"
+    ctx = context()
+    ctx["comparison"] = {
+        "complete": True,
+        "previous_count": 1,
+        "change": 3,
+        "change_pct": 300,
+        "rows": [{"label": "AHU-3", "previous": 1, "current": 4, "change": 3}],
+    }
+    html = render_report(document, layout="community", management=ctx)
+    assert "\u2066+3 (+300.0%)\u2069" in html
+    assert "\u2066+3\u2069" in html
+
+
 def test_action_without_model_source_resolves_exact_collected_asset():
     document = multipage_document()
     actions = next(s for s in document.sections if s.kind == "actions")
@@ -85,6 +158,29 @@ def test_daily_cycle_chart_highlights_validated_focus_index():
     chart.focus_index = 2
     with pytest.raises(ValueError, match="existing label"):
         analysis_svg(chart)
+
+
+def test_management_chart_wraps_legends_and_preserves_standalone_svg_labels():
+    from netix_render.charts import analysis_svg
+    from netix_render.schema import AnalysisChart
+
+    chart = AnalysisChart(
+        kind="stacked",
+        title="События за неделю",
+        unit="Аварии",
+        labels=["Пн", "Вт"],
+        series=[{"name": "Критические < A-12", "values": [10, 20], "color": "#196796"}],
+        note="Показания",
+    )
+    html = render_report(multipage_document(), layout="community", management=context(), analysis_charts=[chart])
+    assert 'class="analysis-legend"' in html
+    assert "<bdi>Критические &lt; A-12</bdi>" in html
+    assert 'style="background-color:#196796"' in html
+    svg = re.search(r'<svg class="chart" role="img" aria-label="События за неделю".*?</svg>', html)
+    assert svg is not None
+    assert re.findall(r'text-anchor="end"[^>]*>([^<]+)</text>', svg[0]) == ["0", "5", "10", "15", "20"]
+    assert "Критические &lt; A-12" in analysis_svg(chart)
+    assert "Критические &lt; A-12" not in analysis_svg(chart, show_legend=False)
 
 
 def test_evidence_precision_keeps_timestamps_and_original_document_intact():

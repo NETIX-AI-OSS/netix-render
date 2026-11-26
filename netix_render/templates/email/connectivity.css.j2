@@ -88,3 +88,23 @@
         border-bottom: 1px solid {{ tokens.color.line }};
         background: {{ tokens.color.surface_soft }};
       }
+      @media screen and (max-width: 480px) {
+        .compact-kpi tr {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 4px;
+        }
+        .compact-kpi td {
+          box-sizing: border-box;
+          flex: 1 1 40%;
+          min-width: 0;
+        }
+        .cx-t {
+          table-layout: fixed;
+        }
+        .cx-t th, .cx-t > tbody > tr > td {
+          overflow-wrap: anywhere;
+          padding: 4px !important;
+          white-space: normal;
+        }
+      }

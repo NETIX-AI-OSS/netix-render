@@ -1,7 +1,6 @@
 """Report Document to HTML in a sandboxed Jinja2 env; render_email inlines styles via css-inline."""
 
 import re
-from datetime import datetime
 from functools import cache
 from pathlib import Path
 from typing import Literal
@@ -14,6 +13,7 @@ from markupsafe import Markup, escape
 
 from netix_render import charts
 from netix_render.pages import compose_pages
+from netix_render.report_locale import chart_value, display_datetime, isolate_value, report_labels
 from netix_render.schema import (
     AnalysisChart,
     HBarChartSection,
@@ -25,15 +25,7 @@ from netix_render.schema import (
 
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
-MONTH_ABBREVIATIONS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
-
 BOLD_MARKER_PATTERN = re.compile(r"\*\*(.+?)\*\*", flags=re.DOTALL)
-
-
-def display_datetime(value: datetime) -> str:
-    """Locale-independent '11 Jun 2026 06:30' formatting used by the generation chrome."""
-    month = MONTH_ABBREVIATIONS[value.month - 1]
-    return f"{value.day:02d} {month} {value.year} {value.hour:02d}:{value.minute:02d}"  # noqa: E231
 
 
 def bold_markup(value: str) -> Markup:
@@ -55,7 +47,7 @@ def evidence_text(value: str) -> str:
     )
 
 
-def _sparkline(chart: TrendChart, wide: bool) -> Markup:
+def _sparkline(chart: TrendChart, wide: bool, language: str, direction: str) -> Markup:
     width, height = (640, 136) if wide else (330, 126)
     return Markup(
         charts.sparkline_svg(
@@ -67,6 +59,8 @@ def _sparkline(chart: TrendChart, wide: bool) -> Markup:
             color=chart.color,
             highlight_color=chart.highlight_color,
             decimals=chart.decimals,
+            language=language,
+            direction=direction,
         )
     )
 
@@ -75,8 +69,16 @@ def _hbar(section: HBarChartSection) -> Markup:
     return Markup(charts.hbar_svg(section.rows, section.scale_max))
 
 
-def _analysis(chart: AnalysisChart, wide: bool = False) -> Markup:
-    return Markup(charts.analysis_svg(chart, wide=wide))
+def _analysis(chart: AnalysisChart, wide: bool = False, *, count_axis: bool = False) -> Markup:
+    svg = charts.analysis_svg(chart, wide=wide, show_legend=False, count_axis=count_axis)
+    if chart.kind == "ranked":
+        return Markup(svg)
+    legend = "".join(
+        f'<span><span class="analysis-swatch" aria-hidden="true" style="background-color:{escape(series.color)}">'
+        f"</span><bdi>{escape(series.name)}</bdi></span>"
+        for series in chart.series
+    )
+    return Markup(f'<div class="analysis-legend">{legend}</div>{svg}')
 
 
 def _ring(item: RingItem) -> Markup:
@@ -93,6 +95,9 @@ def environment() -> SandboxedEnvironment:
         autoescape=True,
     )
     env.filters["display_datetime"] = display_datetime
+    env.filters["report_labels"] = report_labels
+    env.filters["isolate_value"] = isolate_value
+    env.filters["chart_value"] = chart_value
     env.filters["bold_markup"] = bold_markup
     env.filters["evidence_text"] = evidence_text
     env.tests["hourly_source"] = lambda value: str(value).startswith("data_query:hourly:")
@@ -166,10 +171,16 @@ def render_report(
             update={"sections": [*document.sections, HeadlineDetailsSection(kind="headline_details", items=[])]}
         )
         pages = compose_pages(paged_document, compact_sources=True)
+    management_copy = None
     if management and layout == "community":
-        from netix_render.management import management_pages, validate_context
+        from netix_render.management import comparison_rows, comparison_summary, management_pages, validate_context
+        from netix_render.management_locale import management_labels
 
         management = validate_context(management)
+        locale = document.meta.language
+        management_copy = management_labels(locale)
+        management["comparison_summary"] = comparison_summary(management["comparison"], locale)
+        management["comparison_rows"] = comparison_rows(management["comparison"], locale)
         pages = management_pages(document)
     return (
         environment()
@@ -183,6 +194,7 @@ def render_report(
             links_for=links_for,
             action_links=action_links,
             management=management,
+            management_copy=management_copy,
         )
     )
 

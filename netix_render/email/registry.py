@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from netix_render import renderer, tokens
 from netix_render.email import schema
 from netix_render.email.strings import translator
+from netix_render.report_locale import isolate_value
 
 
 class RenderedEmail(BaseModel):
@@ -38,6 +39,7 @@ def _text_environment() -> SandboxedEnvironment:
         trim_blocks=False,
         keep_trailing_newline=False,
     )
+    env.filters["isolate_value"] = isolate_value
     return env
 
 
@@ -310,4 +312,4 @@ def render_email_template(template_id: str, context: Mapping[str, Any]) -> Rende
     subject = payload.meta.subject or template.default_subject(payload, translate)
     html = renderer.environment().get_template(f"email/{template_id}.html.j2").render(subject=subject, **render_context)
     text = _text_environment().get_template(f"email/{template_id}.txt.j2").render(**render_context).strip() + "\n"
-    return RenderedEmail(subject=subject, html=css_inline.inline(html), text=text)
+    return RenderedEmail(subject=subject, html=css_inline.inline(html, keep_at_rules=True), text=text)

@@ -36,6 +36,34 @@ def test_renders_in_every_locale(template_id, locale):
     assert f'lang="{locale}"' in rendered.html
 
 
+@pytest.mark.parametrize(
+    ("requested", "locale"),
+    [
+        ("en-GB", "en"),
+        ("ar-AE", "ar"),
+        ("fr-CA", "fr"),
+        ("es-MX", "es"),
+        ("nl-BE", "nl"),
+        ("de-AT", "de"),
+        (" RU_ru ", "ru"),
+    ],
+)
+def test_email_language_aliases_render_the_canonical_template(requested, locale):
+    sample = dict(TEMPLATES["otp_code"].sample)
+    sample["meta"] = {**sample["meta"], "locale": requested}
+    regional = render_email_template("otp_code", sample)
+    sample["meta"]["locale"] = locale
+    assert regional == render_email_template("otp_code", sample)
+
+
+@pytest.mark.parametrize("locale", ["it-IT", 12])
+def test_email_language_still_rejects_unsupported_values(locale):
+    sample = dict(TEMPLATES["otp_code"].sample)
+    sample["meta"] = {**sample["meta"], "locale": locale}
+    with pytest.raises(ValueError, match=r"meta.locale"):
+        render_email_template("otp_code", sample)
+
+
 @pytest.mark.parametrize("template_id", sorted(TEMPLATES))
 def test_email_safety_constraints(template_id):
     rendered = render_email_template(template_id, TEMPLATES[template_id].sample)
@@ -110,6 +138,34 @@ def test_text_alternative_contains_payload_facts():
     rendered = render_email_template("report_ready", TEMPLATES["report_ready"].sample)
     assert "attendance_2026-08.xlsx" in rendered.text
     assert "https://example.invalid/download/abc" in rendered.text
+
+
+def test_arabic_wordmark_preserves_latin_order_in_the_masthead():
+    sample = {**TEMPLATES["report_pack"].sample, "meta": {"locale": "ar"}}
+    html = render_email_template("report_pack", sample).html
+
+    assert re.search(r'<div class="wordmark"[^>]*dir="ltr"[^>]*>NETIX<span[^>]*>\.AI</span>', html)
+
+
+def test_arabic_offline_report_isolates_timestamps_and_timezone():
+    sample = {**TEMPLATES["offline_daily_report"].sample, "language": "ar"}
+    html = render_email_template("offline_daily_report", sample).html
+
+    assert f"\u2068{sample['report_date']}\u2069" in html
+    assert f"\u2068{sample['timezone']}\u2069" in html
+    assert f"\u2068{sample['offline_items'][0]['since']}\u2069" in html
+
+
+def test_arabic_report_pack_protects_file_name_and_size_direction():
+    sample = {
+        **TEMPLATES["report_pack"].sample,
+        "meta": {"locale": "ar"},
+        "files": [{"name": "AHU-17.pdf", "size_label": "41,3 KB"}],
+    }
+    rendered = render_email_template("report_pack", sample)
+    for surface in (rendered.html, rendered.text):
+        assert "\u2068AHU-17.pdf\u2069" in surface
+        assert "\u206841,3 KB\u2069" in surface
 
 
 def test_visible_text_contains_code():
@@ -399,7 +455,12 @@ def test_offline_daily_report_new_vs_yesterday_wording(vs, expected):
 
 @pytest.mark.parametrize(
     ("locale", "pct", "expected"),
-    [("en", 96.84, "96.8%"), ("de", 96.84, "96,8 %"), ("en", None, "Availability, 24 h - (")],
+    [
+        ("en", 96.84, "96.8%"),
+        ("de", 96.84, "96,8 %"),
+        ("ru-RU", 96.84, "Доступность за 24 ч 96,8 %"),
+        ("en", None, "Availability, 24 h - ("),
+    ],
 )
 def test_offline_daily_report_availability_format(locale, pct, expected):
     rendered = render_email_template("offline_daily_report", _offline_report(language=locale, availability_pct_24h=pct))
@@ -491,7 +552,8 @@ def test_offline_monthly_report_bars_are_zoomed_email_safe_tables_with_a_target_
     assert '<td width="74%" height="6" bgcolor="#d97706"' in rendered.html
     assert '<td width="90%" height="6" bgcolor="#94a3b8"' in rendered.html
     assert (
-        '<td width="2" height="6" bgcolor="#2d2e2f"></td><td width="4%" height="6" bgcolor="#94a3b8"' in rendered.html
+        '<td width="2" height="6" bgcolor="#2d2e2f" style="min-width:2px"></td>'
+        '<td width="4%" height="6" bgcolor="#94a3b8"' in rendered.html
     )
     assert 'bgcolor="#e7ecf1"' in rendered.html  # the neutral lane behind every bar
     assert "<svg" not in rendered.html and "<img" not in rendered.html
@@ -576,10 +638,17 @@ def test_offline_monthly_report_empty_period():
 
 
 def test_offline_monthly_report_flat_context_rtl_and_meta_override():
-    rendered = render_email_template("offline_monthly_report", _monthly(language="ar"))
+    rendered = render_email_template("offline_monthly_report", _monthly(language="ar-AE"))
     assert 'dir="rtl"' in rendered.html and 'lang="ar"' in rendered.html
     assert translator("ar")("availability_by_building") in rendered.text
     assert "text-align: left" in rendered.html
+    for duration in ("6 d 4 h", "4 d 2 h", "2 d 5 h"):
+        assert f"\u2068{duration}\u2069" in rendered.html
+        assert duration in rendered.text
+    totals = {**TEMPLATES["offline_monthly_report"].sample["totals"], "total_offline": "6 ي 4 س"}
+    localized = render_email_template("offline_monthly_report", _monthly(language="ar-AE", totals=totals))
+    assert "\u20686 ي 4 س\u2069" in localized.html
+    assert "6 ي 4 س" in localized.text
     rendered = render_email_template("offline_monthly_report", _monthly(meta={"locale": "de", "subject": "Custom"}))
     assert 'lang="de"' in rendered.html and rendered.subject == "Custom"
     assert "99,1 %" in rendered.text
@@ -606,7 +675,8 @@ def test_offline_monthly_report_rejects_invalid_context(overrides):
         render_email_template("offline_monthly_report", _monthly(**overrides))
 
 
-def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip():
+@pytest.mark.parametrize("language", ["en", "ar", "fr", "es", "nl", "de", "ru"])
+def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip(language):
     buildings = [
         {
             "building": f"Building {index:03d} North Wing",
@@ -621,7 +691,9 @@ def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip()
         {"display_name": f"Device {index}", "building": "Building 001", "outages": 9, "total_offline": "2 d"}
         for index in range(20)
     ]
-    rendered = render_email_template("offline_monthly_report", _monthly(buildings=buildings, worst_devices=devices))
+    rendered = render_email_template(
+        "offline_monthly_report", _monthly(language=language, buildings=buildings, worst_devices=devices)
+    )
     assert len(rendered.html.encode()) < GMAIL_CLIP_LIMIT
 
 
