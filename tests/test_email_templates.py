@@ -552,7 +552,8 @@ def test_offline_monthly_report_bars_are_zoomed_email_safe_tables_with_a_target_
     assert '<td width="74%" height="6" bgcolor="#d97706"' in rendered.html
     assert '<td width="90%" height="6" bgcolor="#94a3b8"' in rendered.html
     assert (
-        '<td width="2" height="6" bgcolor="#2d2e2f"></td><td width="4%" height="6" bgcolor="#94a3b8"' in rendered.html
+        '<td width="2" height="6" bgcolor="#2d2e2f" style="min-width:2px"></td>'
+        '<td width="4%" height="6" bgcolor="#94a3b8"' in rendered.html
     )
     assert 'bgcolor="#e7ecf1"' in rendered.html  # the neutral lane behind every bar
     assert "<svg" not in rendered.html and "<img" not in rendered.html
@@ -641,6 +642,13 @@ def test_offline_monthly_report_flat_context_rtl_and_meta_override():
     assert 'dir="rtl"' in rendered.html and 'lang="ar"' in rendered.html
     assert translator("ar")("availability_by_building") in rendered.text
     assert "text-align: left" in rendered.html
+    for duration in ("6 d 4 h", "4 d 2 h", "2 d 5 h"):
+        assert f"\u2068{duration}\u2069" in rendered.html
+        assert duration in rendered.text
+    totals = {**TEMPLATES["offline_monthly_report"].sample["totals"], "total_offline": "6 ي 4 س"}
+    localized = render_email_template("offline_monthly_report", _monthly(language="ar-AE", totals=totals))
+    assert "\u20686 ي 4 س\u2069" in localized.html
+    assert "6 ي 4 س" in localized.text
     rendered = render_email_template("offline_monthly_report", _monthly(meta={"locale": "de", "subject": "Custom"}))
     assert 'lang="de"' in rendered.html and rendered.subject == "Custom"
     assert "99,1 %" in rendered.text
@@ -667,7 +675,8 @@ def test_offline_monthly_report_rejects_invalid_context(overrides):
         render_email_template("offline_monthly_report", _monthly(**overrides))
 
 
-def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip():
+@pytest.mark.parametrize("language", ["en", "ar", "fr", "es", "nl", "de", "ru"])
+def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip(language):
     buildings = [
         {
             "building": f"Building {index:03d} North Wing",
@@ -682,7 +691,9 @@ def test_offline_monthly_report_largest_allowed_payload_stays_under_gmail_clip()
         {"display_name": f"Device {index}", "building": "Building 001", "outages": 9, "total_offline": "2 d"}
         for index in range(20)
     ]
-    rendered = render_email_template("offline_monthly_report", _monthly(buildings=buildings, worst_devices=devices))
+    rendered = render_email_template(
+        "offline_monthly_report", _monthly(language=language, buildings=buildings, worst_devices=devices)
+    )
     assert len(rendered.html.encode()) < GMAIL_CLIP_LIMIT
 
 

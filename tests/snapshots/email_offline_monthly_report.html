@@ -17,6 +17,46 @@
           padding: 4px !important;
           white-space: normal;
         }
+      } @media screen and (max-width: 480px) {
+        /* Let names take a full row, and keep the three measures aligned below them. */
+        .cx-monthly, .cx-monthly > tbody {
+          display: block;
+        }
+        .cx-monthly > tbody > tr {
+          display: block;
+          border-bottom: 1px solid #e5eaf0;
+          font-size: 0;
+          padding: 5px 0;
+        }
+        .cx-monthly > tbody > tr:first-child {
+          padding: 0;
+        }
+        .cx-monthly > tbody > tr > th:first-child {
+          display: none;
+        }
+        .cx-monthly > tbody > tr > th {
+          background: none !important;
+          font-size: 11px !important;
+          letter-spacing: normal !important;
+          text-transform: none !important;
+        }
+        .cx-monthly > tbody > tr > td {
+          font-size: 12.5px;
+        }
+        .cx-monthly > tbody > tr > th, .cx-monthly > tbody > tr > td {
+          display: inline-block;
+          box-sizing: border-box;
+          border: 0 !important;
+          overflow-wrap: anywhere;
+          padding: 3px 2px !important;
+          vertical-align: top;
+          white-space: normal !important;
+          width: 33.33%;
+        }
+        .cx-monthly > tbody > tr > td:first-child {
+          display: block;
+          width: 100%;
+        }
       } </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,21 +120,21 @@
 
 
 
-<table class="cx-t" cellspacing="0" width="100%" cellpadding="7" style="border-collapse: collapse;font-size: 12.5px;margin: 8px 0 12px;">
+<table class="cx-t cx-monthly" cellspacing="0" width="100%" cellpadding="7" style="border-collapse: collapse;font-size: 12.5px;margin: 8px 0 12px;">
   <tbody><tr>
     <th style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 8px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
     <th width="34%" style="text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 8px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Availability</th>
     <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 8px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Outages</th>
     <th style="color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 8px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;text-align: right">Offline time</th>
   </tr>
-  <tr><td valign="top" style="border-bottom:1px solid #e5eaf0"><b>Plant 2</b><br><span style="font-size:11.5px;color:#5d7482">Most offline: Chiller CH-01</span></td><td valign="top" style="border-bottom:1px solid #e5eaf0"><b style="color:#92400e">▲ 97.4%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="74%" height="6" bgcolor="#d97706" style="font-size:0;line-height:0">&nbsp;</td><td width="16%"></td><td width="2" height="6" bgcolor="#2d2e2f"></td><td width="10%"></td></tr></tbody></table></td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right">21</td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">4 d 2 h</td></tr>
-  <tr><td valign="top" style="border-bottom:1px solid #e5eaf0"><b>Tower B</b><br><span style="font-size:11.5px;color:#5d7482">Most offline: GW-Tower-B-02</span></td><td valign="top" style="border-bottom:1px solid #e5eaf0"><b>99.4%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="90%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="2" height="6" bgcolor="#2d2e2f"></td><td width="4%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="6%"></td></tr></tbody></table></td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right">14</td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">1 d 22 h</td></tr>
-  <tr><td valign="top" style="border-bottom:1px solid #e5eaf0"><b>Harbour Office</b></td><td valign="top" style="border-bottom:1px solid #e5eaf0"><b>99.9%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="90%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="2" height="6" bgcolor="#2d2e2f"></td><td width="9%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="1%"></td></tr></tbody></table></td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right">2</td><td valign="top" style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">4 min</td></tr>
+  <tr valign="top"><td style="border-bottom:1px solid #e5eaf0"><b>Plant 2</b><br><span style="font-size:11.5px;color:#5d7482">Most offline: Chiller CH-01</span></td><td style="border-bottom:1px solid #e5eaf0"><b style="color:#92400e">▲ 97.4%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="74%" height="6" bgcolor="#d97706" style="font-size:0;line-height:0">&nbsp;</td><td width="16%"></td><td width="2" height="6" bgcolor="#2d2e2f" style="min-width:2px"></td><td width="10%"></td></tr></tbody></table></td><td style="border-bottom:1px solid #e5eaf0" align="right">21</td><td style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">4 d 2 h</td></tr>
+  <tr valign="top"><td style="border-bottom:1px solid #e5eaf0"><b>Tower B</b><br><span style="font-size:11.5px;color:#5d7482">Most offline: GW-Tower-B-02</span></td><td style="border-bottom:1px solid #e5eaf0"><b>99.4%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="90%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="2" height="6" bgcolor="#2d2e2f" style="min-width:2px"></td><td width="4%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="6%"></td></tr></tbody></table></td><td style="border-bottom:1px solid #e5eaf0" align="right">14</td><td style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">1 d 22 h</td></tr>
+  <tr valign="top"><td style="border-bottom:1px solid #e5eaf0"><b>Harbour Office</b></td><td style="border-bottom:1px solid #e5eaf0"><b>99.9%</b><table width="100%" cellpadding="0" cellspacing="0" bgcolor="#e7ecf1" style="margin-top:4px"><tbody><tr><td width="90%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="2" height="6" bgcolor="#2d2e2f" style="min-width:2px"></td><td width="9%" height="6" bgcolor="#94a3b8" style="font-size:0;line-height:0">&nbsp;</td><td width="1%"></td></tr></tbody></table></td><td style="border-bottom:1px solid #e5eaf0" align="right">2</td><td style="border-bottom:1px solid #e5eaf0" align="right" nowrap="">4 min</td></tr>
 </tbody></table>
 
 
 <p class="h2" style="font-size: 14px;font-weight: 700;margin: 22px 0 4px;color: #2d2e2f;">Devices with the most offline time</p>
-<table class="kv" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
+<table class="kv cx-monthly" cellspacing="0" cellpadding="0" style="width: 100%;border-collapse: collapse;font-size: 12.5px;margin: 12px 0;">
   <tbody><tr>
     <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Device</th>
     <th style="overflow-wrap: anywhere;text-align: left;color: #5d7482;font-size: 10px;text-transform: uppercase;letter-spacing: 0.8px;padding: 7px 10px;border-bottom: 1px solid #e5eaf0;background: #f4f6f8;">Building</th>
