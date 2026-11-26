@@ -513,7 +513,7 @@ def isolate_value(value: str, direction: str) -> str:
 
 
 def chart_value(value: str, locale: str) -> str:
-    return value.replace(".", ",") if _language(locale) in {"ar", "fr", "es", "nl", "de", "ru"} else value
+    return value.replace(".", ",") if _language(locale) in {"fr", "es", "nl", "de", "ru"} else value
 
 
 def report_labels(locale: str) -> dict[str, str]:

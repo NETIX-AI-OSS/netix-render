@@ -171,17 +171,24 @@ def test_rtl_isolates_numeric_values_in_kpis_and_authored_data_cells():
     assert kpi["items"][0]["value"] == "53 500 kWh"
 
 
-def test_chart_gaps_and_decimals_use_the_report_locale():
+@pytest.mark.parametrize(
+    ("language", "direction", "value_label", "unavailable"),
+    [
+        ("fr", "ltr", "12,50", "N/D"),
+        ("ar-AE", "rtl", "\u206812.50\u2069", "غير متاح"),
+    ],
+)
+def test_chart_gaps_and_decimals_use_the_report_locale(language, direction, value_label, unavailable):
     payload = load_fixture_json("synthetic_daily")
-    payload["meta"].update(language="fr", dir="ltr")
+    payload["meta"].update(language=language, dir=direction)
     chart = next(s for s in payload["sections"] if s["kind"] == "trend_pair")["charts"][0]
     chart["series"][0]["value"] = 12.5
     chart["series"][1]["value"] = None
     document = ReportDocument.model_validate(payload)
 
     for html in (render_report(document), render_email(document)):
-        assert "12,50" in html
-        assert ">N/D<" in html
+        assert f">{value_label}<" in html
+        assert f">{unavailable}<" in html
 
 
 def test_accent_gradient_is_parameterized():
