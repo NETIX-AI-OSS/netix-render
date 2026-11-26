@@ -1,0 +1,19 @@
+{% macro pct(value) %}{{ t("percent", value=value.replace(".", t("decimal_separator"))) if value is not none else "-" }}{% endmacro -%}
+{% set totals = payload.totals -%}
+{% set target = pct(payload.target_value) if payload.target_value is not none else "" -%}
+{{ payload.report_name }}
+{{ t("report_date_tz", date=payload.period_label, timezone=payload.timezone) }}
+
+{{ t("monitored") }} {{ totals.monitored }}, {{ t("availability") }} {{ pct(totals.availability_value) }}{% if target %} ({{ t("target", value=target) }}){% endif %}, {{ t("outages") }} {{ totals.outages }}, {{ t("total_offline") }} {{ totals.total_offline or "-" }}
+{% if target and totals.availability_pct is not none %}{{ t("target_missed", value=target) if payload.below_target(totals.availability_pct) else t("target_met", value=target) }}
+{% endif %}
+{{ t("availability_by_building") }}{% if payload.buildings %}{% for row in payload.buildings %}
+- {{ row.building }}: {{ t("availability") }} {{ pct(row.availability_value) }}{% if payload.below_target(row.availability) %} ({{ t("below_target") }}){% endif %}, {{ t("outages") }} {{ row.outages }}, {{ t("offline_time") }} {{ row.total_offline or "-" }}{% if row.worst_device %}, {{ t("worst_device", name=row.worst_device) }}{% endif %}{% endfor %}{% else %}
+{{ t("no_buildings") }}{% endif %}
+{% if payload.worst_devices %}
+{{ t("worst_devices") }}{% for device in payload.worst_devices %}
+- {{ device.display_name }}, {{ t("building") }}: {{ device.building or "-" }}, {{ t("outages") }} {{ device.outages }}, {{ t("offline_time") }} {{ device.total_offline or "-" }}{% endfor %}
+{% endif %}{% if payload.attachment_note %}
+{{ payload.attachment_note }}
+{% endif %}
+{{ t("open_dashboard") }}: {{ payload.dashboard_url }}

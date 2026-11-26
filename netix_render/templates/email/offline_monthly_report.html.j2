@@ -1,0 +1,70 @@
+{% extends "email/base.html.j2" %}
+{% import "email/macros.j2" as m %}
+{% import "email/connectivity.j2" as cx with context %}
+{% set end = "left" if payload.meta.dir == "rtl" else "right" %}
+{% block styles %}{% include "email/connectivity.css.j2" %}{% endblock %}
+{% block content %}
+{% set totals = payload.totals %}
+{% set target = cx.pct(payload.target_value) if payload.target_value is not none else "" %}
+{% set missed = payload.below_target(totals.availability_pct) %}
+<div class="band cx-band-info">{{ payload.report_name }}</div>
+<p class="p mut">{{ t("report_date_tz", date=payload.period_label, timezone=payload.timezone) }}</p>
+<table class="kpi" cellpadding="0" cellspacing="4">
+  <tr>
+    {{ cx.kpi(totals.monitored, t("monitored")) }}
+    {{ cx.kpi(cx.pct(totals.availability_value), t("availability"), "degraded" if missed else "", sub=t("target", value=target) if target else "") }}
+    {{ cx.kpi(totals.outages, t("outages")) }}
+    {{ cx.kpi(totals.total_offline or "-", t("total_offline")) }}
+  </tr>
+</table>
+{% if target and totals.availability_pct is not none %}
+{% if missed %}
+<p class="p cx-degraded">{{ cx.icon("degraded") }} {{ t("target_missed", value=target) }}</p>
+{% else %}
+<p class="p mut">{{ cx.icon("ok") }} {{ t("target_met", value=target) }}</p>
+{% endif %}
+{% endif %}
+<p class="h2">{{ t("availability_by_building") }}</p>
+{% if payload.buildings %}
+<p class="small">{% if payload.any_building_below_target %}<span class="cx-flag">{{ cx.icon("degraded") }} {{ t("below_target") }}</span> · {% endif %}{{ t("bars_start", value=t("percent", value=payload.bar_floor)) }}{% if payload.availability_target is not none and payload.bar_floor < payload.availability_target < 100 %} {{ t("target_marker") }}{% endif %}</p>
+{#- Compact markup with styles written inline: up to 100 rows must stay under Gmail's 102 KB clip. #}
+{% set cell = ('valign="top" style="border-bottom:1px solid ' ~ tokens.color.line ~ '"') | safe %}
+{% set meta = ('style="font-size:11.5px;color:' ~ tokens.color.ink_soft ~ '"') | safe %}
+{% set warn = ('style="color:' ~ tokens.color.connectivity.degraded_text ~ '"') | safe %}
+<table class="cx-t" width="100%" cellpadding="7" cellspacing="0">
+  <tr>
+    <th>{{ t("building") }}</th>
+    <th width="34%">{{ t("availability") }}</th>
+    <th style="text-align: {{ end }}">{{ t("outages") }}</th>
+    <th style="text-align: {{ end }}">{{ t("offline_time") }}</th>
+  </tr>
+  {%- for row in payload.buildings %}
+  {%- set below = payload.below_target(row.availability) %}
+  <tr><td {{ cell }}><b>{{ row.building }}</b>{% if row.worst_device %}<br><span {{ meta }}>{{ t("worst_device", name=row.worst_device) }}</span>{% endif %}</td><td {{ cell }}><b{% if below %} {{ warn }}{% endif %}>{% if below %}&#x25B2; {% endif %}{{ cx.pct(row.availability_value) }}</b>{% if row.availability is not none %}{{ cx.bar(payload.bar_cells(row.availability), "degraded" if below else "online") }}{% endif %}</td><td {{ cell }} align="{{ end }}">{{ row.outages }}</td><td {{ cell }} align="{{ end }}" nowrap>{{ row.total_offline or "-" }}</td></tr>
+  {%- endfor %}
+</table>
+{% else %}
+<p class="p mut">{{ t("no_buildings") }}</p>
+{% endif %}
+{% if payload.worst_devices %}
+<p class="h2">{{ t("worst_devices") }}</p>
+<table class="kv" cellpadding="0" cellspacing="0">
+  <tr>
+    <th>{{ t("kind_device") }}</th>
+    <th>{{ t("building") }}</th>
+    <th style="text-align: {{ end }}">{{ t("outages") }}</th>
+    <th style="text-align: {{ end }}">{{ t("offline_time") }}</th>
+  </tr>
+  {% for device in payload.worst_devices %}
+  <tr>
+    <td class="v">{{ device.display_name }}</td>
+    <td>{{ device.building or "-" }}</td>
+    <td style="text-align: {{ end }}">{{ device.outages }}</td>
+    <td style="text-align: {{ end }}; white-space: nowrap">{{ device.total_offline or "-" }}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+{% if payload.attachment_note %}<p class="p">{{ payload.attachment_note }}</p>{% endif %}
+{{ m.cta_button({"label": t("open_dashboard"), "url": payload.dashboard_url}) }}
+{% endblock %}
