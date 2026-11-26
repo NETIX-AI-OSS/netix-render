@@ -1,34 +1,27 @@
 {% extends "email/base.html.j2" %}
 {% import "email/macros.j2" as m %}
+{% import "email/connectivity.j2" as cx with context %}
 {% set end = "left" if payload.meta.dir == "rtl" else "right" %}
 {% set kinds = {"asset": t("kind_asset"), "gateway": t("kind_gateway")} %}
-{% macro kpi(value, label, level="", width=25) -%}
-<td width="{{ width }}%">
-  <div class="kpi-n{% if level %} kpi-{{ level }}{% endif %}">{{ value }}</div>
-  <div class="kpi-l">{{ label }}</div>
-</td>
-{%- endmacro %}
-{% macro compact_cell(label, value, is_name=false, align_end=false) -%}
-<td{% if is_name %} class="v"{% endif %}{% if align_end %} style="text-align: {{ end }}"{% endif %}>
-  <span class="compact-label">{{ t(label) }}</span><span>{{ value | string | isolate_value(payload.meta.dir) }}</span>
+{% set incident_kinds = {"gateway": t("kind_gateway"), "building": t("building"), "single": t("kind_device")} %}
+{% set band_state = {"crit": "offline", "warn": "degraded", "ok": "ok"} %}
+{% macro compact_cell(label, value, cell_class="", align_end=false, link=none) -%}
+<td{% if cell_class %} class="{{ cell_class }}"{% endif %}{% if align_end %} style="text-align: {{ end }}"{% endif %}>
+  <span class="compact-label">{{ t(label) }}</span><span>{{ cx.name_link(value | string | isolate_value(payload.meta.dir), link) }}</span>
 </td>
 {%- endmacro %}
 {% macro count(value) %}{{ value if value else "-" }}{% endmacro %}
-{% block responsive_styles %}
+{% macro excluded_note() -%}
+{% set excluded = ([t("count_snoozed", count=payload.snoozed_count)] if payload.snoozed_count else [])
+  + ([t("count_in_maintenance", count=payload.maintenance_count)] if payload.maintenance_count else []) %}
+{% if excluded %}<p class="small">{{ t("not_included", items=excluded | join(t("list_separator"))) }}</p>{% endif %}
+{%- endmacro %}
+{% block styles %}
+      {% include "email/connectivity.css.j2" %}
       .compact-label {
         display: none;
       }
       @media screen and (max-width: 480px) {
-        .compact-kpi tr {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 4px;
-        }
-        .compact-kpi td {
-          box-sizing: border-box;
-          flex: 1 1 40%;
-          min-width: 0;
-        }
         .compact-table, .compact-table tbody, .compact-table tr {
           display: block;
         }
@@ -55,29 +48,67 @@
       }
 {% endblock %}
 {% block content %}
-<div class="band band-{{ payload.severity }}">{{ payload.report_name }}</div>
-<p class="p mut">{{ t("report_date_tz", date=payload.report_date | isolate_value(payload.meta.dir), timezone=payload.timezone | isolate_value(payload.meta.dir)) }}</p>
+{% set totals = payload.totals %}
+{% set availability = cx.pct(payload.availability_value) %}
+{% set date_line = t("report_date_tz", date=payload.report_date | isolate_value(payload.meta.dir), timezone=payload.timezone | isolate_value(payload.meta.dir)) %}
+{% if payload.all_clear %}
+<div class="band cx-band-ok">{{ cx.icon("ok") }} {{ t("all_clear_heading") }}</div>
+<p class="p mut">{{ payload.report_name }}. {{ date_line }}</p>
+<p class="p">{{ t("all_clear_body") }}</p>
+<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
+  <tr>
+    {{ cx.kpi(totals.monitored, t("monitored"), width=33) }}
+    {{ cx.kpi(availability, t("availability_24h"), sub=payload.availability_delta or "", width=33) }}
+    {{ cx.kpi(payload.movement.recovered_24h, t("back_online"), width=34) }}
+  </tr>
+</table>
+{{ excluded_note() }}
+{% else %}
+<div class="band cx-band-{{ payload.severity }}">{{ cx.icon(band_state[payload.severity]) }} {{ payload.report_name }}</div>
+<p class="p mut">{{ date_line }}</p>
 {% if payload.all_online %}<p class="p">{{ t("all_online") }}</p>{% endif %}
+{% set moved = payload.movement %}
+{% set vs = moved.new_vs_yesterday %}
+{% set vs_text = "" if vs is none else t("vs_yesterday_more", count=vs) if vs > 0 else t("vs_yesterday_fewer", count=-vs) if vs < 0 else t("vs_yesterday_same") %}
+<p class="kpi-cap">{{ t("changes_since_yesterday") }}</p>
+<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
+  <tr>
+    {{ cx.kpi(moved.new_24h, t("went_offline"), "offline" if moved.new_24h else "", sub=vs_text) }}
+    {{ cx.kpi(moved.recovered_24h, t("back_online")) }}
+    {{ cx.kpi(moved.still_down, t("still_down"), "offline" if moved.still_down else "") }}
+    {{ cx.kpi(availability, t("availability_24h"), sub=payload.availability_delta or "") }}
+  </tr>
+</table>
 <p class="kpi-cap">{{ t("kpi_now") }}</p>
 <table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
   <tr>
-    {{ kpi(payload.totals.monitored, t("monitored")) }}
-    {{ kpi(payload.totals.online, t("online")) }}
-    {{ kpi(payload.totals.degraded, t("degraded"), "warn" if payload.totals.degraded else "") }}
-    {{ kpi(payload.totals.offline, t("offline"), "crit" if payload.totals.offline else "") }}
+    {{ cx.kpi(totals.monitored, t("monitored")) }}
+    {{ cx.kpi(totals.online, t("online"), "online") }}
+    {{ cx.kpi(totals.degraded, t("degraded"), "degraded" if totals.degraded else "") }}
+    {{ cx.kpi(totals.offline, t("offline"), "offline" if totals.offline else "") }}
   </tr>
 </table>
-<p class="kpi-cap">{{ t("kpi_last_24h") }}</p>
-<table class="kpi compact-kpi" cellpadding="0" cellspacing="4">
+{{ excluded_note() }}
+{% if payload.incidents %}
+<p class="h2">{{ t("incidents") }}</p>
+<table class="kv" cellpadding="0" cellspacing="0">
+  {% for incident in payload.incidents %}
+  {% set affected_key = "assets_unreachable" if incident.kind == "gateway" else "devices_affected" %}
   <tr>
-    {% set availability = payload.availability_value %}
-    {{ kpi(t("percent", value=availability.replace(".", t("decimal_separator"))) if availability is not none else "-", t("availability"), width=33) }}
-    {{ kpi(payload.new_24h, t("went_offline"), "crit" if payload.new_24h else "", width=33) }}
-    {{ kpi(payload.recovered_24h, t("back_online"), width=34) }}
+    <td>
+      <span class="cx-chip">{{ incident_kinds[incident.kind] }}</span>
+      <b>{{ cx.name_link(incident.title, incident.link) }}</b>
+      {% if incident.since or incident.duration %}<div class="cx-meta">{% if incident.since %}{{ t("since") }} {{ incident.since | isolate_value(payload.meta.dir) }}{% endif %}{% if incident.since and incident.duration %} · {% endif %}{{ (incident.duration or "") | isolate_value(payload.meta.dir) }}</div>{% endif %}
+    </td>
+    <td class="v" style="text-align: {{ end }}">
+      {% if incident.kind != "single" or incident.affected > 1 %}{{ t(affected_key ~ ("_one" if incident.affected == 1 else "_other"), count=incident.affected) }}{% endif %}
+    </td>
   </tr>
+  {% endfor %}
 </table>
+{% endif %}
 {% if not payload.all_online %}
-<p class="h2">{{ t("offline_now") }}</p>
+<p class="h2">{{ cx.icon("offline") }} {{ t("offline_now") }}</p>
 {% if payload.offline_items %}
 <table class="kv compact-table" cellpadding="0" cellspacing="0">
   <tr class="compact-header">
@@ -89,7 +120,7 @@
   </tr>
   {% for item in payload.offline_items %}
   <tr>
-    {{ compact_cell("name", item.display_name, is_name=true) }}
+    {{ compact_cell("name", item.display_name, cell_class="v", link=item.link) }}
     {{ compact_cell("type", kinds.get(item.subject_kind, item.subject_kind) or "-") }}
     {{ compact_cell("building", item.building or "-") }}
     {{ compact_cell("since", item.since or "-") }}
@@ -108,15 +139,15 @@
   <tr class="compact-header">
     <th>{{ t("building") }}</th>
     <th style="text-align: {{ end }}">{{ t("monitored") }}</th>
-    <th style="text-align: {{ end }}">{{ t("offline") }}</th>
-    <th style="text-align: {{ end }}">{{ t("degraded") }}</th>
+    <th style="text-align: {{ end }}">{{ cx.icon("offline") }} {{ t("offline") }}</th>
+    <th style="text-align: {{ end }}">{{ cx.icon("degraded") }} {{ t("degraded") }}</th>
   </tr>
   {% for row in payload.by_building %}
   <tr>
-    {{ compact_cell("building", row.building, is_name=true) }}
+    {{ compact_cell("building", row.building, cell_class="v") }}
     {{ compact_cell("monitored", row.monitored, align_end=true) }}
-    {{ compact_cell("offline", count(row.offline), align_end=true) }}
-    {{ compact_cell("degraded", count(row.degraded), align_end=true) }}
+    {{ compact_cell("offline", count(row.offline), cell_class="v cx-offline" if row.offline else "", align_end=true) }}
+    {{ compact_cell("degraded", count(row.degraded), cell_class="v cx-degraded" if row.degraded else "", align_end=true) }}
   </tr>
   {% endfor %}
 </table>
@@ -131,12 +162,13 @@
   </tr>
   {% for gateway in payload.gateway_impact %}
   <tr>
-    {{ compact_cell("gateway", gateway.display_name, is_name=true) }}
+    {{ compact_cell("gateway", gateway.display_name, cell_class="v") }}
     {{ compact_cell("since", gateway.since or "-") }}
     {{ compact_cell("assets_affected", gateway.affected_assets, align_end=true) }}
   </tr>
   {% endfor %}
 </table>
+{% endif %}
 {% endif %}
 {% if payload.attachment_note %}<p class="p">{{ payload.attachment_note }}</p>{% endif %}
 {{ m.cta_button({"label": t("open_dashboard"), "url": payload.dashboard_url}) }}

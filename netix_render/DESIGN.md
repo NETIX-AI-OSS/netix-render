@@ -18,6 +18,7 @@ colors or type.
 | `color.line` | `#e5eaf0` | Borders, table rules |
 | `color.status.ok/warn/crit/muted` | `#007d39` / `#b97600` / `#d72828` / `#4b5156` | Semantic state only, never decoration |
 | `color.status_soft.*` | tinted equivalents | Pill and band backgrounds |
+| `color.connectivity.*` | online `#64748b` (fill `#94a3b8`, lane `#e7ecf1`), degraded `#d97706` / text `#92400e` / soft `#fdf3e2`, offline `#dc2626` / text `#b91c1c` / soft `#fdecec` | Connectivity (IoT offline) emails only; see below |
 | `color.print.navy` | `#1F4E78` | Print/docx documents only |
 
 Typography: `'Inter', 'Segoe UI', Arial, sans-serif`. Web pages may load Inter; email must
@@ -30,6 +31,11 @@ Sign-off is always "NETIX.AI · CAFM Platform" (`email.sign_off`). The wordmark 
 `NETIX` + accent-colored `.AI`. Never write "IFM Facilities Management" or other legacy
 sign-offs. Automated mail always carries the do-not-reply note. Semantic color states are
 ok / warn / crit, pick by meaning, not appearance.
+
+Connectivity colour rule: online is quiet neutral grey (hollow circle), degraded is amber with a
+triangle (▲), offline is red with an octagon (🛑). Status is never colour alone: every icon or
+tint sits next to its word or under a header that names it. Email uses Unicode glyphs for the
+icons (no SVG) and table-cell bars with `bgcolor` for availability.
 
 ## Email constraints (hard rules)
 

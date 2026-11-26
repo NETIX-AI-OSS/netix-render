@@ -12,8 +12,8 @@ and exposed as `documents.*` MCP tools by ml-engine.
   hbar_chart, rings, footer) rendered to a web page or an email-safe inlined variant.
 - **Transactional email** (`netix_render.render_email_template`): registered templates
   (`otp_code`, `report_ready`, `entity_event`, `staff_alert`, `report_pack`, `alarm_notice`,
-  `feedback_request`, `status_digest`, `offline_daily_report`), each with a strict pydantic
-  contract, en/ar/fr/es/nl/de/ru chrome strings, RTL support, and a plain-text alternative:
+  `feedback_request`, `status_digest`, `offline_daily_report`, `offline_monthly_report`), each with a strict
+  pydantic contract, en/ar/fr/es/nl/de/ru chrome strings, RTL support, and a plain-text alternative:
 
 ```python
 from netix_render import render_email_template
@@ -26,8 +26,8 @@ rendered.subject, rendered.html, rendered.text
 ```
 
 Select the recipient’s language with `meta.locale`; omitting it defaults to English.
-`offline_daily_report` also takes data-service's flat `language` and `organization_name` keys,
-which fill `meta.locale` and `meta.org.name` when `meta` does not set them.
+`offline_daily_report` and `offline_monthly_report` also take data-service's flat `language` and
+`organization_name` keys, which fill `meta.locale` and `meta.org.name` when `meta` does not set them.
 The renderer translates template chrome and default subjects. Callers supply localized
 body text, field labels, and action labels. Email action and download links reject active
 script, data, and local-file URL schemes.
@@ -37,8 +37,21 @@ Every render is deterministic: validation happens against the template's contrac
 from caller-supplied data.
 
 The `v0.1.4` tag accepts `en`, `ar` and `es`. The `v0.1.5` tag adds `fr`, `nl` and `de`, link
-validation and the `offline_daily_report` template. Russian email templates require a renderer
-revision newer than `v0.1.5`.
+validation and the `offline_daily_report` template. This revision adds Russian email chrome.
+
+`v0.1.6` adds Connectivity v2 to the offline emails:
+
+- `offline_daily_report` accepts optional `subject_line`, `all_clear`, `changes`, `incidents` (at most 20),
+  `availability_delta`, `snoozed_count`, `maintenance_count` and `offline_items[].link`, so a `v0.1.5` sender still
+  validates. The email leads with what changed since yesterday, then incidents (a gateway incident reads
+  "14 assets unreachable"), then the offline list with deep links, by building and gateway impact. `all_clear: true`
+  sends a short green "Everything is reporting" email. The subject is `meta.subject`, else `subject_line`, else
+  "<report name>, <date>".
+- `offline_monthly_report` is new: availability per building (at most 100) for a calendar month, with totals,
+  an optional availability target, the devices with the most offline time (at most 20) and an attachment note.
+  Availability is floored to one decimal so a missed target never reads as met.
+- Both follow the connectivity colour rule (`color.connectivity` tokens): online is neutral grey with a hollow
+  circle, degraded is amber with a triangle, offline is red with an octagon, and every status also carries its word.
 
 ## Design tokens
 
@@ -77,6 +90,3 @@ Web reports include in-document navigation. A4 print styles insert page breaks a
 Report fixtures and snapshots must be authored from scratch with fictional assets, readings, incidents and `example.invalid` links. Renaming a customer or site is insufficient. Keep production reports, screenshots, raw payloads and validation artifacts outside this public repository, including PR descriptions and attachments. The `synthetic_*` fixtures are deliberately fictional and exercise daily, weekly and monthly report components.
 
 Report branding is supplied through `meta.logo_line`. It is escaped and used consistently in HTML, email and every multipage header. Omitting it renders reports without an organization label. Report metadata supplies asset names and timestamps; the renderer does not invent copyright ownership or verification destinations.
-
-Report documents use `meta.language` for built-in labels and dates. Arabic documents default to
-right-to-left, including regional codes such as `ar-AE`. Supply `meta.dir` to set an explicit direction.
