@@ -1,0 +1,35 @@
+{#- Connectivity email macros; import "with context" so t() and tokens resolve.
+    Status is never colour alone: offline = octagon (U+1F6D1) + red, degraded = triangle + amber,
+    online = hollow circle + neutral grey. Icons are aria-hidden because the word is always next to them. -#}
+{% macro icon(state) -%}
+{%- if state == "offline" -%}<span class="cx-ico" aria-hidden="true">&#x1F6D1;</span>
+{%- elif state == "degraded" -%}<span class="cx-ico cx-ico-degraded" aria-hidden="true">&#x25B2;</span>
+{%- elif state == "ok" -%}<span class="cx-ico cx-ico-ok" aria-hidden="true">&#x2713;</span>
+{%- else -%}<span class="cx-ico cx-ico-online" aria-hidden="true">&#x25CB;</span>
+{%- endif -%}
+{%- endmacro %}
+{% macro pct(value) -%}
+{{ t("percent", value=value.replace(".", t("decimal_separator"))) if value is not none else "-" }}
+{%- endmacro %}
+{% macro kpi(value, label, state="", sub="", width=25) -%}
+<td width="{{ width }}%">
+  <div class="kpi-n{% if state %} cx-{{ state }}{% endif %}">{% if state %}{{ icon(state) }} {% endif %}{{ value }}</div>
+  <div class="kpi-l">{{ label }}</div>
+  {% if sub %}<div class="cx-sub">{{ sub }}</div>{% endif %}
+</td>
+{%- endmacro %}
+{% macro bar(cells, state="online") -%}
+{#- cells: (kind, width %) from OfflineMonthlyReportEmail.bar_cells; the table bgcolor is the neutral lane. -#}
+{%- set fill = tokens.color.connectivity.degraded if state == "degraded" else tokens.color.connectivity.online_fill -%}
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="{{ tokens.color.connectivity.online_soft }}" style="margin-top:4px"><tr>
+{%- for kind, width in cells -%}
+{%- if kind == "fill" %}<td width="{{ width }}%" height="6" bgcolor="{{ fill }}" style="font-size:0;line-height:0">&nbsp;</td>
+{%- elif kind == "marker" %}<td width="2" height="6" bgcolor="{{ tokens.color.ink }}"></td>
+{%- else %}<td width="{{ width }}%"{% if loop.first %} height="6"{% endif %}></td>
+{%- endif -%}
+{%- endfor -%}
+</tr></table>
+{%- endmacro %}
+{% macro name_link(name, link) -%}
+{% if link %}<a class="cx-link" href="{{ link }}">{{ name }}</a>{% else %}{{ name }}{% endif %}
+{%- endmacro %}

@@ -1,0 +1,90 @@
+{#- Connectivity colour rule for email: online neutral grey, degraded amber + triangle, offline red + octagon. -#}
+{%- set cx = tokens.color.connectivity -%}
+.cx-band-ok {
+        background: {{ tokens.color.status_soft.ok }};
+        color: {{ tokens.color.status.ok }};
+      }
+      .cx-band-warn {
+        background: {{ cx.degraded_soft }};
+        color: {{ cx.degraded_text }};
+      }
+      .cx-band-crit {
+        background: {{ cx.offline_soft }};
+        color: {{ cx.offline_text }};
+      }
+      .cx-band-info {
+        background: {{ tokens.color.primary_soft }};
+        color: {{ tokens.color.primary }};
+      }
+      .cx-offline {
+        color: {{ cx.offline_text }};
+      }
+      .cx-degraded {
+        color: {{ cx.degraded_text }};
+      }
+      .cx-ok {
+        color: {{ tokens.color.status.ok }};
+      }
+      .cx-online {
+        color: {{ tokens.color.ink }};
+      }
+      .cx-ico {
+        font-size: 13px;
+        font-weight: 400;
+      }
+      .cx-ico-degraded {
+        color: {{ cx.degraded }};
+      }
+      .cx-ico-ok {
+        color: {{ tokens.color.status.ok }};
+      }
+      .cx-ico-online {
+        color: {{ cx.online }};
+      }
+      .cx-sub {
+        font-size: 11px;
+        color: {{ tokens.color.ink_soft }};
+        padding-top: 2px;
+      }
+      .cx-link {
+        color: {{ tokens.color.primary }};
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .cx-chip {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        padding: 1px 6px;
+        border-radius: 4px;
+        background: {{ cx.online_soft }};
+        color: {{ tokens.color.ink_soft }};
+      }
+      .cx-meta {
+        font-size: 11.5px;
+        color: {{ tokens.color.ink_soft }};
+        padding-top: 2px;
+      }
+      .cx-flag {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: {{ cx.degraded_text }};
+        white-space: nowrap;
+      }
+      .cx-t {
+        border-collapse: collapse;
+        font-size: 12.5px;
+        margin: 8px 0 12px;
+      }
+      .cx-t th {
+        text-align: {{ "right" if payload.meta.dir == "rtl" else "left" }};
+        color: {{ tokens.color.ink_soft }};
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        padding: 7px 8px;
+        border-bottom: 1px solid {{ tokens.color.line }};
+        background: {{ tokens.color.surface_soft }};
+      }
